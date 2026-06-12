@@ -1,14 +1,13 @@
 :root {
   --bg: #f8fafc;
   --surface: #ffffff;
-  --surface-soft: #edf8f6;
+  --surface-soft: #eef6fb;
   --text: #0f172a;
   --muted: #334155;
   --border: #cbd5e1;
-  --primary: #005891;
-  --primary-strong: #001a37;
-  --success: #007f68;
-  --accent-soft: #7bc3b8;
+  --primary: #005a9c;
+  --primary-strong: #003b66;
+  --success: #007a5e;
   --warning: #facc15;
   --danger: #b91c1c;
   --focus: #ffb703;
@@ -109,21 +108,6 @@ a {
 }
 
 .brand {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.85rem;
-  align-items: center;
-  min-width: 0;
-}
-
-.brand-logo {
-  width: clamp(3rem, 7vw, 4.6rem);
-  height: auto;
-  max-height: 5rem;
-  object-fit: contain;
-}
-
-.brand-copy {
   min-width: 0;
 }
 
@@ -142,28 +126,6 @@ a {
   font-size: clamp(1.7rem, 4vw, 3rem);
   line-height: 1.05;
   letter-spacing: 0;
-}
-
-.brand-name {
-  display: inline-flex;
-  align-items: baseline;
-  color: var(--primary-strong);
-  font-weight: 950;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.brand-name-main {
-  color: var(--primary-strong);
-}
-
-.brand-name-highlight {
-  color: var(--primary);
-}
-
-body.high-contrast .brand-name-main,
-body.high-contrast .brand-name-highlight {
-  color: var(--primary-strong);
 }
 
 .brand-subtitle {
@@ -319,7 +281,6 @@ body.high-contrast .button-secondary {
 }
 
 .hero-panel {
-  border-top: 5px solid var(--accent-soft);
   background: linear-gradient(135deg, var(--surface), var(--surface-soft));
 }
 
@@ -339,17 +300,6 @@ body.high-contrast .button-secondary {
   font-size: clamp(1.8rem, 5vw, 3.9rem);
   line-height: 1.05;
   letter-spacing: 0;
-}
-
-.page-title .brand-name {
-  flex-wrap: wrap;
-  white-space: normal;
-}
-
-.hero-logo {
-  width: clamp(4rem, 12vw, 6.5rem);
-  height: auto;
-  margin-bottom: 1rem;
 }
 
 .section-title {
@@ -880,14 +830,6 @@ body.high-contrast .success-badge {
 @media (max-width: 680px) {
   .app-header {
     padding: 0.85rem;
-  }
-
-  .brand {
-    gap: 0.65rem;
-  }
-
-  .brand-logo {
-    width: 3.2rem;
   }
 
   .app-shell {

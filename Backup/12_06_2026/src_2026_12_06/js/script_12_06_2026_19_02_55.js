@@ -143,7 +143,7 @@ const profiles = [
 
 const translations = {
   pt: {
-    appTitle: 'AcessibiliUFSC',
+    appTitle: 'UFSC Acessível',
     appSubtitle: 'Rotas inclusivas pelo campus Trindade',
     appKicker: 'Protótipo de IHC',
     skipLink: 'Pular para o conteúdo principal',
@@ -155,7 +155,7 @@ const translations = {
     stepNavLabel: 'Etapas do planejamento de rota',
     steps: ['Boas-vindas', 'Origem e destino', 'Perfil', 'Resultado', 'Passo a passo', 'Conclusão'],
     welcomeEyebrow: 'Orientação acessível no campus',
-    welcomeTitle: 'AcessibiliUFSC',
+    welcomeTitle: 'UFSC Acessível',
     welcomeIntro: 'Planeje rotas inclusivas no Campus Reitor João David Ferreira Lima, considerando mobilidade, baixa visão, descanso e clareza das instruções.',
     welcomeAction: 'Planejar rota',
     welcomeFeatureTitle: 'O que este protótipo entrega',
@@ -253,7 +253,7 @@ const translations = {
     }
   },
   en: {
-    appTitle: 'AcessibiliUFSC',
+    appTitle: 'UFSC Accessible',
     appSubtitle: 'Inclusive routes through Trindade campus',
     appKicker: 'HCI prototype',
     skipLink: 'Skip to main content',
@@ -265,7 +265,7 @@ const translations = {
     stepNavLabel: 'Route planning steps',
     steps: ['Welcome', 'Origin and destination', 'Profile', 'Result', 'Step by step', 'Completion'],
     welcomeEyebrow: 'Accessible campus guidance',
-    welcomeTitle: 'AcessibiliUFSC',
+    welcomeTitle: 'UFSC Accessible',
     welcomeIntro: 'Plan inclusive routes on UFSC Trindade campus, considering mobility, low vision, rest points, and clear instructions.',
     welcomeAction: 'Plan route',
     welcomeFeatureTitle: 'What this prototype delivers',
@@ -548,13 +548,6 @@ function formatTemplate(template, values) {
   return template.replace(/\{(\w+)\}/g, (_, key) => values[key] ?? '');
 }
 
-function renderBrandName() {
-  return `
-    <span class="brand-name">
-      <span class="brand-name-main">Acessibili</span><span class="brand-name-highlight">UFSC</span>
-    </span>
-  `;
-}
 function getLocation(id) {
   return locations.find(location => location.id === id);
 }
@@ -605,8 +598,7 @@ function render(shouldFocus = false) {
 
   document.querySelector('[data-i18n="skipLink"]').textContent = t.skipLink;
   document.querySelector('#brand-kicker').textContent = t.appKicker;
-  document.querySelector('#brand-title').setAttribute('aria-label', t.appTitle);
-  document.querySelector('#brand-title').innerHTML = renderBrandName();
+  document.querySelector('#brand-title').textContent = t.appTitle;
   document.querySelector('#brand-subtitle').textContent = t.appSubtitle;
 
   renderTopActions();
@@ -694,9 +686,8 @@ function renderWelcome() {
     <div class="welcome-layout">
       <section class="panel hero-panel" aria-labelledby="welcome-title">
         <div class="panel-inner">
-          <img class="hero-logo" src="assets/logo.svg" alt="" aria-hidden="true">
           <p class="eyebrow">${escapeHtml(t.welcomeEyebrow)}</p>
-          <h2 class="page-title" id="welcome-title" tabindex="-1" data-focus-target aria-label="${escapeHtml(t.welcomeTitle)}">${renderBrandName()}</h2>
+          <h2 class="page-title" id="welcome-title" tabindex="-1" data-focus-target>${escapeHtml(t.welcomeTitle)}</h2>
           <p class="section-lead">${escapeHtml(t.welcomeIntro)}</p>
           <div class="action-row">
             <button class="button button-primary" type="button" id="start-planning">${escapeHtml(t.welcomeAction)}</button>
