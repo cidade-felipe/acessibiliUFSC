@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="src/css/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-i18n="skipLink"></a>
+
+    <header class="app-header" role="banner">
+      <div class="brand">
+        <p class="brand-kicker" id="brand-kicker"></p>
+        <h1 class="brand-title" id="brand-title"></h1>
+        <p class="brand-subtitle" id="brand-subtitle"></p>
+      </div>
+
+      <div class="top-actions" id="top-actions"></div>
+    </header>
+
+    <main class="app-shell" id="main-content" tabindex="-1">
+      <div class="sr-only" id="screen-reader-status" aria-live="polite" aria-atomic="true"></div>
+      <nav class="step-nav" id="step-nav"></nav>
+      <section class="stage" id="app"></section>
+    </main>
+
+    <script src="src/js/script.js"></script>
+  </body>
+</html>

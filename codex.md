@@ -1,0 +1,491 @@
+# Documentação detalhada do projeto UFSC Acessível
+
+## 1. Visão geral
+
+O repositório contém um protótipo funcional de Interface e Interação Humano-Computador chamado `UFSC Acessível`. O objetivo do projeto é demonstrar, em um fluxo completo e navegável, como uma aplicação web poderia apoiar o deslocamento de pessoas no Campus Reitor João David Ferreira Lima, da UFSC Trindade, considerando acessibilidade, clareza cognitiva, responsividade e internacionalização.
+
+Fato: o projeto é estático e usa apenas HTML, CSS e JavaScript puro. Não existe backend, banco de dados, API externa, framework frontend ou biblioteca de UI.
+
+Fato: a imagem base do mapa está em `assets/mapa_ufsc.jpg`, conforme solicitado no arquivo `instructions/instrucoes_codex.md`.
+
+Inferência: o protótipo foi pensado para apresentação acadêmica em uma disciplina de Interface e Interação Humano-Computador, porque a pasta `instructions` contém um enunciado de trabalho final e uma instrução específica para o Codex gerar o produto.
+
+Opinião técnica: manter o projeto estático, sem dependências externas, é a escolha mais adequada neste contexto. Isso reduz custo de execução, elimina problemas de instalação na apresentação, facilita a abertura direta pelo avaliador e diminui riscos de falha por ambiente.
+
+## 2. Fontes de requisito analisadas
+
+Foram analisados estes arquivos:
+
+- `instructions/instrucoes_codex.md`
+- `instructions/trabalho_final_ihc_v2.html.md`
+- `README.md` original, que continha apenas o título `# av3-ihc-ufsc`
+
+O arquivo solicitado pelo usuário foi citado como `intrucoes.md`, mas o repositório possui `instructions/instrucoes_codex.md`. Como não há arquivo com o nome exato informado, foi adotada a interpretação de que `instrucoes_codex.md` é o arquivo correto.
+
+Fato: o arquivo `instructions/instrucoes_codex.md` exige um site chamado `UFSC Acessível`, com fluxo completo, acessibilidade real, troca de idioma PT-BR/EN, mapa com imagem da UFSC, marcadores interativos, rotas simuladas e README com justificativa de IHC.
+
+Fato: o arquivo `instructions/trabalho_final_ihc_v2.html.md` define a rubrica do trabalho, com maior peso para acessibilidade, depois internacionalização, fluxo completo, qualidade do protótipo e aplicação de IHC.
+
+## 3. Estrutura atual do projeto
+
+Estrutura principal após a implementação:
+
+```txt
+.
+├── index.html
+├── README.md
+├── codex.md
+├── LICENSE
+├── .gitignore
+├── assets
+│   └── mapa_ufsc.jpg
+├── src
+│   ├── css
+│   │   └── styles.css
+│   └── js
+│       └── script.js
+├── instructions
+│   ├── instrucoes_codex.md
+│   └── trabalho_final_ihc_v2.html.md
+└── Backup
+    └── 12_06_2026
+        └── README_12_06_2026_*.md
+```
+
+O `index.html` fica na raiz para permitir abertura direta no navegador, conforme a exigência de execução simples. O CSS e o JavaScript ficam dentro de `src/css` e `src/js`, respectivamente, para evitar arquivos de implementação soltos na raiz.
+
+Trade-off: deixar `index.html` na raiz é menos “purista” do ponto de vista de organização total, mas é melhor para usabilidade e entrega acadêmica, porque o avaliador pode abrir o projeto imediatamente.
+
+## 4. Arquivos criados e alterados
+
+### 4.1 `index.html`
+
+Arquivo criado para conter a estrutura semântica base da aplicação.
+
+Responsabilidades:
+
+- Definir o documento HTML.
+- Carregar `src/css/styles.css`.
+- Carregar `src/js/script.js`.
+- Expor regiões estruturais: `header`, `main`, `nav` e `section`.
+- Incluir o link de pular para o conteúdo principal.
+- Incluir uma região `aria-live` para leitores de tela.
+- Evitar textos fixos visíveis no HTML, delegando a renderização textual ao JavaScript.
+
+Decisão de design: a maior parte do conteúdo textual é renderizada via JavaScript para garantir que a troca de idioma altere títulos, botões, labels, instruções, alertas, mensagens de erro e labels ARIA de forma consistente.
+
+### 4.2 `src/css/styles.css`
+
+Arquivo criado para concentrar toda a camada visual e responsiva.
+
+Responsabilidades:
+
+- Definir tokens de cor com variáveis CSS.
+- Implementar contraste base com cores próximas às sugeridas na instrução.
+- Implementar modo alto contraste com `body.high-contrast`.
+- Garantir foco visível usando `:focus-visible`.
+- Estilizar cabeçalho, navegação de etapas, cards, formulários, botões, mapa, marcadores, rota SVG, alertas, métricas, modo texto, progresso e tela final.
+- Garantir responsividade com media queries para tablets e celulares.
+- Respeitar `prefers-reduced-motion`.
+
+Decisão de design: foram usados cards com raio de borda de `8px`, botões grandes, espaçamento generoso e hierarquia visual forte, porque o trabalho valoriza acessibilidade, ergonomia física e produto com aparência profissional.
+
+### 4.3 `src/js/script.js`
+
+Arquivo criado para controlar estado, renderização, validações, traduções, rotas mockadas e interações.
+
+Responsabilidades:
+
+- Manter os dados mockados dos locais do campus.
+- Manter os perfis de acessibilidade.
+- Manter o objeto `translations` com textos em PT-BR e EN.
+- Controlar o estado da aplicação em `state`.
+- Renderizar cada etapa do fluxo.
+- Validar origem, destino e perfil.
+- Calcular rotas específicas ou rota padrão.
+- Desenhar rota visual no mapa com SVG.
+- Posicionar marcadores usando coordenadas percentuais.
+- Atualizar labels, ARIA e textos ao trocar idioma.
+- Controlar modo alto contraste.
+- Controlar modo texto da rota.
+- Controlar modo passo a passo e conclusão.
+
+Decisão de design: a aplicação usa renderização por estado em uma única página. Isso mantém o fluxo simples, evita navegação entre arquivos e reduz o risco de telas inconsistentes.
+
+### 4.4 `README.md`
+
+Arquivo alterado para documentar:
+
+- Nome do projeto.
+- Descrição curta.
+- Problema resolvido.
+- Fluxo principal.
+- Recursos de acessibilidade.
+- Internacionalização.
+- Como executar.
+- Justificativa de IHC e acessibilidade.
+- Observação de dados simulados.
+
+Antes da alteração, o arquivo foi salvo em backup conforme regra do projeto.
+
+### 4.5 `codex.md`
+
+Arquivo criado para documentar de forma detalhada o projeto, decisões tomadas, estrutura, requisitos atendidos, riscos, validações e próximos passos. Este arquivo deve ser mantido atualizado a cada mudança relevante no projeto.
+
+## 5. Fluxo funcional implementado
+
+O fluxo do usuário possui seis etapas:
+
+1. Boas-vindas.
+2. Escolha da origem e destino.
+3. Escolha do perfil de acessibilidade.
+4. Resultado da rota.
+5. Modo passo a passo.
+6. Confirmação de chegada.
+
+Fato: o usuário consegue iniciar na tela de boas-vindas e chegar à tela final de conclusão sem login, cadastro ou telas fora do fluxo principal.
+
+Impacto prático: isso atende diretamente à rubrica de fluxo completo, reduz pontos de falha durante apresentação e demonstra domínio de IHC por conduzir o usuário até uma tarefa concluída.
+
+## 6. Etapa 1, boas-vindas
+
+A tela inicial apresenta:
+
+- Nome do produto.
+- Subtítulo do produto.
+- Explicação curta do objetivo.
+- Botão para planejar rota.
+- Alternância de idioma no topo.
+- Botão de alto contraste no topo.
+- Link de pular para o conteúdo principal.
+- Lista curta de benefícios do protótipo.
+
+Opinião técnica: esta etapa funciona como orientação inicial, mas sem virar landing page de marketing. O foco permanece no fluxo principal, como pedido no arquivo de instruções.
+
+## 7. Etapa 2, origem e destino
+
+A etapa de locais usa dois campos `select`:
+
+- Origem.
+- Destino.
+
+Os locais mockados implementados são:
+
+- Reitoria.
+- Biblioteca Central.
+- Restaurante Universitário.
+- Hospital Universitário.
+- Centro Tecnológico.
+- Centro Socioeconômico.
+- Centro de Filosofia e Ciências Humanas.
+- Centro de Comunicação e Expressão.
+- Centro de Cultura e Eventos.
+
+Cada local possui:
+
+- `id`
+- `namePt`
+- `nameEn`
+- `typePt`
+- `typeEn`
+- `x`
+- `y`
+
+As coordenadas `x` e `y` são usadas como porcentagens para posicionar marcadores no mapa.
+
+Validações implementadas:
+
+- Não permite continuar sem origem.
+- Não permite continuar sem destino.
+- Não permite origem igual ao destino.
+
+As mensagens aparecem visualmente e também são anunciadas pela região `aria-live`.
+
+## 8. Etapa 3, perfil de acessibilidade
+
+Os perfis implementados são:
+
+- Rota com menos escadas.
+- Rota com menos inclinação.
+- Rota com mais pontos de descanso.
+- Rota com instruções simplificadas.
+- Rota para baixa visão.
+- Rota padrão.
+
+Cada perfil é renderizado como card selecionável com radio button real. Isso é importante porque radio buttons nativos funcionam por teclado, são interpretados corretamente por leitores de tela e reduzem a necessidade de JavaScript customizado para comportamento básico.
+
+Validação implementada:
+
+- Não permite avançar sem escolher um perfil.
+
+## 9. Etapa 4, resultado da rota
+
+A tela de resultado mostra:
+
+- Mapa com `assets/mapa_ufsc.jpg`.
+- Marcadores interativos sobre o mapa.
+- Marcador de origem.
+- Marcador de destino.
+- Linha de rota em SVG.
+- Card com resumo da rota.
+- Tempo estimado.
+- Distância estimada.
+- Nível de acessibilidade.
+- Perfil escolhido.
+- Ajuste aplicado pelo perfil.
+- Alertas da rota.
+- Instruções passo a passo.
+- Botão para iniciar rota.
+- Botão para voltar e alterar.
+- Botão para ver rota em modo texto.
+
+Rotas específicas implementadas:
+
+1. Biblioteca Central para Restaurante Universitário.
+2. Reitoria para Centro Tecnológico.
+3. Centro Socioeconômico para Biblioteca Central.
+4. Centro de Cultura e Eventos para Hospital Universitário.
+
+Quando a combinação escolhida não possui rota específica, o sistema gera uma rota padrão com base nos pontos selecionados.
+
+Inferência: como não há dados oficiais de acessibilidade no repositório, todas as rotas e alertas são simulados. Essa limitação é explicitada no README.
+
+## 10. Etapa 5, modo passo a passo
+
+O modo passo a passo apresenta:
+
+- Número do passo atual.
+- Instrução curta.
+- Informação de acessibilidade.
+- Botão para voltar ao passo anterior.
+- Botão para próximo passo.
+- Botão para ver mapa novamente.
+- Barra visual de progresso.
+- Texto de progresso, como `Passo 2 de 5`.
+
+Decisão de acessibilidade: a barra de progresso não depende só de cor. O texto do progresso informa o avanço de forma explícita, inclusive para leitores de tela.
+
+## 11. Etapa 6, confirmação de chegada
+
+A etapa final apresenta:
+
+- Mensagem de sucesso.
+- Origem.
+- Destino.
+- Perfil escolhido.
+- Resumo da rota.
+- Botão para planejar nova rota.
+- Botão para ver mapa novamente.
+
+Mensagens implementadas:
+
+- PT-BR: `Você chegou ao destino. Rota concluída com sucesso.`
+- EN: `You have arrived at your destination. Route completed successfully.`
+
+## 12. Internacionalização
+
+O idioma padrão é PT-BR. A troca de idioma está disponível no topo em todas as etapas.
+
+Idiomas implementados:
+
+- PT-BR.
+- EN.
+
+Fato: o objeto `translations` em `src/js/script.js` centraliza os textos da aplicação.
+
+Textos cobertos:
+
+- Títulos.
+- Subtítulos.
+- Botões.
+- Rótulos.
+- Placeholders.
+- Mensagens de erro.
+- Instruções.
+- Alertas.
+- Textos de confirmação.
+- Textos do modo alto contraste.
+- Labels ARIA.
+- Nome das etapas.
+- Textos do modo texto.
+
+Opinião técnica: centralizar traduções em um objeto simples é suficiente para o escopo do protótipo. Usar uma biblioteca de i18n aumentaria complexidade sem ganho proporcional, já que o requisito proíbe bibliotecas externas e o projeto é pequeno.
+
+## 13. Acessibilidade
+
+Recursos implementados:
+
+- Contraste visual com paleta de alto contraste.
+- Modo alto contraste alternável.
+- Foco visível em elementos interativos.
+- Link de pular para conteúdo principal.
+- Controles nativos para botões, selects e radios.
+- Cards de perfil com radio buttons reais.
+- Mensagens de erro textuais.
+- Alertas com ícone textual, categoria escrita e mensagem.
+- `aria-live` para mudanças importantes.
+- `aria-describedby` para associar ajuda e erro aos campos.
+- `aria-current="step"` no indicador de etapa atual.
+- `alt` descritivo na imagem do mapa.
+- Marcadores do mapa como botões com `aria-label` traduzido.
+- Modo texto do mapa.
+- Layout responsivo.
+- Respeito a `prefers-reduced-motion`.
+
+Impacto prático: esses recursos reduzem risco de exclusão de usuários que navegam por teclado, usam leitor de tela, precisam de contraste maior, têm baixa visão ou preferem instruções textuais.
+
+## 14. Design visual
+
+O design usa:
+
+- Fundo claro.
+- Cards organizados.
+- Botões grandes.
+- Hierarquia visual clara.
+- Cores institucionais com azul, verde, amarelo e vermelho acessíveis.
+- Espaço em branco suficiente.
+- Layout responsivo em Grid e Flexbox.
+
+Opinião técnica: a aparência busca equilíbrio entre produto institucional e protótipo acadêmico. Evitou-se um visual genérico de mapa, priorizando fluxo, acessibilidade e clareza da tarefa.
+
+## 15. Mapa interativo
+
+O mapa usa a imagem `assets/mapa_ufsc.jpg`.
+
+Os marcadores são posicionados com `position: absolute` e coordenadas percentuais. Cada marcador é um botão com nome, tipo e papel na rota no `aria-label`.
+
+A rota é desenhada com SVG usando uma `polyline`. A linha possui espessura, camada branca de contraste e padrão tracejado, reduzindo dependência exclusiva de cor.
+
+Ao focar ou clicar em um marcador, a aplicação mostra um card textual com:
+
+- Nome do local.
+- Tipo do local.
+- Papel na rota ou indicação de ponto do campus.
+
+## 16. Modo texto do mapa
+
+O botão `Ver rota em modo texto` mostra uma alternativa completa à imagem do mapa.
+
+O modo texto apresenta:
+
+- Origem.
+- Destino.
+- Distância.
+- Tempo.
+- Passos numerados.
+- Alertas.
+- Pontos de referência.
+
+Fato: este requisito é obrigatório no arquivo de instruções e foi implementado porque a imagem do mapa pode não ser suficiente para usuários de leitor de tela, baixa visão ou navegação com zoom alto.
+
+## 17. Dados simulados e limites
+
+Fato: o projeto não usa dados oficiais de acessibilidade da UFSC.
+
+Fato: o README informa que as rotas são simuladas e não devem ser usadas como orientação oficial.
+
+Inferência: os dados mockados são adequados para um protótipo de IHC, porque o foco da avaliação é o fluxo, a interação, a acessibilidade e a internacionalização, não a precisão cartográfica.
+
+Risco mitigado: deixar claro que os dados são simulados evita uso indevido em contexto real.
+
+## 18. Backup e rastreabilidade
+
+Antes de alterar o `README.md`, foi criado backup em:
+
+```txt
+Backup/12_06_2026/
+```
+
+O nome do arquivo segue o padrão:
+
+```txt
+README_12_06_2026_hora_min_seg.md
+```
+
+Isso atende a regra definida nas instruções do ambiente para preservar arquivos antes de alteração, substituição ou remoção.
+
+## 19. Critérios de aceite atendidos
+
+Checklist com base no arquivo `instructions/instrucoes_codex.md`:
+
+- O usuário consegue concluir uma rota do início ao fim.
+- A imagem do mapa da UFSC aparece e é usada como base visual.
+- Existem marcadores interativos sobre o mapa.
+- Existe uma rota visual entre origem e destino.
+- Existe alternativa textual completa para a rota.
+- Existe troca de idioma PT-BR e EN em todas as etapas.
+- Os textos são renderizados a partir do JavaScript e mudam ao trocar idioma.
+- A interface funciona sem backend.
+- A interface usa controles nativos adequados para teclado.
+- O foco visível aparece nos elementos interativos.
+- Há modo alto contraste.
+- Há feedback textual para erros e alertas.
+- O layout é responsivo.
+- O projeto tem aparência de produto real.
+- Não existem telas vazias no fluxo.
+- Não existem botões intencionalmente sem função.
+- Não existem textos `Lorem ipsum`.
+- O README explica decisões de IHC e acessibilidade.
+
+## 20. Validações recomendadas
+
+Validações manuais:
+
+1. Abrir `index.html` no navegador.
+2. Navegar usando apenas teclado.
+3. Testar o link de pular para conteúdo principal.
+4. Alternar idioma em cada etapa.
+5. Ativar e desativar alto contraste.
+6. Tentar continuar sem origem.
+7. Tentar continuar sem destino.
+8. Tentar usar origem e destino iguais.
+9. Tentar avançar sem perfil.
+10. Calcular uma rota específica.
+11. Calcular uma rota padrão.
+12. Focar e clicar nos marcadores do mapa.
+13. Abrir e fechar o modo texto.
+14. Avançar e voltar no modo passo a passo.
+15. Confirmar chegada.
+16. Planejar nova rota.
+17. Testar em largura de celular.
+18. Testar zoom de 200%.
+
+Validações técnicas recomendadas:
+
+- Executar `node --check src/js/script.js` para verificar sintaxe do JavaScript.
+- Usar a inspeção de acessibilidade do navegador.
+- Testar contraste com ferramenta WCAG.
+- Testar leitura com NVDA, Narrator, VoiceOver ou leitor de tela equivalente.
+
+## 21. Próximos aprimoramentos possíveis
+
+Melhorias futuras, caso o projeto evolua:
+
+- Persistir preferência de idioma e alto contraste em `localStorage`.
+- Adicionar testes automatizados de acessibilidade com ferramentas como axe, se bibliotecas externas forem permitidas.
+- Adicionar rotas específicas para todas as combinações mais prováveis.
+- Validar contraste com relatório formal WCAG.
+- Criar uma apresentação curta com capturas das etapas e justificativa oral.
+- Substituir dados simulados por dados oficiais se a UFSC disponibilizar fonte confiável.
+
+## 22. Decisões técnicas resumidas
+
+Melhor opção adotada: aplicação estática em HTML, CSS e JavaScript puro, com estado central em JavaScript e renderização dinâmica por etapa.
+
+Por que é superior neste caso:
+
+- Menor complexidade.
+- Sem instalação.
+- Menor risco na apresentação.
+- Aderência direta ao requisito.
+- Facilidade de revisão pelo professor.
+- Custo de manutenção baixo.
+
+Trade-offs:
+
+- Sem framework, há mais responsabilidade manual na renderização.
+- Sem backend, dados são simulados.
+- Sem biblioteca de i18n, as traduções dependem de disciplina no objeto `translations`.
+- Sem testes automatizados, a validação inicial é manual e por inspeção.
+
+Mesmo com esses trade-offs, a solução é adequada ao objetivo acadêmico, porque entrega fluxo completo, acessibilidade, internacionalização e execução simples.
