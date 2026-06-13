@@ -1220,7 +1220,7 @@ function renderRouteSvg(path) {
   const points = path.map(point => `${point.x},${point.y}`).join(' ');
   const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="0.45"></circle>`).join('');
   return `
-    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" focusable="false">
+    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <polyline class="route-shadow" points="${points}"></polyline>
       <polyline class="route-line" points="${points}"></polyline>
       ${circles}

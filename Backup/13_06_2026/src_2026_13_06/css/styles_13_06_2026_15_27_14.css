@@ -573,7 +573,6 @@ body.high-contrast .summary-icon {
 }
 
 .map-image {
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -583,12 +582,9 @@ body.high-contrast .summary-icon {
 .marker-layer {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
 }
 
 .route-layer {
-  display: block;
   pointer-events: none;
 }
 

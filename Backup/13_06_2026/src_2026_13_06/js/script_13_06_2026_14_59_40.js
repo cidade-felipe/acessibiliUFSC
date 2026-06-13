@@ -583,17 +583,6 @@ function getProfileNote(profile) {
   return state.lang === 'pt' ? profile.notePt : profile.noteEn;
 }
 
-function routeMatchesSelection(route = state.route) {
-  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination);
-}
-
-function invalidateRoute() {
-  state.route = null;
-  state.currentRouteStep = 0;
-  state.textMode = false;
-  state.activeMarkerId = '';
-}
-
 function setStatus(message) {
   statusRegion.textContent = message;
 }
@@ -781,16 +770,10 @@ function renderPlaces() {
 
   document.querySelector('#origin-select').addEventListener('change', event => {
     state.origin = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#destination-select').addEventListener('change', event => {
     state.destination = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#places-back').addEventListener('click', () => {
@@ -821,11 +804,6 @@ function renderPlaces() {
       render(true);
       setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
       return;
-    }
-
-
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
     }
 
     setView('profile', { focus: true });
@@ -917,13 +895,13 @@ function buildRoute() {
   const template = routeTemplates[`${state.origin}|${state.destination}`];
 
   if (template) {
-    return normalizeTemplateRoute(template, origin, destination, state.profile);
+    return normalizeTemplateRoute(template, origin, destination);
   }
 
   return buildFallbackRoute(origin, destination);
 }
 
-function normalizeTemplateRoute(template, origin, destination, profileId = state.profile) {
+function normalizeTemplateRoute(template, origin, destination) {
   return {
     namePt: translations.pt.routeSpecificNames[template.nameKey],
     nameEn: translations.en.routeSpecificNames[template.nameKey],
@@ -932,11 +910,11 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     distance: template.distance,
     timePt: template.timePt,
     timeEn: template.timeEn,
-    accessibility: getProfileAccessibility(template.accessibility, profileId),
+    accessibility: template.accessibility,
     summaryPt: template.summaryPt,
     summaryEn: template.summaryEn,
-    path: buildProfilePath(template.path, origin, destination, profileId),
-    alerts: buildProfileAlerts(template.alerts, profileId),
+    path: template.path,
+    alerts: template.alerts,
     landmarksPt: template.landmarksPt,
     landmarksEn: template.landmarksEn,
     steps: template.stepsPt.map((step, index) => ({
@@ -954,12 +932,10 @@ function buildFallbackRoute(origin, destination) {
   const rawDistance = Math.hypot(dx, dy);
   const meters = Math.max(350, Math.round(rawDistance * 22));
   const minutes = Math.max(6, Math.round(meters / 75));
-  const midpoint = getPointBetween(origin, destination, 0.5);
-  const basePath = [
-    { x: origin.x, y: origin.y },
-    midpoint,
-    { x: destination.x, y: destination.y }
-  ];
+  const midpoint = {
+    x: Math.round((origin.x + destination.x) / 2),
+    y: Math.round((origin.y + destination.y) / 2)
+  };
 
   return {
     namePt: translations.pt.defaultRouteName,
@@ -969,11 +945,15 @@ function buildFallbackRoute(origin, destination) {
     distance: `${meters} m`,
     timePt: `${minutes} a ${minutes + 3} min`,
     timeEn: `${minutes} to ${minutes + 3} min`,
-    accessibility: getProfileAccessibility(rawDistance > 24 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
+    accessibility: rawDistance > 24 ? 'routeAccessibleModerate' : 'routeAccessibleMedium',
     summaryPt: translations.pt.defaultRouteSummary,
     summaryEn: translations.en.defaultRouteSummary,
-    path: buildProfilePath(basePath, origin, destination, state.profile),
-    alerts: buildProfileAlerts(['partialShade', 'unevenFloor', 'textReference'], state.profile),
+    path: [
+      { x: origin.x, y: origin.y },
+      { x: midpoint.x, y: midpoint.y },
+      { x: destination.x, y: destination.y }
+    ],
+    alerts: ['partialShade', 'unevenFloor', 'textReference'],
     landmarksPt: [origin.namePt, 'Via interna do campus', destination.namePt],
     landmarksEn: [origin.nameEn, 'Campus internal road', destination.nameEn],
     steps: [
@@ -1005,119 +985,6 @@ function buildFallbackRoute(origin, destination) {
   };
 }
 
-function buildProfilePath(basePath, origin, destination, profileId = 'standard') {
-  const anchoredPath = anchorPathEndpoints(basePath, origin, destination);
-
-  if (profileId === 'simple') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.5),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'stairs') {
-    const corridorY = clampCoordinate((origin.y + destination.y) / 2, 'y');
-    return [
-      getLocationPoint(origin),
-      { x: origin.x, y: corridorY },
-      { x: destination.x, y: corridorY },
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'slope') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.25, -1.2),
-      getPointBetween(origin, destination, 0.5, -1.8),
-      getPointBetween(origin, destination, 0.75, -1.2),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'rest') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.2, 1.4),
-      getPointBetween(origin, destination, 0.4, -1.2),
-      getPointBetween(origin, destination, 0.6, 1.2),
-      getPointBetween(origin, destination, 0.8, -1.4),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'lowVision') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.33, 2.4),
-      getPointBetween(origin, destination, 0.66, 2.4),
-      getLocationPoint(destination)
-    ];
-  }
-
-  return anchoredPath;
-}
-
-function anchorPathEndpoints(basePath, origin, destination) {
-  const middlePoints = Array.isArray(basePath) && basePath.length > 2
-    ? basePath.slice(1, -1).map(point => ({ x: point.x, y: point.y }))
-    : [];
-
-  return [
-    getLocationPoint(origin),
-    ...middlePoints,
-    getLocationPoint(destination)
-  ];
-}
-
-function getPointBetween(origin, destination, ratio, perpendicularOffset = 0) {
-  const dx = destination.x - origin.x;
-  const dy = destination.y - origin.y;
-  const length = Math.hypot(dx, dy) || 1;
-  const normalX = -dy / length;
-  const normalY = dx / length;
-
-  return {
-    x: clampCoordinate(origin.x + dx * ratio + normalX * perpendicularOffset, 'x'),
-    y: clampCoordinate(origin.y + dy * ratio + normalY * perpendicularOffset, 'y')
-  };
-}
-
-function getLocationPoint(location) {
-  return { x: location.x, y: location.y };
-}
-
-function clampCoordinate(value, axis) {
-  const min = axis === 'x' ? 3 : 3;
-  const max = axis === 'x' ? 97 : 97;
-  return Math.min(max, Math.max(min, Number(value.toFixed(2))));
-}
-
-function buildProfileAlerts(baseAlerts, profileId = 'standard') {
-  const profileAlerts = {
-    stairs: ['wheelchair', 'vehicleCrossing'],
-    slope: ['unevenFloor', 'partialShade'],
-    rest: ['restPoint', 'partialShade'],
-    simple: ['textReference'],
-    lowVision: ['textReference', 'crowded'],
-    standard: []
-  };
-
-  return [...new Set([...(baseAlerts || []), ...(profileAlerts[profileId] || [])])];
-}
-
-function getProfileAccessibility(defaultAccessibility, profileId = 'standard') {
-  if (['stairs', 'slope', 'rest', 'lowVision'].includes(profileId)) {
-    return 'routeAccessibleHigh';
-  }
-
-  if (profileId === 'simple') {
-    return 'routeAccessibleMedium';
-  }
-
-  return defaultAccessibility;
-}
 function renderRoute() {
   const t = getT();
 
@@ -1162,21 +1029,15 @@ function renderRoute() {
 }
 
 function getRouteView() {
-  if (!routeMatchesSelection() && state.origin && state.destination && state.profile) {
-    state.route = buildRoute();
-  }
-
   const route = state.route;
   const origin = getLocation(route.originId);
   const destination = getLocation(route.destinationId);
   const profile = getProfile(state.profile);
-  const path = buildProfilePath(route.path, origin, destination, state.profile);
 
   return {
     route,
     origin,
     destination,
-    path,
     profile,
     name: state.lang === 'pt' ? route.namePt : route.nameEn,
     summary: state.lang === 'pt' ? route.summaryPt : route.summaryEn,
@@ -1204,7 +1065,7 @@ function renderMap(routeView) {
       </div>
       <div class="map-wrap">
         <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
-        ${renderRouteSvg(routeView.path)}
+        ${renderRouteSvg(routeView.route.path)}
         <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
           ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
@@ -1218,9 +1079,9 @@ function renderMap(routeView) {
 
 function renderRouteSvg(path) {
   const points = path.map(point => `${point.x},${point.y}`).join(' ');
-  const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="0.45"></circle>`).join('');
+  const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="1.7"></circle>`).join('');
   return `
-    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" focusable="false">
+    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <polyline class="route-shadow" points="${points}"></polyline>
       <polyline class="route-line" points="${points}"></polyline>
       ${circles}

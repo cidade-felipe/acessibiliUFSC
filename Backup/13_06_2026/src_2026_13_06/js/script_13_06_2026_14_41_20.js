@@ -7,8 +7,8 @@ const locations = [
     nameEn: "Rector's Office",
     typePt: 'Unidade administrativa',
     typeEn: 'Administrative unit',
-    x: 52.4,
-    y: 46.3
+    x: 53.7,
+    y: 55.6
   },
   {
     id: 'biblioteca',
@@ -16,8 +16,8 @@ const locations = [
     nameEn: 'Central Library',
     typePt: 'Biblioteca',
     typeEn: 'Library',
-    x: 52.4,
-    y: 37.4
+    x: 53.6,
+    y: 43
   },
   {
     id: 'ru',
@@ -25,8 +25,8 @@ const locations = [
     nameEn: 'University Restaurant',
     typePt: 'Alimentação',
     typeEn: 'Food service',
-    x: 40.4,
-    y: 55.7
+    x: 41.2,
+    y: 66
   },
   {
     id: 'hu',
@@ -34,8 +34,8 @@ const locations = [
     nameEn: 'University Hospital',
     typePt: 'Saúde',
     typeEn: 'Health service',
-    x: 63.8,
-    y: 27
+    x: 63.5,
+    y: 30.5
   },
   {
     id: 'ctc',
@@ -43,8 +43,8 @@ const locations = [
     nameEn: 'Technology Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 63.5,
-    y: 50.2
+    x: 84.5,
+    y: 44.5
   },
   {
     id: 'cse',
@@ -52,8 +52,8 @@ const locations = [
     nameEn: 'Socioeconomic Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 40.7,
-    y: 38
+    x: 41.6,
+    y: 43
   },
   {
     id: 'cfh',
@@ -61,8 +61,8 @@ const locations = [
     nameEn: 'Center of Philosophy and Human Sciences',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 31.6,
-    y: 53.7
+    x: 30.8,
+    y: 64.5
   },
   {
     id: 'cce',
@@ -70,8 +70,8 @@ const locations = [
     nameEn: 'Communication and Expression Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 43.2,
-    y: 47
+    x: 42.3,
+    y: 52.5
   },
   {
     id: 'centro_eventos',
@@ -79,11 +79,10 @@ const locations = [
     nameEn: 'Culture and Events Center',
     typePt: 'Eventos',
     typeEn: 'Events',
-    x: 50.5,
-    y: 51.6
+    x: 51.5,
+    y: 62.2
   }
 ];
-
 const profiles = [
   {
     id: 'stairs',
@@ -385,10 +384,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto curto entre a Biblioteca Central e o RU, com travessia sinalizada e alternativa por trecho mais plano.',
     summaryEn: 'Short path between the Central Library and the University Restaurant, with a marked crossing and a flatter alternative segment.',
     path: [
-      { x: 52.4, y: 37.4 },
-      { x: 49, y: 44 },
-      { x: 45, y: 51 },
-      { x: 40.4, y: 55.7 }
+      { x: 53.6, y: 43 },
+      { x: 50.5, y: 51.5 },
+      { x: 44.5, y: 58.5 },
+      { x: 41.2, y: 66 }
     ],
     alerts: ['vehicleCrossing', 'partialShade', 'wheelchair', 'crowded'],
     landmarksPt: ['Entrada principal da Biblioteca Central', 'Via interna central', 'Faixa sinalizada próxima ao RU'],
@@ -417,10 +416,10 @@ const routeTemplates = {
     summaryPt: 'Rota institucional entre a Reitoria e o CTC, evitando atalhos com piso irregular quando possível.',
     summaryEn: 'Institutional route between the Rector\'s Office and the Technology Center, avoiding uneven shortcuts where possible.',
     path: [
-      { x: 52.4, y: 46.3 },
-      { x: 56, y: 48 },
-      { x: 60, y: 49 },
-      { x: 63.5, y: 50.2 }
+      { x: 53.7, y: 55.6 },
+      { x: 61, y: 52.5 },
+      { x: 72.5, y: 48.5 },
+      { x: 84.5, y: 44.5 }
     ],
     alerts: ['unevenFloor', 'partialShade', 'restPoint', 'rain'],
     landmarksPt: ['Praça próxima à Reitoria', 'Via interna em direção ao setor leste', 'Acesso principal ao CTC'],
@@ -449,10 +448,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto direto entre CSE e Biblioteca Central, com referências simples e baixa distância estimada.',
     summaryEn: 'Direct path between the Socioeconomic Center and the Central Library, with simple references and low estimated distance.',
     path: [
-      { x: 40.7, y: 38 },
-      { x: 45, y: 37.6 },
-      { x: 49, y: 37.5 },
-      { x: 52.4, y: 37.4 }
+      { x: 41.6, y: 43 },
+      { x: 45, y: 42.8 },
+      { x: 49.5, y: 42.9 },
+      { x: 53.6, y: 43 }
     ],
     alerts: ['partialShade', 'wheelchair', 'restPoint'],
     landmarksPt: ['Saída do CSE', 'Eixo de circulação central', 'Entrada lateral da Biblioteca Central'],
@@ -481,10 +480,10 @@ const routeTemplates = {
     summaryPt: 'Rota mais longa entre o Centro de Cultura e Eventos e o HU, com alertas para chuva e circulação intensa.',
     summaryEn: 'Longer route between the Culture and Events Center and the University Hospital, with alerts for rain and heavy circulation.',
     path: [
-      { x: 50.5, y: 51.6 },
-      { x: 55, y: 43 },
-      { x: 60, y: 34 },
-      { x: 63.8, y: 27 }
+      { x: 51.5, y: 62.2 },
+      { x: 55, y: 55 },
+      { x: 59.5, y: 44 },
+      { x: 63.5, y: 30.5 }
     ],
     alerts: ['rain', 'vehicleCrossing', 'crowded', 'textReference'],
     landmarksPt: ['Centro de Cultura e Eventos', 'Via interna em direção ao norte', 'Acesso do Hospital Universitário'],
@@ -581,17 +580,6 @@ function getProfileDescription(profile) {
 
 function getProfileNote(profile) {
   return state.lang === 'pt' ? profile.notePt : profile.noteEn;
-}
-
-function routeMatchesSelection(route = state.route) {
-  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination);
-}
-
-function invalidateRoute() {
-  state.route = null;
-  state.currentRouteStep = 0;
-  state.textMode = false;
-  state.activeMarkerId = '';
 }
 
 function setStatus(message) {
@@ -781,16 +769,10 @@ function renderPlaces() {
 
   document.querySelector('#origin-select').addEventListener('change', event => {
     state.origin = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#destination-select').addEventListener('change', event => {
     state.destination = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#places-back').addEventListener('click', () => {
@@ -821,11 +803,6 @@ function renderPlaces() {
       render(true);
       setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
       return;
-    }
-
-
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
     }
 
     setView('profile', { focus: true });
@@ -917,13 +894,13 @@ function buildRoute() {
   const template = routeTemplates[`${state.origin}|${state.destination}`];
 
   if (template) {
-    return normalizeTemplateRoute(template, origin, destination, state.profile);
+    return normalizeTemplateRoute(template, origin, destination);
   }
 
   return buildFallbackRoute(origin, destination);
 }
 
-function normalizeTemplateRoute(template, origin, destination, profileId = state.profile) {
+function normalizeTemplateRoute(template, origin, destination) {
   return {
     namePt: translations.pt.routeSpecificNames[template.nameKey],
     nameEn: translations.en.routeSpecificNames[template.nameKey],
@@ -932,11 +909,11 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     distance: template.distance,
     timePt: template.timePt,
     timeEn: template.timeEn,
-    accessibility: getProfileAccessibility(template.accessibility, profileId),
+    accessibility: template.accessibility,
     summaryPt: template.summaryPt,
     summaryEn: template.summaryEn,
-    path: buildProfilePath(template.path, origin, destination, profileId),
-    alerts: buildProfileAlerts(template.alerts, profileId),
+    path: template.path,
+    alerts: template.alerts,
     landmarksPt: template.landmarksPt,
     landmarksEn: template.landmarksEn,
     steps: template.stepsPt.map((step, index) => ({
@@ -954,12 +931,10 @@ function buildFallbackRoute(origin, destination) {
   const rawDistance = Math.hypot(dx, dy);
   const meters = Math.max(350, Math.round(rawDistance * 22));
   const minutes = Math.max(6, Math.round(meters / 75));
-  const midpoint = getPointBetween(origin, destination, 0.5);
-  const basePath = [
-    { x: origin.x, y: origin.y },
-    midpoint,
-    { x: destination.x, y: destination.y }
-  ];
+  const midpoint = {
+    x: Math.round((origin.x + destination.x) / 2),
+    y: Math.round((origin.y + destination.y) / 2)
+  };
 
   return {
     namePt: translations.pt.defaultRouteName,
@@ -969,11 +944,15 @@ function buildFallbackRoute(origin, destination) {
     distance: `${meters} m`,
     timePt: `${minutes} a ${minutes + 3} min`,
     timeEn: `${minutes} to ${minutes + 3} min`,
-    accessibility: getProfileAccessibility(rawDistance > 24 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
+    accessibility: rawDistance > 24 ? 'routeAccessibleModerate' : 'routeAccessibleMedium',
     summaryPt: translations.pt.defaultRouteSummary,
     summaryEn: translations.en.defaultRouteSummary,
-    path: buildProfilePath(basePath, origin, destination, state.profile),
-    alerts: buildProfileAlerts(['partialShade', 'unevenFloor', 'textReference'], state.profile),
+    path: [
+      { x: origin.x, y: origin.y },
+      { x: midpoint.x, y: midpoint.y },
+      { x: destination.x, y: destination.y }
+    ],
+    alerts: ['partialShade', 'unevenFloor', 'textReference'],
     landmarksPt: [origin.namePt, 'Via interna do campus', destination.namePt],
     landmarksEn: [origin.nameEn, 'Campus internal road', destination.nameEn],
     steps: [
@@ -1005,119 +984,6 @@ function buildFallbackRoute(origin, destination) {
   };
 }
 
-function buildProfilePath(basePath, origin, destination, profileId = 'standard') {
-  const anchoredPath = anchorPathEndpoints(basePath, origin, destination);
-
-  if (profileId === 'simple') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.5),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'stairs') {
-    const corridorY = clampCoordinate((origin.y + destination.y) / 2, 'y');
-    return [
-      getLocationPoint(origin),
-      { x: origin.x, y: corridorY },
-      { x: destination.x, y: corridorY },
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'slope') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.25, -1.2),
-      getPointBetween(origin, destination, 0.5, -1.8),
-      getPointBetween(origin, destination, 0.75, -1.2),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'rest') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.2, 1.4),
-      getPointBetween(origin, destination, 0.4, -1.2),
-      getPointBetween(origin, destination, 0.6, 1.2),
-      getPointBetween(origin, destination, 0.8, -1.4),
-      getLocationPoint(destination)
-    ];
-  }
-
-  if (profileId === 'lowVision') {
-    return [
-      getLocationPoint(origin),
-      getPointBetween(origin, destination, 0.33, 2.4),
-      getPointBetween(origin, destination, 0.66, 2.4),
-      getLocationPoint(destination)
-    ];
-  }
-
-  return anchoredPath;
-}
-
-function anchorPathEndpoints(basePath, origin, destination) {
-  const middlePoints = Array.isArray(basePath) && basePath.length > 2
-    ? basePath.slice(1, -1).map(point => ({ x: point.x, y: point.y }))
-    : [];
-
-  return [
-    getLocationPoint(origin),
-    ...middlePoints,
-    getLocationPoint(destination)
-  ];
-}
-
-function getPointBetween(origin, destination, ratio, perpendicularOffset = 0) {
-  const dx = destination.x - origin.x;
-  const dy = destination.y - origin.y;
-  const length = Math.hypot(dx, dy) || 1;
-  const normalX = -dy / length;
-  const normalY = dx / length;
-
-  return {
-    x: clampCoordinate(origin.x + dx * ratio + normalX * perpendicularOffset, 'x'),
-    y: clampCoordinate(origin.y + dy * ratio + normalY * perpendicularOffset, 'y')
-  };
-}
-
-function getLocationPoint(location) {
-  return { x: location.x, y: location.y };
-}
-
-function clampCoordinate(value, axis) {
-  const min = axis === 'x' ? 3 : 3;
-  const max = axis === 'x' ? 97 : 97;
-  return Math.min(max, Math.max(min, Number(value.toFixed(2))));
-}
-
-function buildProfileAlerts(baseAlerts, profileId = 'standard') {
-  const profileAlerts = {
-    stairs: ['wheelchair', 'vehicleCrossing'],
-    slope: ['unevenFloor', 'partialShade'],
-    rest: ['restPoint', 'partialShade'],
-    simple: ['textReference'],
-    lowVision: ['textReference', 'crowded'],
-    standard: []
-  };
-
-  return [...new Set([...(baseAlerts || []), ...(profileAlerts[profileId] || [])])];
-}
-
-function getProfileAccessibility(defaultAccessibility, profileId = 'standard') {
-  if (['stairs', 'slope', 'rest', 'lowVision'].includes(profileId)) {
-    return 'routeAccessibleHigh';
-  }
-
-  if (profileId === 'simple') {
-    return 'routeAccessibleMedium';
-  }
-
-  return defaultAccessibility;
-}
 function renderRoute() {
   const t = getT();
 
@@ -1162,21 +1028,15 @@ function renderRoute() {
 }
 
 function getRouteView() {
-  if (!routeMatchesSelection() && state.origin && state.destination && state.profile) {
-    state.route = buildRoute();
-  }
-
   const route = state.route;
   const origin = getLocation(route.originId);
   const destination = getLocation(route.destinationId);
   const profile = getProfile(state.profile);
-  const path = buildProfilePath(route.path, origin, destination, state.profile);
 
   return {
     route,
     origin,
     destination,
-    path,
     profile,
     name: state.lang === 'pt' ? route.namePt : route.nameEn,
     summary: state.lang === 'pt' ? route.summaryPt : route.summaryEn,
@@ -1204,7 +1064,7 @@ function renderMap(routeView) {
       </div>
       <div class="map-wrap">
         <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
-        ${renderRouteSvg(routeView.path)}
+        ${renderRouteSvg(routeView.route.path)}
         <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
           ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
@@ -1218,9 +1078,9 @@ function renderMap(routeView) {
 
 function renderRouteSvg(path) {
   const points = path.map(point => `${point.x},${point.y}`).join(' ');
-  const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="0.45"></circle>`).join('');
+  const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="1.7"></circle>`).join('');
   return `
-    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" focusable="false">
+    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <polyline class="route-shadow" points="${points}"></polyline>
       <polyline class="route-line" points="${points}"></polyline>
       ${circles}

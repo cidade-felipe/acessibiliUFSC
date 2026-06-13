@@ -583,17 +583,6 @@ function getProfileNote(profile) {
   return state.lang === 'pt' ? profile.notePt : profile.noteEn;
 }
 
-function routeMatchesSelection(route = state.route) {
-  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination);
-}
-
-function invalidateRoute() {
-  state.route = null;
-  state.currentRouteStep = 0;
-  state.textMode = false;
-  state.activeMarkerId = '';
-}
-
 function setStatus(message) {
   statusRegion.textContent = message;
 }
@@ -781,16 +770,10 @@ function renderPlaces() {
 
   document.querySelector('#origin-select').addEventListener('change', event => {
     state.origin = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#destination-select').addEventListener('change', event => {
     state.destination = event.target.value;
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
-    }
   });
 
   document.querySelector('#places-back').addEventListener('click', () => {
@@ -821,11 +804,6 @@ function renderPlaces() {
       render(true);
       setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
       return;
-    }
-
-
-    if (!routeMatchesSelection()) {
-      invalidateRoute();
     }
 
     setView('profile', { focus: true });
@@ -1162,10 +1140,6 @@ function renderRoute() {
 }
 
 function getRouteView() {
-  if (!routeMatchesSelection() && state.origin && state.destination && state.profile) {
-    state.route = buildRoute();
-  }
-
   const route = state.route;
   const origin = getLocation(route.originId);
   const destination = getLocation(route.destinationId);
@@ -1220,7 +1194,7 @@ function renderRouteSvg(path) {
   const points = path.map(point => `${point.x},${point.y}`).join(' ');
   const circles = path.map(point => `<circle class="route-dot" cx="${point.x}" cy="${point.y}" r="0.45"></circle>`).join('');
   return `
-    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" focusable="false">
+    <svg class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <polyline class="route-shadow" points="${points}"></polyline>
       <polyline class="route-line" points="${points}"></polyline>
       ${circles}
