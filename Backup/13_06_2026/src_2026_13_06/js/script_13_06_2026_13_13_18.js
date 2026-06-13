@@ -7,8 +7,8 @@ const locations = [
     nameEn: "Rector's Office",
     typePt: 'Unidade administrativa',
     typeEn: 'Administrative unit',
-    x: 53.7,
-    y: 55.6
+    x: 56,
+    y: 60
   },
   {
     id: 'biblioteca',
@@ -16,8 +16,8 @@ const locations = [
     nameEn: 'Central Library',
     typePt: 'Biblioteca',
     typeEn: 'Library',
-    x: 53.6,
-    y: 43
+    x: 49,
+    y: 45
   },
   {
     id: 'ru',
@@ -25,8 +25,8 @@ const locations = [
     nameEn: 'University Restaurant',
     typePt: 'Alimentação',
     typeEn: 'Food service',
-    x: 41.2,
-    y: 66
+    x: 45,
+    y: 62
   },
   {
     id: 'hu',
@@ -34,8 +34,8 @@ const locations = [
     nameEn: 'University Hospital',
     typePt: 'Saúde',
     typeEn: 'Health service',
-    x: 63.5,
-    y: 30.5
+    x: 62,
+    y: 32
   },
   {
     id: 'ctc',
@@ -43,8 +43,8 @@ const locations = [
     nameEn: 'Technology Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 84.5,
-    y: 44.5
+    x: 67,
+    y: 51
   },
   {
     id: 'cse',
@@ -52,7 +52,7 @@ const locations = [
     nameEn: 'Socioeconomic Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 41.6,
+    x: 35,
     y: 43
   },
   {
@@ -61,8 +61,8 @@ const locations = [
     nameEn: 'Center of Philosophy and Human Sciences',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 30.8,
-    y: 64.5
+    x: 31,
+    y: 65
   },
   {
     id: 'cce',
@@ -70,8 +70,8 @@ const locations = [
     nameEn: 'Communication and Expression Center',
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
-    x: 42.3,
-    y: 52.5
+    x: 39,
+    y: 50
   },
   {
     id: 'centro_eventos',
@@ -79,10 +79,11 @@ const locations = [
     nameEn: 'Culture and Events Center',
     typePt: 'Eventos',
     typeEn: 'Events',
-    x: 51.5,
-    y: 62.2
+    x: 53,
+    y: 60
   }
 ];
+
 const profiles = [
   {
     id: 'stairs',
@@ -384,10 +385,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto curto entre a Biblioteca Central e o RU, com travessia sinalizada e alternativa por trecho mais plano.',
     summaryEn: 'Short path between the Central Library and the University Restaurant, with a marked crossing and a flatter alternative segment.',
     path: [
-      { x: 53.6, y: 43 },
-      { x: 50.5, y: 51.5 },
-      { x: 44.5, y: 58.5 },
-      { x: 41.2, y: 66 }
+      { x: 49, y: 45 },
+      { x: 48, y: 52 },
+      { x: 46, y: 58 },
+      { x: 45, y: 62 }
     ],
     alerts: ['vehicleCrossing', 'partialShade', 'wheelchair', 'crowded'],
     landmarksPt: ['Entrada principal da Biblioteca Central', 'Via interna central', 'Faixa sinalizada próxima ao RU'],
@@ -416,10 +417,10 @@ const routeTemplates = {
     summaryPt: 'Rota institucional entre a Reitoria e o CTC, evitando atalhos com piso irregular quando possível.',
     summaryEn: 'Institutional route between the Rector\'s Office and the Technology Center, avoiding uneven shortcuts where possible.',
     path: [
-      { x: 53.7, y: 55.6 },
-      { x: 61, y: 52.5 },
-      { x: 72.5, y: 48.5 },
-      { x: 84.5, y: 44.5 }
+      { x: 56, y: 60 },
+      { x: 60, y: 58 },
+      { x: 63, y: 54 },
+      { x: 67, y: 51 }
     ],
     alerts: ['unevenFloor', 'partialShade', 'restPoint', 'rain'],
     landmarksPt: ['Praça próxima à Reitoria', 'Via interna em direção ao setor leste', 'Acesso principal ao CTC'],
@@ -448,10 +449,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto direto entre CSE e Biblioteca Central, com referências simples e baixa distância estimada.',
     summaryEn: 'Direct path between the Socioeconomic Center and the Central Library, with simple references and low estimated distance.',
     path: [
-      { x: 41.6, y: 43 },
-      { x: 45, y: 42.8 },
-      { x: 49.5, y: 42.9 },
-      { x: 53.6, y: 43 }
+      { x: 35, y: 43 },
+      { x: 39, y: 44 },
+      { x: 44, y: 45 },
+      { x: 49, y: 45 }
     ],
     alerts: ['partialShade', 'wheelchair', 'restPoint'],
     landmarksPt: ['Saída do CSE', 'Eixo de circulação central', 'Entrada lateral da Biblioteca Central'],
@@ -480,10 +481,10 @@ const routeTemplates = {
     summaryPt: 'Rota mais longa entre o Centro de Cultura e Eventos e o HU, com alertas para chuva e circulação intensa.',
     summaryEn: 'Longer route between the Culture and Events Center and the University Hospital, with alerts for rain and heavy circulation.',
     path: [
-      { x: 51.5, y: 62.2 },
-      { x: 55, y: 55 },
-      { x: 59.5, y: 44 },
-      { x: 63.5, y: 30.5 }
+      { x: 53, y: 60 },
+      { x: 56, y: 52 },
+      { x: 59, y: 43 },
+      { x: 62, y: 32 }
     ],
     alerts: ['rain', 'vehicleCrossing', 'crowded', 'textReference'],
     landmarksPt: ['Centro de Cultura e Eventos', 'Via interna em direção ao norte', 'Acesso do Hospital Universitário'],

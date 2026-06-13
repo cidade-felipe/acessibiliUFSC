@@ -569,13 +569,13 @@ body.high-contrast .summary-icon {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: #dbeafe;
-  aspect-ratio: 1500 / 2121;
+  aspect-ratio: 16 / 11;
 }
 
 .map-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .route-layer,
@@ -920,7 +920,7 @@ body.high-contrast .success-badge {
   .map-wrap {
     width: calc(100% - 1rem);
     margin: 0.5rem;
-    aspect-ratio: 1500 / 2121;
+    aspect-ratio: 4 / 4.2;
   }
 
   .map-header,
