@@ -273,58 +273,29 @@ body.high-contrast .button-secondary {
 
 .step-item {
   min-width: 0;
-}
-
-.step-button {
-  display: block;
-  width: 100%;
-  min-height: 3.2rem;
-  padding: 0.65rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  color: var(--muted);
   background: var(--surface);
-  text-align: left;
-  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
-.step-button:not(:disabled):hover {
+.step-item[aria-current="step"] {
   border-color: var(--primary);
-  color: var(--primary-strong);
-  background: var(--surface-soft);
-}
-
-.step-button:disabled {
-  opacity: 1;
-  color: #64748b;
-  border-color: #d7e0ea;
-  background: #e8eef5;
-  cursor: not-allowed;
-}
-
-.step-item[aria-current="step"] .step-button {
-  border-color: var(--primary);
-  color: var(--primary-strong);
-  background: var(--surface);
   box-shadow: inset 0 0 0 2px var(--primary);
-}
-
-.step-item.is-locked .step-button {
-  color: #64748b;
 }
 
 .step-label {
   display: block;
+  min-height: 3.2rem;
+  padding: 0.65rem 0.7rem;
+  color: var(--muted);
   font-size: 0.86rem;
   font-weight: 750;
 }
 
-body.high-contrast .step-button:disabled,
-body.high-contrast .step-item.is-locked .step-button {
-  color: #94a3b8;
-  border-color: #64748b;
-  background: #020617;
+.step-item[aria-current="step"] .step-label {
+  color: var(--primary-strong);
 }
+
 .stage {
   min-height: 32rem;
 }
@@ -647,24 +618,6 @@ body.high-contrast .summary-icon {
   vector-effect: non-scaling-stroke;
 }
 
-.map-source {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0 1rem 1rem;
-}
-
-.map-source-copy {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.map-source-link {
-  flex: 0 0 auto;
-}
-
 .map-marker {
   position: absolute;
   display: inline-flex;
@@ -967,7 +920,7 @@ body.high-contrast .success-badge {
     grid-template-columns: 1fr;
   }
 
-  .step-button {
+  .step-label {
     min-height: auto;
   }
 
@@ -981,16 +934,6 @@ body.high-contrast .success-badge {
   .route-panel-header,
   .route-content {
     padding-inline: 0.75rem;
-  }
-
-  .map-source {
-    align-items: stretch;
-    flex-direction: column;
-    padding-inline: 0.75rem;
-  }
-
-  .map-source-link {
-    width: 100%;
   }
 
   .marker-tag {

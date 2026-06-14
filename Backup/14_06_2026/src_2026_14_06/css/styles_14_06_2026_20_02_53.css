@@ -647,24 +647,6 @@ body.high-contrast .summary-icon {
   vector-effect: non-scaling-stroke;
 }
 
-.map-source {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0 1rem 1rem;
-}
-
-.map-source-copy {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.map-source-link {
-  flex: 0 0 auto;
-}
-
 .map-marker {
   position: absolute;
   display: inline-flex;
@@ -981,16 +963,6 @@ body.high-contrast .success-badge {
   .route-panel-header,
   .route-content {
     padding-inline: 0.75rem;
-  }
-
-  .map-source {
-    align-items: stretch;
-    flex-direction: column;
-    padding-inline: 0.75rem;
-  }
-
-  .map-source-link {
-    width: 100%;
   }
 
   .marker-tag {

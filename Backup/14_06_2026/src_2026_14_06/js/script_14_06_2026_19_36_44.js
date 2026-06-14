@@ -187,9 +187,6 @@ const translations = {
     routeLead: 'Revise o mapa, os alertas e as instruções antes de iniciar.',
     mapTitle: 'Mapa do campus',
     mapAlt: 'Mapa visual do Campus Trindade da UFSC usado como base para marcadores de rota.',
-    mapSourceLabel: 'Fonte do mapa',
-    mapSourceText: 'Imagem baseada no Mapa e Endereços da UFSC.',
-    mapSourceAction: 'Acessar fonte oficial',
     mapInfoInitial: 'Foque ou selecione um marcador para ver detalhes do local.',
     routeSummaryTitle: 'Resumo da rota',
     estimatedTime: 'Tempo estimado',
@@ -301,9 +298,6 @@ const translations = {
     routeLead: 'Review the map, alerts, and instructions before starting.',
     mapTitle: 'Campus map',
     mapAlt: 'Visual map of UFSC Trindade campus used as a base for route markers.',
-    mapSourceLabel: 'Map source',
-    mapSourceText: 'Image based on UFSC Maps and Addresses.',
-    mapSourceAction: 'Open official source',
     mapInfoInitial: 'Focus or select a marker to see location details.',
     routeSummaryTitle: 'Route summary',
     estimatedTime: 'Estimated time',
@@ -542,7 +536,6 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
   accumulator[path] = view;
   return accumulator;
 }, {});
-const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 
 const app = document.querySelector('#app');
 const stepNav = document.querySelector('#step-nav');
@@ -606,7 +599,7 @@ function getProfileNote(profile) {
 }
 
 function routeMatchesSelection(route = state.route) {
-  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination && route.profileId === state.profile);
+  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination);
 }
 
 function invalidateRoute() {
@@ -665,11 +658,11 @@ function resolveAllowedView(requestedView) {
   }
 
   if (view === 'route' || view === 'navigation') {
-    return routeMatchesSelection() ? view : 'profile';
+    return ensureRouteForCurrentSelection() ? view : 'profile';
   }
 
   if (view === 'complete') {
-    if (!routeMatchesSelection()) {
+    if (!ensureRouteForCurrentSelection()) {
       return 'profile';
     }
 
@@ -679,25 +672,6 @@ function resolveAllowedView(requestedView) {
   return 'welcome';
 }
 
-function isViewUnlocked(view) {
-  if (view === 'welcome' || view === 'places') {
-    return true;
-  }
-
-  if (view === 'profile') {
-    return hasValidPlaceSelection();
-  }
-
-  if (view === 'route' || view === 'navigation') {
-    return hasValidPlaceSelection() && hasProfileSelection() && routeMatchesSelection();
-  }
-
-  if (view === 'complete') {
-    return hasValidPlaceSelection() && hasProfileSelection() && routeMatchesSelection() && state.routeCompleted;
-  }
-
-  return false;
-}
 function getHistoryViewFromUrl() {
   const path = decodeURIComponent(window.location.hash.replace(/^#/, ''));
   return pathViews[path] || 'welcome';
@@ -860,32 +834,15 @@ function renderStepNav() {
   stepNav.setAttribute('aria-label', t.stepNavLabel);
   stepNav.innerHTML = `
     <ol class="step-list">
-      ${t.steps.map((label, index) => {
-        const view = viewOrder[index];
-        const isCurrent = index === activeIndex;
-        const isUnlocked = isViewUnlocked(view);
-        const itemClasses = `step-item ${isUnlocked ? 'is-unlocked' : 'is-locked'}`;
-        const buttonAttributes = isUnlocked
-          ? `data-step-view="${escapeHtml(view)}"`
-          : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
-
-        return `
-          <li class="${itemClasses}"${isCurrent ? ' aria-current="step"' : ''}>
-            <button class="step-button" type="button" ${buttonAttributes}>
-              <span class="step-label">${index + 1}. ${escapeHtml(label)}</span>
-            </button>
-          </li>
-        `;
-      }).join('')}
+      ${t.steps.map((label, index) => `
+        <li class="step-item"${index === activeIndex ? ' aria-current="step"' : ''}>
+          <span class="step-label">${index + 1}. ${escapeHtml(label)}</span>
+        </li>
+      `).join('')}
     </ol>
   `;
-
-  stepNav.querySelectorAll('[data-step-view]').forEach(button => {
-    button.addEventListener('click', () => {
-      setView(button.dataset.stepView, { focus: true });
-    });
-  });
 }
+
 function renderWelcome() {
   const t = getT();
   app.innerHTML = `
@@ -971,7 +928,6 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    renderStepNav();
   });
 
   document.querySelector('#destination-select').addEventListener('change', event => {
@@ -979,7 +935,6 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    renderStepNav();
   });
 
   document.querySelector('#places-back').addEventListener('click', () => {
@@ -1072,10 +1027,6 @@ function renderProfile() {
   document.querySelectorAll('input[name="profile"]').forEach(input => {
     input.addEventListener('change', event => {
       state.profile = event.target.value;
-      if (!routeMatchesSelection()) {
-        invalidateRoute();
-      }
-      renderStepNav();
     });
   });
 
@@ -1123,7 +1074,6 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     nameEn: translations.en.routeSpecificNames[template.nameKey],
     originId: origin.id,
     destinationId: destination.id,
-    profileId,
     distance: template.distance,
     timePt: template.timePt,
     timeEn: template.timeEn,
@@ -1161,7 +1111,6 @@ function buildFallbackRoute(origin, destination) {
     nameEn: translations.en.defaultRouteName,
     originId: origin.id,
     destinationId: destination.id,
-    profileId: state.profile,
     distance: `${meters} m`,
     timePt: `${minutes} a ${minutes + 3} min`,
     timeEn: `${minutes} to ${minutes + 3} min`,
@@ -1404,10 +1353,6 @@ function renderMap(routeView) {
         <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
           ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
-      </div>
-      <div class="map-source">
-        <p class="map-source-copy"><strong>${escapeHtml(t.mapSourceLabel)}:</strong> ${escapeHtml(t.mapSourceText)}</p>
-        <a class="button button-secondary map-source-link" href="${escapeHtml(mapSourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.mapSourceAction)}</a>
       </div>
       <div class="map-location-panel" id="map-location-panel">
         ${renderLocationInfo(state.activeMarkerId ? getLocation(state.activeMarkerId) : null, routeView)}

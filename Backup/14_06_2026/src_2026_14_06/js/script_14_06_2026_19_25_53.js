@@ -177,7 +177,6 @@ const translations = {
     originRequired: 'selecione uma origem.',
     destinationRequired: 'selecione um destino.',
     samePlaceError: 'selecione um destino diferente da origem.',
-    navigationBlocked: 'Etapa ainda não disponível. Continue pelo fluxo para liberar essa página.',
     profileTitle: 'Informe seu perfil de acessibilidade',
     profileLead: 'A seleção orienta o resumo, os alertas e a forma de apresentar a rota.',
     profileLegend: 'Perfil de acessibilidade ou preferência de navegação',
@@ -187,9 +186,6 @@ const translations = {
     routeLead: 'Revise o mapa, os alertas e as instruções antes de iniciar.',
     mapTitle: 'Mapa do campus',
     mapAlt: 'Mapa visual do Campus Trindade da UFSC usado como base para marcadores de rota.',
-    mapSourceLabel: 'Fonte do mapa',
-    mapSourceText: 'Imagem baseada no Mapa e Endereços da UFSC.',
-    mapSourceAction: 'Acessar fonte oficial',
     mapInfoInitial: 'Foque ou selecione um marcador para ver detalhes do local.',
     routeSummaryTitle: 'Resumo da rota',
     estimatedTime: 'Tempo estimado',
@@ -291,7 +287,6 @@ const translations = {
     originRequired: 'select an origin.',
     destinationRequired: 'select a destination.',
     samePlaceError: 'select a destination different from the origin.',
-    navigationBlocked: 'This step is not available yet. Continue through the flow to unlock this page.',
     profileTitle: 'Choose your accessibility profile',
     profileLead: 'The selection guides the summary, alerts, and how the route is presented.',
     profileLegend: 'Accessibility profile or navigation preference',
@@ -301,9 +296,6 @@ const translations = {
     routeLead: 'Review the map, alerts, and instructions before starting.',
     mapTitle: 'Campus map',
     mapAlt: 'Visual map of UFSC Trindade campus used as a base for route markers.',
-    mapSourceLabel: 'Map source',
-    mapSourceText: 'Image based on UFSC Maps and Addresses.',
-    mapSourceAction: 'Open official source',
     mapInfoInitial: 'Focus or select a marker to see location details.',
     routeSummaryTitle: 'Route summary',
     estimatedTime: 'Estimated time',
@@ -525,24 +517,10 @@ const state = {
   errors: {},
   currentRouteStep: 0,
   textMode: false,
-  activeMarkerId: '',
-  routeCompleted: false
+  activeMarkerId: ''
 };
 
 const viewOrder = ['welcome', 'places', 'profile', 'route', 'navigation', 'complete'];
-const viewPaths = {
-  welcome: 'boas-vindas',
-  places: 'origem-destino',
-  profile: 'perfil',
-  route: 'resultado',
-  navigation: 'passo-a-passo',
-  complete: 'conclusao'
-};
-const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) => {
-  accumulator[path] = view;
-  return accumulator;
-}, {});
-const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 
 const app = document.querySelector('#app');
 const stepNav = document.querySelector('#step-nav');
@@ -606,7 +584,7 @@ function getProfileNote(profile) {
 }
 
 function routeMatchesSelection(route = state.route) {
-  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination && route.profileId === state.profile);
+  return Boolean(route && route.originId === state.origin && route.destinationId === state.destination);
 }
 
 function invalidateRoute() {
@@ -614,150 +592,6 @@ function invalidateRoute() {
   state.currentRouteStep = 0;
   state.textMode = false;
   state.activeMarkerId = '';
-  state.routeCompleted = false;
-}
-
-function hasValidPlaceSelection() {
-  return Boolean(getLocation(state.origin) && getLocation(state.destination) && state.origin !== state.destination);
-}
-
-function hasProfileSelection() {
-  return Boolean(getProfile(state.profile));
-}
-
-function ensureRouteForCurrentSelection() {
-  if (!hasValidPlaceSelection() || !hasProfileSelection()) {
-    return false;
-  }
-
-  if (!routeMatchesSelection()) {
-    invalidateRoute();
-  }
-
-  if (!state.route) {
-    state.route = buildRoute();
-    state.currentRouteStep = 0;
-    state.textMode = false;
-    state.activeMarkerId = state.origin;
-    state.routeCompleted = false;
-  }
-
-  return Boolean(state.route);
-}
-
-function resolveAllowedView(requestedView) {
-  const view = viewOrder.includes(requestedView) ? requestedView : 'welcome';
-
-  if (view === 'welcome' || view === 'places') {
-    return view;
-  }
-
-  if (!hasValidPlaceSelection()) {
-    return 'places';
-  }
-
-  if (view === 'profile') {
-    return view;
-  }
-
-  if (!hasProfileSelection()) {
-    return 'profile';
-  }
-
-  if (view === 'route' || view === 'navigation') {
-    return routeMatchesSelection() ? view : 'profile';
-  }
-
-  if (view === 'complete') {
-    if (!routeMatchesSelection()) {
-      return 'profile';
-    }
-
-    return state.routeCompleted ? 'complete' : 'navigation';
-  }
-
-  return 'welcome';
-}
-
-function isViewUnlocked(view) {
-  if (view === 'welcome' || view === 'places') {
-    return true;
-  }
-
-  if (view === 'profile') {
-    return hasValidPlaceSelection();
-  }
-
-  if (view === 'route' || view === 'navigation') {
-    return hasValidPlaceSelection() && hasProfileSelection() && routeMatchesSelection();
-  }
-
-  if (view === 'complete') {
-    return hasValidPlaceSelection() && hasProfileSelection() && routeMatchesSelection() && state.routeCompleted;
-  }
-
-  return false;
-}
-function getHistoryViewFromUrl() {
-  const path = decodeURIComponent(window.location.hash.replace(/^#/, ''));
-  return pathViews[path] || 'welcome';
-}
-
-function getHistoryUrl(view) {
-  const path = viewPaths[view] || viewPaths.welcome;
-  return `${window.location.pathname}${window.location.search}#${path}`;
-}
-
-function syncHistoryView(view, mode = 'push') {
-  if (!window.history || !window.history.pushState) {
-    return;
-  }
-
-  const historyState = { view };
-  const url = getHistoryUrl(view);
-
-  if (mode === 'replace' || window.history.state?.view === view) {
-    window.history.replaceState(historyState, '', url);
-    return;
-  }
-
-  window.history.pushState(historyState, '', url);
-}
-
-function announceViewChange(view, blocked = false) {
-  if (blocked) {
-    setStatus(getT().navigationBlocked);
-    return;
-  }
-
-  const index = viewOrder.indexOf(view);
-  if (index >= 0) {
-    setStatus(`${getT().statusStepChanged} ${getT().steps[index]}.`);
-  }
-}
-
-function handleHistoryNavigation(event) {
-  const requestedView = event.state?.view || getHistoryViewFromUrl();
-  const allowedView = resolveAllowedView(requestedView);
-  const blocked = allowedView !== requestedView;
-
-  state.currentView = allowedView;
-  state.errors = {};
-  render(true);
-  announceViewChange(allowedView, blocked);
-
-  if (blocked) {
-    syncHistoryView(allowedView, 'replace');
-  }
-}
-
-function initializeHistory() {
-  const requestedView = getHistoryViewFromUrl();
-  const allowedView = resolveAllowedView(requestedView);
-
-  state.currentView = allowedView;
-  syncHistoryView(allowedView, 'replace');
-  window.addEventListener('popstate', handleHistoryNavigation);
 }
 
 function setStatus(message) {
@@ -765,19 +599,15 @@ function setStatus(message) {
 }
 
 function setView(view, options = {}) {
-  const allowedView = resolveAllowedView(view);
-  const blocked = allowedView !== view;
-
-  state.currentView = allowedView;
+  state.currentView = view;
   state.errors = {};
   render(Boolean(options.focus));
-
-  if (options.history !== false) {
-    syncHistoryView(allowedView, options.historyMode || 'push');
+  const index = viewOrder.indexOf(view);
+  if (index >= 0) {
+    setStatus(`${getT().statusStepChanged} ${getT().steps[index]}.`);
   }
-
-  announceViewChange(allowedView, blocked);
 }
+
 function render(shouldFocus = false) {
   const t = getT();
   document.documentElement.lang = state.lang === 'pt' ? 'pt-BR' : 'en';
@@ -860,32 +690,15 @@ function renderStepNav() {
   stepNav.setAttribute('aria-label', t.stepNavLabel);
   stepNav.innerHTML = `
     <ol class="step-list">
-      ${t.steps.map((label, index) => {
-        const view = viewOrder[index];
-        const isCurrent = index === activeIndex;
-        const isUnlocked = isViewUnlocked(view);
-        const itemClasses = `step-item ${isUnlocked ? 'is-unlocked' : 'is-locked'}`;
-        const buttonAttributes = isUnlocked
-          ? `data-step-view="${escapeHtml(view)}"`
-          : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
-
-        return `
-          <li class="${itemClasses}"${isCurrent ? ' aria-current="step"' : ''}>
-            <button class="step-button" type="button" ${buttonAttributes}>
-              <span class="step-label">${index + 1}. ${escapeHtml(label)}</span>
-            </button>
-          </li>
-        `;
-      }).join('')}
+      ${t.steps.map((label, index) => `
+        <li class="step-item"${index === activeIndex ? ' aria-current="step"' : ''}>
+          <span class="step-label">${index + 1}. ${escapeHtml(label)}</span>
+        </li>
+      `).join('')}
     </ol>
   `;
-
-  stepNav.querySelectorAll('[data-step-view]').forEach(button => {
-    button.addEventListener('click', () => {
-      setView(button.dataset.stepView, { focus: true });
-    });
-  });
 }
+
 function renderWelcome() {
   const t = getT();
   app.innerHTML = `
@@ -971,7 +784,6 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    renderStepNav();
   });
 
   document.querySelector('#destination-select').addEventListener('change', event => {
@@ -979,7 +791,6 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    renderStepNav();
   });
 
   document.querySelector('#places-back').addEventListener('click', () => {
@@ -1072,10 +883,6 @@ function renderProfile() {
   document.querySelectorAll('input[name="profile"]').forEach(input => {
     input.addEventListener('change', event => {
       state.profile = event.target.value;
-      if (!routeMatchesSelection()) {
-        invalidateRoute();
-      }
-      renderStepNav();
     });
   });
 
@@ -1096,7 +903,6 @@ function renderProfile() {
     }
 
     state.route = buildRoute();
-    state.routeCompleted = false;
     state.currentRouteStep = 0;
     state.textMode = false;
     state.activeMarkerId = state.origin;
@@ -1123,7 +929,6 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     nameEn: translations.en.routeSpecificNames[template.nameKey],
     originId: origin.id,
     destinationId: destination.id,
-    profileId,
     distance: template.distance,
     timePt: template.timePt,
     timeEn: template.timeEn,
@@ -1161,7 +966,6 @@ function buildFallbackRoute(origin, destination) {
     nameEn: translations.en.defaultRouteName,
     originId: origin.id,
     destinationId: destination.id,
-    profileId: state.profile,
     distance: `${meters} m`,
     timePt: `${minutes} a ${minutes + 3} min`,
     timeEn: `${minutes} to ${minutes + 3} min`,
@@ -1404,10 +1208,6 @@ function renderMap(routeView) {
         <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
           ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
-      </div>
-      <div class="map-source">
-        <p class="map-source-copy"><strong>${escapeHtml(t.mapSourceLabel)}:</strong> ${escapeHtml(t.mapSourceText)}</p>
-        <a class="button button-secondary map-source-link" href="${escapeHtml(mapSourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.mapSourceAction)}</a>
       </div>
       <div class="map-location-panel" id="map-location-panel">
         ${renderLocationInfo(state.activeMarkerId ? getLocation(state.activeMarkerId) : null, routeView)}
@@ -1687,7 +1487,6 @@ function renderNavigation() {
 
   document.querySelector('#next-route-step').addEventListener('click', () => {
     if (state.currentRouteStep === total - 1) {
-      state.routeCompleted = true;
       setView('complete', { focus: true });
       setStatus(t.arrivalMessage);
       return;
@@ -1753,7 +1552,6 @@ function renderComplete() {
     state.currentRouteStep = 0;
     state.textMode = false;
     state.activeMarkerId = '';
-    state.routeCompleted = false;
     setView('welcome', { focus: true });
   });
 
@@ -1762,5 +1560,4 @@ function renderComplete() {
   });
 }
 
-initializeHistory();
 render(true);

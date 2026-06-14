@@ -187,9 +187,6 @@ const translations = {
     routeLead: 'Revise o mapa, os alertas e as instruções antes de iniciar.',
     mapTitle: 'Mapa do campus',
     mapAlt: 'Mapa visual do Campus Trindade da UFSC usado como base para marcadores de rota.',
-    mapSourceLabel: 'Fonte do mapa',
-    mapSourceText: 'Imagem baseada no Mapa e Endereços da UFSC.',
-    mapSourceAction: 'Acessar fonte oficial',
     mapInfoInitial: 'Foque ou selecione um marcador para ver detalhes do local.',
     routeSummaryTitle: 'Resumo da rota',
     estimatedTime: 'Tempo estimado',
@@ -301,9 +298,6 @@ const translations = {
     routeLead: 'Review the map, alerts, and instructions before starting.',
     mapTitle: 'Campus map',
     mapAlt: 'Visual map of UFSC Trindade campus used as a base for route markers.',
-    mapSourceLabel: 'Map source',
-    mapSourceText: 'Image based on UFSC Maps and Addresses.',
-    mapSourceAction: 'Open official source',
     mapInfoInitial: 'Focus or select a marker to see location details.',
     routeSummaryTitle: 'Route summary',
     estimatedTime: 'Estimated time',
@@ -542,7 +536,6 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
   accumulator[path] = view;
   return accumulator;
 }, {});
-const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 
 const app = document.querySelector('#app');
 const stepNav = document.querySelector('#step-nav');
@@ -1404,10 +1397,6 @@ function renderMap(routeView) {
         <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
           ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
-      </div>
-      <div class="map-source">
-        <p class="map-source-copy"><strong>${escapeHtml(t.mapSourceLabel)}:</strong> ${escapeHtml(t.mapSourceText)}</p>
-        <a class="button button-secondary map-source-link" href="${escapeHtml(mapSourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.mapSourceAction)}</a>
       </div>
       <div class="map-location-panel" id="map-location-panel">
         ${renderLocationInfo(state.activeMarkerId ? getLocation(state.activeMarkerId) : null, routeView)}
