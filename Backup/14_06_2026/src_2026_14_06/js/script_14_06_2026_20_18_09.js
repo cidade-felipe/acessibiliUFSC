@@ -386,6 +386,9 @@ const alertMeta = {
 const routeTemplates = {
   'biblioteca|ru': {
     nameKey: 'bibliotecaRu',
+    distance: '650 m',
+    timePt: '8 a 10 min',
+    timeEn: '8 to 10 min',
     accessibility: 'routeAccessibleHigh',
     summaryPt: 'Trajeto curto entre a Biblioteca Central e o RU, com travessia sinalizada e alternativa por trecho mais plano.',
     summaryEn: 'Short path between the Central Library and the University Restaurant, with a marked crossing and a flatter alternative segment.',
@@ -415,6 +418,9 @@ const routeTemplates = {
   },
   'reitoria|ctc': {
     nameKey: 'reitoriaCtc',
+    distance: '900 m',
+    timePt: '12 a 14 min',
+    timeEn: '12 to 14 min',
     accessibility: 'routeAccessibleMedium',
     summaryPt: 'Rota institucional entre a Reitoria e o CTC, evitando atalhos com piso irregular quando possível.',
     summaryEn: 'Institutional route between the Rector\'s Office and the Technology Center, avoiding uneven shortcuts where possible.',
@@ -444,6 +450,9 @@ const routeTemplates = {
   },
   'cse|biblioteca': {
     nameKey: 'cseBiblioteca',
+    distance: '520 m',
+    timePt: '7 a 9 min',
+    timeEn: '7 to 9 min',
     accessibility: 'routeAccessibleHigh',
     summaryPt: 'Trajeto direto entre CSE e Biblioteca Central, com referências simples e baixa distância estimada.',
     summaryEn: 'Direct path between the Socioeconomic Center and the Central Library, with simple references and low estimated distance.',
@@ -473,6 +482,9 @@ const routeTemplates = {
   },
   'centro_eventos|hu': {
     nameKey: 'eventosHu',
+    distance: '1,2 km',
+    timePt: '16 a 20 min',
+    timeEn: '16 to 20 min',
     accessibility: 'routeAccessibleModerate',
     summaryPt: 'Rota mais longa entre o Centro de Cultura e Eventos e o HU, com alertas para chuva e circulação intensa.',
     summaryEn: 'Longer route between the Culture and Events Center and the University Hospital, with alerts for rain and heavy circulation.',
@@ -531,16 +543,6 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
   return accumulator;
 }, {});
 const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
-const mapImageSize = { width: 1500, height: 2121 };
-const metersPerMapPixel = 1.18;
-const routeMetricProfiles = {
-  standard: { distanceMultiplier: 1, metersPerMinute: 72, extraMinutes: 0, rangeMinutes: 2 },
-  stairs: { distanceMultiplier: 1.12, metersPerMinute: 56, extraMinutes: 0, rangeMinutes: 3 },
-  slope: { distanceMultiplier: 1.08, metersPerMinute: 58, extraMinutes: 0, rangeMinutes: 3 },
-  rest: { distanceMultiplier: 1.14, metersPerMinute: 52, extraMinutes: 2, rangeMinutes: 4 },
-  simple: { distanceMultiplier: 0.98, metersPerMinute: 70, extraMinutes: 0, rangeMinutes: 2 },
-  lowVision: { distanceMultiplier: 1.05, metersPerMinute: 48, extraMinutes: 1, rangeMinutes: 4 }
-};
 
 const app = document.querySelector('#app');
 const stepNav = document.querySelector('#step-nav');
@@ -1116,24 +1118,19 @@ function buildRoute() {
 }
 
 function normalizeTemplateRoute(template, origin, destination, profileId = state.profile) {
-  const path = buildProfilePath(template.path, origin, destination, profileId);
-  const metrics = buildRouteMetrics(path, profileId);
-
   return {
     namePt: translations.pt.routeSpecificNames[template.nameKey],
     nameEn: translations.en.routeSpecificNames[template.nameKey],
     originId: origin.id,
     destinationId: destination.id,
     profileId,
-    distance: metrics.distancePt,
-    distancePt: metrics.distancePt,
-    distanceEn: metrics.distanceEn,
-    timePt: metrics.timePt,
-    timeEn: metrics.timeEn,
+    distance: template.distance,
+    timePt: template.timePt,
+    timeEn: template.timeEn,
     accessibility: getProfileAccessibility(template.accessibility, profileId),
     summaryPt: template.summaryPt,
     summaryEn: template.summaryEn,
-    path,
+    path: buildProfilePath(template.path, origin, destination, profileId),
     alerts: buildProfileAlerts(template.alerts, profileId),
     landmarksPt: template.landmarksPt,
     landmarksEn: template.landmarksEn,
@@ -1145,16 +1142,19 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     }))
   };
 }
+
 function buildFallbackRoute(origin, destination) {
+  const dx = destination.x - origin.x;
+  const dy = destination.y - origin.y;
+  const rawDistance = Math.hypot(dx, dy);
+  const meters = Math.max(350, Math.round(rawDistance * 22));
+  const minutes = Math.max(6, Math.round(meters / 75));
   const midpoint = getPointBetween(origin, destination, 0.5);
   const basePath = [
     { x: origin.x, y: origin.y },
     midpoint,
     { x: destination.x, y: destination.y }
   ];
-  const path = buildProfilePath(basePath, origin, destination, state.profile);
-  const metrics = buildRouteMetrics(path, state.profile);
-  const baseDistanceMeters = estimatePathMeters(basePath);
 
   return {
     namePt: translations.pt.defaultRouteName,
@@ -1162,15 +1162,13 @@ function buildFallbackRoute(origin, destination) {
     originId: origin.id,
     destinationId: destination.id,
     profileId: state.profile,
-    distance: metrics.distancePt,
-    distancePt: metrics.distancePt,
-    distanceEn: metrics.distanceEn,
-    timePt: metrics.timePt,
-    timeEn: metrics.timeEn,
-    accessibility: getProfileAccessibility(baseDistanceMeters > 650 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
+    distance: `${meters} m`,
+    timePt: `${minutes} a ${minutes + 3} min`,
+    timeEn: `${minutes} to ${minutes + 3} min`,
+    accessibility: getProfileAccessibility(rawDistance > 24 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
     summaryPt: translations.pt.defaultRouteSummary,
     summaryEn: translations.en.defaultRouteSummary,
-    path,
+    path: buildProfilePath(basePath, origin, destination, state.profile),
     alerts: buildProfileAlerts(['partialShade', 'unevenFloor', 'textReference'], state.profile),
     landmarksPt: [origin.namePt, 'Via interna do campus', destination.namePt],
     landmarksEn: [origin.nameEn, 'Campus internal road', destination.nameEn],
@@ -1203,47 +1201,6 @@ function buildFallbackRoute(origin, destination) {
   };
 }
 
-function buildRouteMetrics(path, profileId = 'standard') {
-  const profile = routeMetricProfiles[profileId] || routeMetricProfiles.standard;
-  const meters = roundToNearest(estimatePathMeters(path) * profile.distanceMultiplier, 10);
-  const minimumMinutes = Math.max(2, Math.ceil(meters / profile.metersPerMinute + profile.extraMinutes));
-  const maximumMinutes = minimumMinutes + profile.rangeMinutes;
-
-  return {
-    distancePt: formatDistance(meters, 'pt'),
-    distanceEn: formatDistance(meters, 'en'),
-    timePt: `${minimumMinutes} a ${maximumMinutes} min`,
-    timeEn: `${minimumMinutes} to ${maximumMinutes} min`
-  };
-}
-
-function estimatePathMeters(path) {
-  if (!Array.isArray(path) || path.length < 2) {
-    return 0;
-  }
-
-  const pixels = path.slice(1).reduce((total, point, index) => {
-    const previous = path[index];
-    const dx = ((point.x - previous.x) / 100) * mapImageSize.width;
-    const dy = ((point.y - previous.y) / 100) * mapImageSize.height;
-    return total + Math.hypot(dx, dy);
-  }, 0);
-
-  return pixels * metersPerMapPixel;
-}
-
-function roundToNearest(value, step) {
-  return Math.max(step, Math.round(value / step) * step);
-}
-
-function formatDistance(meters, lang) {
-  if (meters >= 1000) {
-    const kilometers = (meters / 1000).toFixed(1);
-    return `${lang === 'pt' ? kilometers.replace('.', ',') : kilometers} km`;
-  }
-
-  return `${meters} m`;
-}
 function buildProfilePath(basePath, origin, destination, profileId = 'standard') {
   const anchoredPath = anchorPathEndpoints(basePath, origin, destination);
 
@@ -1420,7 +1377,6 @@ function getRouteView() {
     name: state.lang === 'pt' ? route.namePt : route.nameEn,
     summary: state.lang === 'pt' ? route.summaryPt : route.summaryEn,
     time: state.lang === 'pt' ? route.timePt : route.timeEn,
-    distance: state.lang === 'pt' ? (route.distancePt || route.distance) : (route.distanceEn || route.distance),
     accessibility: tr(route.accessibility),
     landmarks: state.lang === 'pt' ? route.landmarksPt : route.landmarksEn,
     steps: route.steps.map(step => ({
@@ -1547,7 +1503,7 @@ function renderRoutePanel(routeView) {
           </div>
           <div class="metric">
             <span class="metric-label">${escapeHtml(t.estimatedDistance)}</span>
-            <span class="metric-value">${escapeHtml(routeView.distance)}</span>
+            <span class="metric-value">${escapeHtml(routeView.route.distance)}</span>
           </div>
           <div class="metric">
             <span class="metric-label">${escapeHtml(t.accessibilityLevel)}</span>
@@ -1664,7 +1620,7 @@ function renderTextRoute(routeView) {
         </div>
         <div class="summary-item">
           <dt class="item-title">${escapeHtml(t.estimatedDistance)}</dt>
-          <dd class="item-text">${escapeHtml(routeView.distance)}</dd>
+          <dd class="item-text">${escapeHtml(routeView.route.distance)}</dd>
         </div>
         <div class="summary-item">
           <dt class="item-title">${escapeHtml(t.estimatedTime)}</dt>
