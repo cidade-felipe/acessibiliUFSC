@@ -145,7 +145,7 @@ const translations = {
   pt: {
     appTitle: 'AcessibiliUFSC',
     appSubtitle: 'Rotas inclusivas pelo campus Trindade',
-    appKicker: 'Guia acessível do campus',
+    appKicker: 'Protótipo de IHC',
     skipLink: 'Pular para o conteúdo principal',
     languageLabel: 'Idioma',
     languagePt: 'PT-BR',
@@ -158,11 +158,11 @@ const translations = {
     welcomeTitle: 'AcessibiliUFSC',
     welcomeIntro: 'Planeje rotas inclusivas no Campus Reitor João David Ferreira Lima, considerando mobilidade, baixa visão, descanso e clareza das instruções.',
     welcomeAction: 'Planejar rota',
-    welcomeFeatureTitle: 'Como o AcessibiliUFSC ajuda',
+    welcomeFeatureTitle: 'O que este protótipo entrega',
     welcomeFeatures: [
-      ['Planejamento guiado', 'Escolha origem, destino e perfil em poucos passos.'],
-      ['Recursos inclusivos', 'Modo texto, alto contraste, foco visível e alertas claros.'],
-      ['Português e inglês', 'A interface acompanha quem prefere usar outro idioma.']
+      ['Fluxo completo', 'Da escolha do local até a confirmação de chegada.'],
+      ['Acessibilidade real', 'Foco visível, modo texto, alto contraste e feedback textual.'],
+      ['Dois idiomas', 'Todos os textos mudam entre português e inglês.']
     ],
     placesTitle: 'Escolha origem e destino',
     placesLead: 'Selecione dois pontos do campus para calcular uma rota acessível simulada.',
@@ -255,7 +255,7 @@ const translations = {
   en: {
     appTitle: 'AcessibiliUFSC',
     appSubtitle: 'Inclusive routes through Trindade campus',
-    appKicker: 'Accessible campus guide',
+    appKicker: 'HCI prototype',
     skipLink: 'Skip to main content',
     languageLabel: 'Language',
     languagePt: 'PT-BR',
@@ -268,11 +268,11 @@ const translations = {
     welcomeTitle: 'AcessibiliUFSC',
     welcomeIntro: 'Plan inclusive routes on UFSC Trindade campus, considering mobility, low vision, rest points, and clear instructions.',
     welcomeAction: 'Plan route',
-    welcomeFeatureTitle: 'How AcessibiliUFSC helps',
+    welcomeFeatureTitle: 'What this prototype delivers',
     welcomeFeatures: [
-      ['Guided planning', 'Choose origin, destination, and profile in a few steps.'],
-      ['Inclusive resources', 'Text mode, high contrast, visible focus, and clear alerts.'],
-      ['Portuguese and English', 'The interface supports users who prefer another language.']
+      ['Complete flow', 'From location selection to arrival confirmation.'],
+      ['Real accessibility', 'Visible focus, text mode, high contrast, and textual feedback.'],
+      ['Two languages', 'All text changes between Portuguese and English.']
     ],
     placesTitle: 'Choose origin and destination',
     placesLead: 'Select two campus points to calculate a simulated accessible route.',
