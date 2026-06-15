@@ -198,7 +198,7 @@ const profiles = [
 const translations = {
   pt: {
     appTitle: 'AcessibiliUFSC',
-    appSubtitle: 'Rotas inclusivas pelo campus Trindade',
+    appSubtitle: 'Guia acessível do campus',
     appKicker: 'Guia acessível do campus',
     skipLink: 'Pular para o conteúdo principal',
     languageLabel: 'Idioma',
@@ -208,7 +208,7 @@ const translations = {
     contrastOff: 'Desativar modo alto contraste',
     stepNavLabel: 'Etapas do planejamento de rota',
     steps: ['Boas-vindas', 'Origem e destino', 'Perfil', 'Resultado', 'Passo a passo', 'Conclusão'],
-    welcomeEyebrow: 'Orientação acessível no campus',
+    welcomeEyebrow: 'Guia acessível do campus',
     welcomeTitle: 'AcessibiliUFSC',
     welcomeIntro: 'Planeje rotas inclusivas no Campus Reitor João David Ferreira Lima, considerando mobilidade, baixa visão, descanso e clareza das instruções.',
     welcomeAction: 'Planejar rota',
@@ -278,6 +278,21 @@ const translations = {
     markerAria: 'Marcador de mapa',
     routeCalculated: 'Rota calculada com sucesso. Revise os detalhes antes de iniciar.',
     routeStarted: 'Modo passo a passo iniciado.',
+    routeReaderTitle: 'Leitor da rota',
+    routeReaderReadSummary: 'Ler resumo da rota',
+    routeReaderReadAlerts: 'Ler alertas',
+    routeReaderReadTextMode: 'Ler modo texto',
+    routeReaderReadCurrentStep: 'Ler este passo',
+    routeReaderReadAllSteps: 'Ler todos os passos',
+    routeReaderPause: 'Pausar',
+    routeReaderResume: 'Continuar',
+    routeReaderStop: 'Parar',
+    routeReaderAuto: 'Ler automaticamente ao mudar de passo',
+    routeReaderReady: 'Leitor pronto.',
+    routeReaderReading: 'Lendo instrução.',
+    routeReaderPaused: 'Leitura pausada.',
+    routeReaderStopped: 'Leitura interrompida.',
+    routeReaderUnsupported: 'Leitor de voz indisponível neste navegador.',
     locationSelected: 'Local selecionado no mapa:',
     defaultRouteName: 'Rota acessível simulada',
     defaultRouteSummary: 'Rota gerada automaticamente com base nos pontos escolhidos. Use os alertas e o modo texto como apoio.',
@@ -307,6 +322,7 @@ const translations = {
     arrivalMessage: 'Você chegou ao destino. Rota concluída com sucesso.',
     newRoute: 'Planejar nova rota',
     viewMapAgain: 'Ver mapa novamente',
+    hideMapAgain: 'Ocultar mapa',
     summaryOrigin: 'Origem',
     summaryDestination: 'Destino',
     summaryProfile: 'Perfil',
@@ -326,7 +342,7 @@ const translations = {
   },
   en: {
     appTitle: 'AcessibiliUFSC',
-    appSubtitle: 'Inclusive routes through Trindade campus',
+    appSubtitle: 'Accessible campus guide',
     appKicker: 'Accessible campus guide',
     skipLink: 'Skip to main content',
     languageLabel: 'Language',
@@ -336,7 +352,7 @@ const translations = {
     contrastOff: 'Disable high contrast mode',
     stepNavLabel: 'Route planning steps',
     steps: ['Welcome', 'Origin and destination', 'Profile', 'Result', 'Step by step', 'Completion'],
-    welcomeEyebrow: 'Accessible campus guidance',
+    welcomeEyebrow: 'Accessible campus guide',
     welcomeTitle: 'AcessibiliUFSC',
     welcomeIntro: 'Plan inclusive routes on UFSC Trindade campus, considering mobility, low vision, rest points, and clear instructions.',
     welcomeAction: 'Plan route',
@@ -406,6 +422,21 @@ const translations = {
     markerAria: 'Map marker',
     routeCalculated: 'Route calculated successfully. Review the details before starting.',
     routeStarted: 'Step-by-step mode started.',
+    routeReaderTitle: 'Route reader',
+    routeReaderReadSummary: 'Read route summary',
+    routeReaderReadAlerts: 'Read alerts',
+    routeReaderReadTextMode: 'Read text mode',
+    routeReaderReadCurrentStep: 'Read this step',
+    routeReaderReadAllSteps: 'Read all steps',
+    routeReaderPause: 'Pause',
+    routeReaderResume: 'Resume',
+    routeReaderStop: 'Stop',
+    routeReaderAuto: 'Automatically read when step changes',
+    routeReaderReady: 'Reader ready.',
+    routeReaderReading: 'Reading instruction.',
+    routeReaderPaused: 'Reading paused.',
+    routeReaderStopped: 'Reading stopped.',
+    routeReaderUnsupported: 'Voice reader is unavailable in this browser.',
     locationSelected: 'Location selected on the map:',
     defaultRouteName: 'Simulated accessible route',
     defaultRouteSummary: 'Route automatically generated from the chosen points. Use alerts and text mode as support.',
@@ -435,6 +466,7 @@ const translations = {
     arrivalMessage: 'You have arrived at your destination. Route completed successfully.',
     newRoute: 'Plan new route',
     viewMapAgain: 'View map again',
+    hideMapAgain: 'Hide map',
     summaryOrigin: 'Origin',
     summaryDestination: 'Destination',
     summaryProfile: 'Profile',
@@ -597,7 +629,8 @@ const state = {
   textMode: false,
   activeMarkerId: '',
   routeCompleted: false,
-  placePickerTarget: 'origin'
+  placePickerTarget: 'origin',
+  routeReaderAutoRead: false
 };
 
 const viewOrder = ['welcome', 'places', 'profile', 'route', 'navigation', 'complete'];
@@ -647,8 +680,10 @@ const app = document.querySelector('#app');
 const stepNav = document.querySelector('#step-nav');
 const topActions = document.querySelector('#top-actions');
 const statusRegion = document.querySelector('#screen-reader-status');
+const routeReaderStatusRegion = document.querySelector('#route-reader-status');
 let mapCollisionResizeHandler = null;
 let mapCollisionResizeFrame = 0;
+let currentRouteUtterance = null;
 
 function getT() {
   return translations[state.lang];
@@ -677,6 +712,24 @@ function renderBrandName() {
       <span class="brand-name-main">Acessibili</span><span class="brand-name-highlight">UFSC</span>
     </span>
   `;
+}
+
+function renderIcon(name) {
+  const icons = {
+    language: `
+      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18"></path>
+        <path d="M12 3a14 14 0 0 1 0 18"></path>
+        <path d="M12 3a14 14 0 0 0 0 18"></path>
+      </svg>
+    `,
+    contrast: `
+      <img class="ui-icon ui-icon--image" src="https://cdn-icons-png.flaticon.com/512/475/475980.png" alt="" aria-hidden="true">
+    `
+  };
+
+  return icons[name] || '';
 }
 function getLocation(id) {
   return locations.find(location => location.id === id);
@@ -749,6 +802,7 @@ function routeMatchesSelection(route = state.route) {
 }
 
 function invalidateRoute() {
+  stopSpeech();
   state.route = null;
   state.currentRouteStep = 0;
   state.textMode = false;
@@ -880,6 +934,10 @@ function handleHistoryNavigation(event) {
   const allowedView = resolveAllowedView(requestedView);
   const blocked = allowedView !== requestedView;
 
+  if (state.currentView === 'navigation' && allowedView !== 'navigation') {
+    stopSpeech();
+  }
+
   state.currentView = allowedView;
   state.errors = {};
   render(true);
@@ -903,9 +961,217 @@ function setStatus(message) {
   statusRegion.textContent = message;
 }
 
+function setRouteReaderStatus(message) {
+  routeReaderStatusRegion.textContent = message;
+  document.querySelectorAll('[data-route-reader-status]').forEach(status => {
+    status.textContent = message;
+  });
+}
+
+function getCurrentLanguage() {
+  return state.lang === 'pt' ? 'pt-BR' : 'en-US';
+}
+
+function speakText(text) {
+  if (!('speechSynthesis' in window)) {
+    setRouteReaderStatus(getT().routeReaderUnsupported);
+    return;
+  }
+
+  const content = String(text || '').trim();
+  if (!content) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  currentRouteUtterance = new SpeechSynthesisUtterance(content);
+  currentRouteUtterance.lang = getCurrentLanguage();
+  currentRouteUtterance.onend = () => {
+    currentRouteUtterance = null;
+    setRouteReaderStatus(getT().routeReaderReady);
+  };
+  currentRouteUtterance.onerror = () => {
+    currentRouteUtterance = null;
+    setRouteReaderStatus(getT().routeReaderStopped);
+  };
+
+  setRouteReaderStatus(getT().routeReaderReading);
+  window.speechSynthesis.speak(currentRouteUtterance);
+}
+
+function pauseSpeech() {
+  if (!('speechSynthesis' in window)) {
+    setRouteReaderStatus(getT().routeReaderUnsupported);
+    return;
+  }
+
+  window.speechSynthesis.pause();
+  setRouteReaderStatus(getT().routeReaderPaused);
+}
+
+function resumeSpeech() {
+  if (!('speechSynthesis' in window)) {
+    setRouteReaderStatus(getT().routeReaderUnsupported);
+    return;
+  }
+
+  window.speechSynthesis.resume();
+  setRouteReaderStatus(getT().routeReaderReading);
+}
+
+function stopSpeech() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+
+  currentRouteUtterance = null;
+  setRouteReaderStatus(getT().routeReaderStopped);
+}
+
+function buildRouteSummarySpeechText() {
+  if (!state.route) {
+    return '';
+  }
+
+  const t = getT();
+  const routeView = getRouteView();
+  return [
+    `${t.estimatedTime}: ${routeView.time}.`,
+    `${t.estimatedDistance}: ${routeView.distance}.`,
+    `${t.accessibilityLevel}: ${routeView.accessibility}.`,
+    `${t.chosenProfile}: ${routeView.profileTitle}.`,
+    `${t.profileAdjustment}: ${routeView.profileNote}.`
+  ].join(' ');
+}
+
+function buildRouteAlertsSpeechText() {
+  if (!state.route) {
+    return '';
+  }
+
+  const t = getT();
+  return state.route.alerts.map(key => {
+    const meta = alertMeta[key];
+    return `${getAlertLabel(meta.type)}: ${t.alerts[key]}.`;
+  }).join(' ');
+}
+
+function buildRouteTextModeSpeechText() {
+  if (!state.route) {
+    return '';
+  }
+
+  const t = getT();
+  const routeView = getRouteView();
+  return [
+    `${t.summaryOrigin}: ${getLocationName(routeView.origin)}.`,
+    `${t.summaryDestination}: ${getLocationName(routeView.destination)}.`,
+    `${t.estimatedDistance}: ${routeView.distance}.`,
+    `${t.estimatedTime}: ${routeView.time}.`,
+    buildAllStepsSpeechText(),
+    buildRouteAlertsSpeechText(),
+    `${t.landmarksTitle}: ${routeView.landmarks.join('. ')}.`
+  ].filter(Boolean).join(' ');
+}
+
+function buildCurrentStepSpeechText() {
+  if (!state.route) {
+    return '';
+  }
+
+  const t = getT();
+  const routeView = getRouteView();
+  const step = routeView.steps[state.currentRouteStep];
+  const total = routeView.steps.length;
+  const current = state.currentRouteStep + 1;
+  return `${formatTemplate(t.progressText, { current, total })}. ${step.text} ${step.access}`;
+}
+
+function buildAllStepsSpeechText() {
+  if (!state.route) {
+    return '';
+  }
+
+  const t = getT();
+  const routeView = getRouteView();
+  const total = routeView.steps.length;
+  return routeView.steps.map((step, index) => {
+    const current = index + 1;
+    return `${formatTemplate(t.progressText, { current, total })}. ${step.text} ${step.access}`;
+  }).join(' ');
+}
+
+function renderRouteReaderControls(context) {
+  const t = getT();
+  const isNavigation = context === 'navigation';
+  const playbackControls = `
+    <button class="route-reader__button route-reader__button--icon" type="button" data-route-reader-action="pause" aria-label="${escapeHtml(t.routeReaderPause)}" title="${escapeHtml(t.routeReaderPause)}">⏸</button>
+    <button class="route-reader__button route-reader__button--icon" type="button" data-route-reader-action="resume" aria-label="${escapeHtml(t.routeReaderResume)}" title="${escapeHtml(t.routeReaderResume)}">▶</button>
+    <button class="route-reader__button route-reader__button--icon" type="button" data-route-reader-action="stop" aria-label="${escapeHtml(t.routeReaderStop)}" title="${escapeHtml(t.routeReaderStop)}">■</button>
+  `;
+
+  return `
+    <section class="route-reader" aria-labelledby="route-reader-title-${escapeHtml(context)}">
+      <h4 class="route-reader__title" id="route-reader-title-${escapeHtml(context)}">${escapeHtml(t.routeReaderTitle)}</h4>
+      <div class="route-reader__actions">
+        ${isNavigation
+          ? `
+            <button class="route-reader__button" type="button" data-route-reader-action="current-step">${escapeHtml(t.routeReaderReadCurrentStep)}</button>
+            <button class="route-reader__button" type="button" data-route-reader-action="all-steps">${escapeHtml(t.routeReaderReadAllSteps)}</button>
+          `
+          : `
+            <button class="route-reader__button" type="button" data-route-reader-action="summary">${escapeHtml(t.routeReaderReadSummary)}</button>
+            <button class="route-reader__button" type="button" data-route-reader-action="alerts">${escapeHtml(t.routeReaderReadAlerts)}</button>
+            <button class="route-reader__button" type="button" data-route-reader-action="text-mode">${escapeHtml(t.routeReaderReadTextMode)}</button>
+          `}
+        ${playbackControls}
+      </div>
+      ${isNavigation
+        ? `
+          <label class="route-reader__auto">
+            <input type="checkbox" id="route-reader-auto" ${state.routeReaderAutoRead ? ' checked' : ''}>
+            <span>${escapeHtml(t.routeReaderAuto)}</span>
+          </label>
+        `
+        : ''}
+      <p class="route-reader__status" data-route-reader-status aria-live="polite" aria-atomic="true">${escapeHtml(t.routeReaderReady)}</p>
+    </section>
+  `;
+}
+
+function setupRouteReaderControls() {
+  document.querySelectorAll('[data-route-reader-action]').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.routeReaderAction;
+
+      if (action === 'summary') speakText(buildRouteSummarySpeechText());
+      if (action === 'alerts') speakText(buildRouteAlertsSpeechText());
+      if (action === 'text-mode') speakText(buildRouteTextModeSpeechText());
+      if (action === 'current-step') speakText(buildCurrentStepSpeechText());
+      if (action === 'all-steps') speakText(buildAllStepsSpeechText());
+      if (action === 'pause') pauseSpeech();
+      if (action === 'resume') resumeSpeech();
+      if (action === 'stop') stopSpeech();
+    });
+  });
+
+  const autoReader = document.querySelector('#route-reader-auto');
+  if (autoReader) {
+    autoReader.addEventListener('change', event => {
+      state.routeReaderAutoRead = event.target.checked;
+      setRouteReaderStatus(getT().routeReaderReady);
+    });
+  }
+}
+
 function setView(view, options = {}) {
   const allowedView = resolveAllowedView(view);
   const blocked = allowedView !== view;
+  const previousView = state.currentView;
+
+  if (previousView === 'navigation' && allowedView !== 'navigation') {
+    stopSpeech();
+  }
 
   state.currentView = allowedView;
   state.errors = {};
@@ -927,7 +1193,8 @@ function render(shouldFocus = false) {
   document.querySelector('#brand-kicker').textContent = t.appKicker;
   document.querySelector('#brand-title').setAttribute('aria-label', t.appTitle);
   document.querySelector('#brand-title').innerHTML = renderBrandName();
-  document.querySelector('#brand-subtitle').textContent = t.appSubtitle;
+  document.querySelector('#brand-subtitle').textContent = '';
+  document.querySelector('#brand-subtitle').hidden = true;
 
   renderTopActions();
   renderStepNav();
@@ -968,23 +1235,29 @@ function renderTopActions() {
   const t = getT();
   topActions.innerHTML = `
     <div class="control-group">
-      <label class="control-label" for="language-select">${escapeHtml(t.languageLabel)}</label>
+      <label class="control-label control-label-icon" for="language-select">
+        ${renderIcon('language')}
+        <span>${escapeHtml(t.languageLabel)}</span>
+      </label>
       <select class="select" id="language-select" aria-label="${escapeHtml(t.languageLabel)}">
         <option value="pt"${state.lang === 'pt' ? ' selected' : ''}>${escapeHtml(t.languagePt)}</option>
         <option value="en"${state.lang === 'en' ? ' selected' : ''}>${escapeHtml(t.languageEn)}</option>
       </select>
     </div>
     <button class="icon-button button-secondary" id="contrast-toggle" type="button" aria-pressed="${state.highContrast}" aria-label="${escapeHtml(state.highContrast ? t.contrastOff : t.contrastOn)}">
+      ${renderIcon('contrast')}
       <span aria-hidden="true">Aa</span>
       <span>${escapeHtml(state.highContrast ? t.contrastOff : t.contrastOn)}</span>
     </button>
   `;
 
   document.querySelector('#language-select').addEventListener('change', event => {
+    stopSpeech();
     state.lang = event.target.value;
     render();
     setStatus(`${getT().languageLabel}: ${state.lang === 'pt' ? getT().languagePt : getT().languageEn}.`);
   });
+  setupCustomSelect(document.querySelector('#language-select'));
 
   document.querySelector('#contrast-toggle').addEventListener('click', () => {
     state.highContrast = !state.highContrast;
@@ -996,22 +1269,31 @@ function renderTopActions() {
 function renderStepNav() {
   const t = getT();
   const activeIndex = viewOrder.indexOf(state.currentView);
+  stepNav.className = 'flow-stepper';
   stepNav.setAttribute('aria-label', t.stepNavLabel);
   stepNav.innerHTML = `
-    <ol class="step-list">
+    <ol class="flow-stepper__list">
       ${t.steps.map((label, index) => {
         const view = viewOrder[index];
         const isCurrent = index === activeIndex;
+        const isComplete = index < activeIndex;
         const isUnlocked = isViewUnlocked(view);
-        const itemClasses = `step-item ${isUnlocked ? 'is-unlocked' : 'is-locked'}`;
+        const itemClasses = ['flow-stepper__item'];
+        if (isComplete) {
+          itemClasses.push('is-complete');
+        }
+        if (isCurrent) {
+          itemClasses.push('is-current');
+        }
         const buttonAttributes = isUnlocked
           ? `data-step-view="${escapeHtml(view)}"`
           : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
 
         return `
-          <li class="${itemClasses}"${isCurrent ? ' aria-current="step"' : ''}>
-            <button class="step-button" type="button" ${buttonAttributes}>
-              <span class="step-label">${index + 1}. ${escapeHtml(label)}</span>
+          <li class="${itemClasses.join(' ')}"${isCurrent ? ' aria-current="step"' : ''}>
+            <button class="flow-stepper__button" type="button" ${buttonAttributes}>
+              <span class="flow-stepper__number">${index + 1}</span>
+              <span class="flow-stepper__label">${escapeHtml(label)}</span>
             </button>
           </li>
         `;
@@ -1036,7 +1318,7 @@ function renderWelcome() {
           <p class="eyebrow">${escapeHtml(t.welcomeEyebrow)}</p>
           <h2 class="page-title" id="welcome-title" tabindex="-1" data-focus-target aria-label="${escapeHtml(t.welcomeTitle)}">${renderBrandName()}</h2>
           <p class="section-lead">${escapeHtml(t.welcomeIntro)}</p>
-          <div class="action-row">
+          <div class="action-row action-row--start">
             <button class="button button-primary" type="button" id="start-planning">${escapeHtml(t.welcomeAction)}</button>
           </div>
         </div>
@@ -1100,8 +1382,8 @@ function renderPlaces() {
           ${renderPlaceMapPicker()}
 
           <div class="action-row">
-            <button class="button button-primary" type="submit">${escapeHtml(t.continueButton)}</button>
             <button class="button button-ghost" type="button" id="places-back">${escapeHtml(t.backButton)}</button>
+            <button class="button button-primary" type="submit">${escapeHtml(t.continueButton)}</button>
           </div>
         </form>
       </div>
@@ -1125,6 +1407,8 @@ function renderPlaces() {
     syncPlacePickerSelection();
     renderStepNav();
   });
+  setupCustomSelect(document.querySelector('#origin-select'));
+  setupCustomSelect(document.querySelector('#destination-select'));
 
   bindPlaceMapPicker();
 
@@ -1181,6 +1465,168 @@ function renderLocationOptions(selectedValue) {
       </optgroup>
     `).join('')}
   `;
+}
+
+function setupCustomSelect(select) {
+  if (!select || select.dataset.customSelectReady === 'true') {
+    return;
+  }
+
+  select.dataset.customSelectReady = 'true';
+  select.classList.add('select--native');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-select';
+  wrapper.dataset.selectId = select.id;
+
+  const button = document.createElement('button');
+  button.className = 'custom-select__button';
+  button.type = 'button';
+  button.id = `${select.id}-custom-button`;
+  button.setAttribute('aria-haspopup', 'listbox');
+  button.setAttribute('aria-expanded', 'false');
+
+  const value = document.createElement('span');
+  value.className = 'custom-select__value';
+
+  const icon = document.createElement('span');
+  icon.className = 'custom-select__icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = '⌄';
+
+  const list = document.createElement('div');
+  list.className = 'custom-select__list';
+  list.id = `${select.id}-custom-list`;
+  list.setAttribute('role', 'listbox');
+  list.setAttribute('aria-labelledby', button.id);
+  list.hidden = true;
+
+  button.append(value, icon);
+  wrapper.append(button, list);
+  select.insertAdjacentElement('afterend', wrapper);
+
+  const close = () => {
+    wrapper.classList.remove('is-open');
+    button.setAttribute('aria-expanded', 'false');
+    list.hidden = true;
+  };
+
+  const open = () => {
+    document.querySelectorAll('.custom-select.is-open').forEach(item => {
+      if (item !== wrapper) {
+        item.querySelector('.custom-select__button')?.setAttribute('aria-expanded', 'false');
+        item.querySelector('.custom-select__list')?.setAttribute('hidden', '');
+        item.classList.remove('is-open');
+      }
+    });
+
+    wrapper.classList.add('is-open');
+    button.setAttribute('aria-expanded', 'true');
+    list.hidden = false;
+  };
+
+  const refresh = () => {
+    const selectedOption = select.selectedOptions[0] || select.options[0];
+    value.textContent = selectedOption ? selectedOption.textContent.trim() : '';
+    list.innerHTML = '';
+
+    [...select.children].forEach(child => {
+      if (child.tagName === 'OPTGROUP') {
+        const group = document.createElement('div');
+        group.className = 'custom-select__group';
+        group.textContent = child.label;
+        list.append(group);
+
+        [...child.children].forEach(option => {
+          list.append(renderCustomSelectOption(select, option, close));
+        });
+        return;
+      }
+
+      if (child.tagName === 'OPTION') {
+        list.append(renderCustomSelectOption(select, child, close));
+      }
+    });
+  };
+
+  button.addEventListener('click', () => {
+    if (wrapper.classList.contains('is-open')) {
+      close();
+      return;
+    }
+
+    open();
+  });
+
+  button.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      open();
+      list.querySelector('[role="option"]')?.focus();
+    }
+
+    if (event.key === 'Escape') {
+      close();
+    }
+  });
+
+  select.addEventListener('change', refresh);
+  select.addEventListener('customselectrefresh', refresh);
+  document.addEventListener('click', event => {
+    if (!wrapper.contains(event.target)) {
+      close();
+    }
+  });
+
+  refresh();
+}
+
+function renderCustomSelectOption(select, option, close) {
+  const item = document.createElement('button');
+  item.className = 'custom-select__option';
+  item.type = 'button';
+  item.setAttribute('role', 'option');
+  item.dataset.value = option.value;
+  item.textContent = option.textContent.trim();
+
+  if (option.selected) {
+    item.classList.add('is-selected');
+    item.setAttribute('aria-selected', 'true');
+  } else {
+    item.setAttribute('aria-selected', 'false');
+  }
+
+  item.addEventListener('click', () => {
+    select.value = option.value;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    close();
+  });
+
+  item.addEventListener('keydown', event => {
+    const options = [...item.parentElement.querySelectorAll('[role="option"]')];
+    const currentIndex = options.indexOf(item);
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      options[Math.min(currentIndex + 1, options.length - 1)]?.focus();
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      options[Math.max(currentIndex - 1, 0)]?.focus();
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      item.click();
+    }
+
+    if (event.key === 'Escape') {
+      close();
+    }
+  });
+
+  return item;
 }
 
 function renderPlaceMapPicker() {
@@ -1268,10 +1714,12 @@ function syncPlacePickerSelection() {
 
   if (originSelect) {
     originSelect.value = state.origin;
+    originSelect.dispatchEvent(new Event('customselectrefresh'));
   }
 
   if (destinationSelect) {
     destinationSelect.value = state.destination;
+    destinationSelect.dispatchEvent(new Event('customselectrefresh'));
   }
 
   document.querySelectorAll('[data-place-id]').forEach(marker => {
@@ -1312,8 +1760,8 @@ function renderProfile() {
           <p class="form-error" id="profile-error" aria-live="polite">${escapeHtml(profileError)}</p>
 
           <div class="action-row">
-            <button class="button button-primary" type="submit">${escapeHtml(t.calculateRoute)}</button>
             <button class="button button-ghost" type="button" id="profile-back">${escapeHtml(t.backButton)}</button>
+            <button class="button button-primary" type="submit">${escapeHtml(t.calculateRoute)}</button>
           </div>
         </form>
       </div>
@@ -1635,6 +2083,7 @@ function renderRoute() {
   `;
 
   bindMapMarkers(route);
+  setupRouteReaderControls();
 
   document.querySelector('#toggle-text-mode').addEventListener('click', () => {
     state.textMode = !state.textMode;
@@ -2141,6 +2590,7 @@ function renderRoutePanel(routeView) {
           </li>
         </ul>
 
+        ${renderRouteReaderControls('route')}
         ${renderAlerts(routeView.route.alerts)}
         ${renderInstructionPreview(routeView)}
 
@@ -2281,20 +2731,31 @@ function renderNavigation() {
         <span class="step-number-large" aria-hidden="true">${current}</span>
         <h3 class="section-title">${escapeHtml(step.text)}</h3>
         <p class="section-lead">${escapeHtml(step.access)}</p>
-        <div class="action-row">
+        ${renderRouteReaderControls('navigation')}
+        <div class="action-row action-row--step-navigation">
           <button class="button button-secondary" type="button" id="previous-route-step"${state.currentRouteStep === 0 ? ' disabled' : ''}>${escapeHtml(t.previousStep)}</button>
           <button class="button button-primary" type="button" id="next-route-step">${escapeHtml(state.currentRouteStep === total - 1 ? t.confirmArrival : t.nextStep)}</button>
-          <button class="button button-ghost" type="button" id="navigation-map">${escapeHtml(t.viewMapAgain)}</button>
+          <button class="button button-ghost" type="button" id="navigation-map" aria-controls="navigation-map-preview" aria-expanded="true">${escapeHtml(t.hideMapAgain)}</button>
         </div>
       </article>
+
+      <div class="navigation-map-preview" id="navigation-map-preview">
+        ${renderMap(routeView)}
+      </div>
     </section>
   `;
+
+  setupRouteReaderControls();
+  bindMapMarkers(routeView);
 
   document.querySelector('#previous-route-step').addEventListener('click', () => {
     if (state.currentRouteStep > 0) {
       state.currentRouteStep -= 1;
       render(true);
       setStatus(formatTemplate(t.progressText, { current: state.currentRouteStep + 1, total }));
+      if (state.routeReaderAutoRead) {
+        speakText(buildCurrentStepSpeechText());
+      }
     }
   });
 
@@ -2309,10 +2770,18 @@ function renderNavigation() {
     state.currentRouteStep += 1;
     render(true);
     setStatus(formatTemplate(t.progressText, { current: state.currentRouteStep + 1, total }));
+    if (state.routeReaderAutoRead) {
+      speakText(buildCurrentStepSpeechText());
+    }
   });
 
   document.querySelector('#navigation-map').addEventListener('click', () => {
-    setView('route', { focus: true });
+    const mapPreview = document.querySelector('#navigation-map-preview');
+    const button = document.querySelector('#navigation-map');
+    const isHidden = mapPreview.hidden;
+    mapPreview.hidden = !isHidden;
+    button.textContent = isHidden ? t.hideMapAgain : t.viewMapAgain;
+    button.setAttribute('aria-expanded', String(isHidden));
   });
 }
 
@@ -2351,8 +2820,8 @@ function renderComplete() {
         </dl>
 
         <div class="action-row">
-          <button class="button button-primary" type="button" id="new-route">${escapeHtml(t.newRoute)}</button>
           <button class="button button-secondary" type="button" id="view-map-again">${escapeHtml(t.viewMapAgain)}</button>
+          <button class="button button-primary" type="button" id="new-route">${escapeHtml(t.newRoute)}</button>
         </div>
       </div>
     </section>
