@@ -1,88 +1,164 @@
 # AcessibiliUFSC
 
-Protótipo funcional de Interface e Interação Humano-Computador para planejamento de rotas inclusivas no Campus Reitor João David Ferreira Lima, da UFSC Trindade, em Florianópolis.
+Protótipo funcional de IHC para planejamento de rotas inclusivas no Campus Reitor João David Ferreira Lima, da UFSC Trindade, em Florianópolis.
 
-## Descrição curta
+O projeto simula um guia acessível de campus. Ele ajuda estudantes, visitantes, servidores e pessoas estrangeiras a escolher origem, destino e perfil de acessibilidade, visualizar uma rota simulada, acompanhar instruções passo a passo e confirmar a chegada.
 
-O projeto simula um produto chamado **AcessibiliUFSC**, pensado para ajudar estudantes, visitantes, servidores e pessoas estrangeiras a se orientarem no campus com mais autonomia. A aplicação roda direto no navegador, sem backend, usando HTML, CSS e JavaScript puro.
+## Problema Resolvido
 
-## Problema resolvido
+Circular em um campus grande pode exigir muita tentativa e erro, principalmente para pessoas com mobilidade reduzida, baixa visão, necessidade de pausas, preferência por instruções simples ou pouca familiaridade com o espaço.
 
-Circular por um campus grande pode ser difícil para pessoas com diferentes necessidades de acessibilidade. O protótipo reduz esse risco ao oferecer um fluxo guiado para escolher origem, destino e perfil de navegação, exibindo rota visual, instruções textuais, alertas e confirmação de chegada.
+O AcessibiliUFSC reduz essa carga cognitiva com um fluxo guiado, feedback textual, mapa, rota em modo texto, alertas e leitura por voz. Na prática, isso aumenta autonomia, melhora previsibilidade do deslocamento e reduz o risco de uma pessoa depender apenas de orientação visual ou ajuda presencial.
 
-Na prática, isso aumenta autonomia, reduz esforço cognitivo, melhora previsibilidade do deslocamento e diminui o risco de o usuário depender apenas de tentativa e erro dentro do campus.
+## Fluxo Principal
 
-## Fluxo principal
+1. Tela de boas-vindas com apresentação do serviço.
+2. Escolha de origem e destino por lista categorizada ou por mapa.
+3. Seleção do perfil de acessibilidade.
+4. Resultado da rota com mapa, métricas, alertas e instruções.
+5. Modo passo a passo com progresso textual e visual.
+6. Confirmação de chegada.
+7. Opção de planejar nova rota ou voltar ao mapa.
 
-1. O usuário acessa a tela de boas-vindas.
-2. Escolhe origem e destino dentro do campus.
-3. Seleciona um perfil de acessibilidade ou preferência de navegação.
-4. Visualiza a rota sugerida no mapa da UFSC.
-5. Revisa tempo, distância, nível de acessibilidade, alertas e instruções.
-6. Pode abrir a rota em modo texto.
-7. Inicia o modo passo a passo.
-8. Confirma a chegada ao destino.
-9. Pode planejar uma nova rota ou ver o mapa novamente.
+## Recursos Implementados
 
-## Recursos de acessibilidade implementados
+- Aplicação estática em HTML, CSS e JavaScript puro.
+- Interface em português do Brasil e inglês.
+- Modo alto contraste.
+- Link de pular para o conteúdo principal.
+- Navegação por etapas com bloqueio de telas ainda não liberadas.
+- Suporte ao voltar e avançar do navegador sem permitir pular etapas obrigatórias.
+- Seleção de locais por categorias: centros de ensino, serviços do campus, administração e eventos.
+- Alternativa de escolha por mapa interativo.
+- Marcadores posicionados sobre `assets/mapa_ufsc.jpg`.
+- Rotas simuladas com métricas ajustadas por perfil de acessibilidade.
+- Origem e destino fixos no mapa, com deslocamento apenas das etiquetas quando necessário.
+- Fonte oficial do mapa indicada na interface, com botão para acessar `https://ufsc.br/mapa-e-enderecos/`.
+- Modo texto da rota com origem, destino, tempo, distância, passos, alertas e pontos de referência.
+- Leitor de rota por voz usando a Web Speech API do navegador.
+- Controles para ler resumo, alertas, modo texto, passo atual e todos os passos.
+- Controles de pausar, continuar e parar a leitura.
+- Opção de leitura automática ao mudar de passo.
+- Servidor estático local opcional em Node.js para testes por URL.
+- Ferramenta opcional de screenshot com Playwright em Python.
 
-- HTML semântico com `header`, `main`, `section`, `nav`, `form`, `fieldset`, `legend`, `button`, `label`, `ol` e `ul`.
-- Link “Pular para o conteúdo principal”.
-- Navegação por teclado usando controles nativos.
-- Foco visível destacado com `:focus-visible`.
-- Radio buttons reais nos cards de perfil.
-- Mensagens de erro associadas aos campos por `aria-describedby`.
-- Região `aria-live="polite"` para anunciar erros e mudanças importantes.
+## Acessibilidade
+
+A acessibilidade é parte central do projeto, não só um detalhe visual.
+
+Recursos presentes:
+
+- HTML semântico com `header`, `main`, `section`, `nav`, `form`, `button`, `label`, `ol`, `ul` e `dl`.
+- Regiões `aria-live` para mudanças de estado e status do leitor de rota.
+- Foco visível destacado.
+- Mensagens de erro associadas aos campos.
+- Alertas com categoria textual, ícone e descrição, sem depender apenas de cor.
+- Alto contraste com paleta própria.
 - Imagem do mapa com texto alternativo.
 - Marcadores do mapa como botões acessíveis.
-- Alertas com ícone textual, categoria escrita e mensagem, sem depender apenas de cor.
-- Modo alto contraste.
-- Modo texto da rota, com origem, destino, distância, tempo, passos, alertas e pontos de referência.
-- Barra de progresso visual e textual no passo a passo.
+- Radio buttons reais para escolha de perfil.
+- Rota em modo texto para reduzir dependência da imagem do mapa.
+- Leitor de voz para reforço auditivo das instruções.
 - Layout responsivo para desktop, tablet e celular.
 
-## Internacionalização implementada
+Ponto de atenção técnico: os selects visíveis usam uma camada customizada sobre o select original. Isso melhora o acabamento visual, mas precisa ser validado com teclado e leitor de tela real antes da apresentação final.
 
-O idioma padrão é português do Brasil. A interface permite alternar entre:
+## Internacionalização
 
-- PT-BR
-- EN
+O idioma padrão é PT-BR, com opção de alternar para EN no topo da interface.
 
-Todos os textos principais são gerados pelo JavaScript a partir de um objeto de traduções, incluindo títulos, botões, rótulos, placeholders, mensagens de erro, instruções, alertas, confirmação e labels ARIA.
+A troca de idioma atualiza textos principais, botões, rótulos, mensagens de erro, alertas, instruções, textos de status e labels de acessibilidade.
 
-## Como executar
+## Perfis de Rota
 
-Abra o arquivo `index.html` diretamente no navegador. Não é necessário instalar dependências, criar servidor local ou configurar backend.
+O protótipo permite escolher entre perfis como:
 
-Estrutura principal:
+- Menos escadas.
+- Menos inclinação.
+- Mais pontos de descanso.
+- Instruções simplificadas.
+- Baixa visão.
+- Rota padrão.
+
+As métricas de tempo e distância são simuladas, mas variam conforme o perfil escolhido. Isso deixa a experiência mais coerente do que usar um número fixo para todos os casos.
+
+## Como Executar
+
+Opção simples, abra `index.html` diretamente no navegador.
+
+Opção recomendada para testes por URL local:
+
+```powershell
+node tools\static-server.js
+```
+
+Depois acesse:
+
+```txt
+http://127.0.0.1:8000
+```
+
+Também é possível trocar a porta:
+
+```powershell
+$env:PORT=8080
+node tools\static-server.js
+```
+
+## Screenshots com Playwright
+
+O projeto possui uma ferramenta opcional para capturar screenshots, útil para validar layout, responsividade e problemas visuais no mapa.
+
+Se o ambiente ainda não existir:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+.\venv\Scripts\python.exe -m playwright install chromium
+```
+
+Para capturar uma tela:
+
+```powershell
+.\venv\Scripts\python.exe tools\screenshot.py --viewport 1920x1080
+```
+
+A pasta `venv/` e as imagens em `screenshots/` ficam fora do Git pelo `.gitignore`.
+
+## Estrutura Principal
 
 ```txt
 index.html
-src/css/styles.css
-src/js/script.js
-assets/mapa_ufsc.jpg
-assets/logo.svg
 README.md
+codex.md
+assets/
+  logo.svg
+  mapa_ufsc.jpg
+src/
+  css/styles.css
+  js/script.js
+tools/
+  static-server.js
+  screenshot.py
+instructions/
+  instrucoes_codex.md
+  trabalho_final_ihc_v2.html.md
 ```
 
-## Justificativa de IHC e acessibilidade
+## Justificativa de IHC
 
-O protótipo aplica visibilidade do estado do sistema ao mostrar etapa atual, mensagens de erro, status da rota calculada e progresso textual no modo passo a passo.
+O protótipo aplica visibilidade do estado do sistema ao mostrar etapa atual, progresso, mensagens de erro, status da rota e confirmação de chegada.
 
-A prevenção de erros aparece nas validações de origem obrigatória, destino obrigatório, origem diferente do destino e perfil obrigatório. Isso reduz retrabalho e evita que o usuário avance com uma rota sem sentido.
+A prevenção de erros aparece nas validações de origem, destino, origem diferente do destino e perfil obrigatório. As etapas bloqueadas também impedem que o usuário chegue a telas sem dados suficientes.
 
-A consistência visual e textual é mantida por botões, cards, métricas, alertas e etapas com padrões repetidos. O usuário reconhece a lógica da interface sem precisar reaprender a cada tela.
+O reconhecimento em vez de memorização aparece nas listas categorizadas, nos marcadores do mapa, nas instruções passo a passo e nos pontos de referência.
 
-O reconhecimento em vez de memorização aparece nos selects com nomes e tipos dos locais, nas instruções passo a passo, nos pontos de referência e no modo texto. O usuário não precisa decorar a rota inteira antes de começar.
+A redução de carga cognitiva aparece no fluxo guiado, na separação por etapas, no modo texto, no leitor de rota e nos alertas claros.
 
-A redução de carga cognitiva vem do fluxo guiado, das instruções curtas, dos agrupamentos visuais e da separação entre escolha, resultado, navegação e conclusão.
+O controle e liberdade do usuário aparecem nos botões de voltar, editar rota, usar voltar e avançar do navegador, ver mapa novamente e planejar nova rota.
 
-O controle e liberdade do usuário aparecem nos botões para voltar, alterar a rota, ver o mapa novamente e planejar uma nova rota.
-
-A ergonomia física foi considerada com botões grandes, foco visível, navegação por teclado e controles nativos. A ergonomia cognitiva foi considerada com linguagem simples, etapas progressivas e feedback claro.
-
-A acessibilidade foi tratada como parte central do produto: contraste, semântica, foco visível, alto contraste, feedback textual, modo texto do mapa, internacionalização e uso de ARIA quando necessário.
-
-## Dados simulados
+## Dados Simulados
 
 Este protótipo utiliza dados simulados para fins acadêmicos. As rotas apresentadas não devem ser usadas como orientação oficial de acessibilidade da UFSC.
+
+A imagem do mapa tem fonte indicada como Mapa e Endereços da UFSC: `https://ufsc.br/mapa-e-enderecos/`.
