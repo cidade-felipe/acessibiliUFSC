@@ -225,20 +225,6 @@ const translations = {
     originHelp: 'Escolha de onde você vai sair.',
     destinationHelp: 'Escolha para onde você quer ir.',
     selectPlaceholder: 'Selecione um local',
-    locationCategories: {
-      academic: 'Centros de ensino',
-      services: 'Serviços do campus',
-      administration: 'Administração e eventos'
-    },
-    mapPickerSummary: 'Escolher no mapa',
-    mapPickerTitle: 'Mapa de seleção',
-    mapPickerTargetLabel: 'Preencher campo',
-    mapPickerOriginTarget: 'Origem',
-    mapPickerDestinationTarget: 'Destino',
-    mapPickerEmpty: 'não selecionado',
-    mapPickerStatus: 'Origem: {origin}. Destino: {destination}.',
-    mapPickerOriginSelected: 'Origem selecionada no mapa:',
-    mapPickerDestinationSelected: 'Destino selecionado no mapa:',
     continueButton: 'Continuar',
     backButton: 'Voltar',
     errorPrefix: 'Erro:',
@@ -353,20 +339,6 @@ const translations = {
     originHelp: 'Choose where you will start.',
     destinationHelp: 'Choose where you want to go.',
     selectPlaceholder: 'Select a location',
-    locationCategories: {
-      academic: 'Academic centers',
-      services: 'Campus services',
-      administration: 'Administration and events'
-    },
-    mapPickerSummary: 'Choose on map',
-    mapPickerTitle: 'Selection map',
-    mapPickerTargetLabel: 'Field to fill',
-    mapPickerOriginTarget: 'Origin',
-    mapPickerDestinationTarget: 'Destination',
-    mapPickerEmpty: 'not selected',
-    mapPickerStatus: 'Origin: {origin}. Destination: {destination}.',
-    mapPickerOriginSelected: 'Origin selected on map:',
-    mapPickerDestinationSelected: 'Destination selected on map:',
     continueButton: 'Continue',
     backButton: 'Back',
     errorPrefix: 'Error:',
@@ -596,8 +568,7 @@ const state = {
   currentRouteStep: 0,
   textMode: false,
   activeMarkerId: '',
-  routeCompleted: false,
-  placePickerTarget: 'origin'
+  routeCompleted: false
 };
 
 const viewOrder = ['welcome', 'places', 'profile', 'route', 'navigation', 'complete'];
@@ -616,24 +587,6 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
 const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 const mapImageSize = { width: 1500, height: 2121 };
 const metersPerMapPixel = 1.18;
-const locationCategoryOrder = ['academic', 'services', 'administration'];
-const locationShortCodes = {
-  reitoria: 'R',
-  biblioteca: 'BU',
-  ru: 'RU',
-  hu: 'HU',
-  ctc: 'CTC',
-  cse: 'CSE',
-  cfh: 'CFH',
-  cce: 'CCE',
-  ccb: 'CCB',
-  cfm: 'CFM',
-  ced: 'CED',
-  ccj: 'CCJ',
-  ccs: 'CCS',
-  cds: 'CDS',
-  centro_eventos: 'CE'
-};
 const routeMetricProfiles = {
   standard: { distanceMultiplier: 1, metersPerMinute: 72, extraMinutes: 0, rangeMinutes: 2 },
   stairs: { distanceMultiplier: 1.12, metersPerMinute: 56, extraMinutes: 0, rangeMinutes: 3 },
@@ -688,44 +641,6 @@ function getLocationName(location) {
 
 function getLocationType(location) {
   return state.lang === 'pt' ? location.typePt : location.typeEn;
-}
-
-function getLocationShortCode(location) {
-  return locationShortCodes[location.id] || getLocationName(location).slice(0, 3).toUpperCase();
-}
-
-function getLocationCategoryId(location) {
-  if (location.typePt === 'Centro de ensino') {
-    return 'academic';
-  }
-
-  if (['Biblioteca', 'Alimentação', 'Saúde'].includes(location.typePt)) {
-    return 'services';
-  }
-
-  return 'administration';
-}
-
-function getLocationCategoryLabel(categoryId) {
-  return getT().locationCategories[categoryId] || categoryId;
-}
-
-function getLocationGroups() {
-  const groups = locationCategoryOrder.map(categoryId => ({
-    id: categoryId,
-    label: getLocationCategoryLabel(categoryId),
-    locations: []
-  }));
-
-  locations.forEach(location => {
-    const categoryId = getLocationCategoryId(location);
-    const group = groups.find(item => item.id === categoryId);
-    if (group) {
-      group.locations.push(location);
-    }
-  });
-
-  return groups.filter(group => group.locations.length > 0);
 }
 
 function getProfile(id) {
@@ -1097,8 +1012,6 @@ function renderPlaces() {
             </div>
           </div>
 
-          ${renderPlaceMapPicker()}
-
           <div class="action-row">
             <button class="button button-primary" type="submit">${escapeHtml(t.continueButton)}</button>
             <button class="button button-ghost" type="button" id="places-back">${escapeHtml(t.backButton)}</button>
@@ -1113,7 +1026,6 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    syncPlacePickerSelection();
     renderStepNav();
   });
 
@@ -1122,11 +1034,8 @@ function renderPlaces() {
     if (!routeMatchesSelection()) {
       invalidateRoute();
     }
-    syncPlacePickerSelection();
     renderStepNav();
   });
-
-  bindPlaceMapPicker();
 
   document.querySelector('#places-back').addEventListener('click', () => {
     setView('welcome', { focus: true });
@@ -1171,119 +1080,14 @@ function renderLocationOptions(selectedValue) {
   const t = getT();
   return `
     <option value="">${escapeHtml(t.selectPlaceholder)}</option>
-    ${getLocationGroups().map(group => `
-      <optgroup label="${escapeHtml(group.label)}">
-        ${group.locations.map(location => `
-          <option value="${escapeHtml(location.id)}"${selectedValue === location.id ? ' selected' : ''}>
-            ${escapeHtml(getLocationShortCode(location))} - ${escapeHtml(getLocationName(location))}
-          </option>
-        `).join('')}
-      </optgroup>
+    ${locations.map(location => `
+      <option value="${escapeHtml(location.id)}"${selectedValue === location.id ? ' selected' : ''}>
+        ${escapeHtml(getLocationName(location))} - ${escapeHtml(getLocationType(location))}
+      </option>
     `).join('')}
   `;
 }
 
-function renderPlaceMapPicker() {
-  const t = getT();
-  const originName = state.origin ? getLocationName(getLocation(state.origin)) : t.mapPickerEmpty;
-  const destinationName = state.destination ? getLocationName(getLocation(state.destination)) : t.mapPickerEmpty;
-
-  return `
-    <details class="place-map-disclosure">
-      <summary>${escapeHtml(t.mapPickerSummary)}</summary>
-      <section class="place-map-picker" aria-labelledby="place-map-title">
-        <div class="place-map-header">
-          <h3 class="item-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
-          <div class="place-target-toggle" role="group" aria-label="${escapeHtml(t.mapPickerTargetLabel)}">
-            <button class="place-target-button${state.placePickerTarget === 'origin' ? ' active' : ''}" type="button" data-place-target="origin" aria-pressed="${state.placePickerTarget === 'origin'}">${escapeHtml(t.mapPickerOriginTarget)}</button>
-            <button class="place-target-button${state.placePickerTarget === 'destination' ? ' active' : ''}" type="button" data-place-target="destination" aria-pressed="${state.placePickerTarget === 'destination'}">${escapeHtml(t.mapPickerDestinationTarget)}</button>
-          </div>
-        </div>
-        <div class="place-map-wrap">
-          <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
-          <div class="place-picker-layer" aria-label="${escapeHtml(t.placesAria)}">
-            ${locations.map(location => renderPlacePickerMarker(location)).join('')}
-          </div>
-        </div>
-        <p class="place-map-status" id="place-map-status">${escapeHtml(formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName }))}</p>
-      </section>
-    </details>
-  `;
-}
-
-function renderPlacePickerMarker(location) {
-  const isOrigin = location.id === state.origin;
-  const isDestination = location.id === state.destination;
-  const className = `place-picker-marker${isOrigin ? ' selected-origin' : ''}${isDestination ? ' selected-destination' : ''}`;
-  const ariaLabel = `${getLocationShortCode(location)} - ${getLocationName(location)}, ${getLocationType(location)}.`;
-
-  return `
-    <button class="${className}" type="button" data-place-id="${escapeHtml(location.id)}" style="left: ${location.x}%; top: ${location.y}%;" aria-label="${escapeHtml(ariaLabel)}">
-      <span aria-hidden="true">${escapeHtml(getLocationShortCode(location))}</span>
-    </button>
-  `;
-}
-
-function bindPlaceMapPicker() {
-  document.querySelectorAll('[data-place-target]').forEach(button => {
-    button.addEventListener('click', () => {
-      state.placePickerTarget = button.dataset.placeTarget;
-      updatePlacePickerTargetButtons();
-    });
-  });
-
-  document.querySelectorAll('[data-place-id]').forEach(button => {
-    button.addEventListener('click', () => {
-      const selectedId = button.dataset.placeId;
-      const target = state.placePickerTarget;
-      state[target] = selectedId;
-      delete state.errors[target];
-
-      if (!routeMatchesSelection()) {
-        invalidateRoute();
-      }
-
-      state[target] = selectedId;
-      syncPlacePickerSelection();
-      renderStepNav();
-      setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(getLocation(selectedId))}.`);
-    });
-  });
-}
-
-function updatePlacePickerTargetButtons() {
-  document.querySelectorAll('[data-place-target]').forEach(button => {
-    const isActive = button.dataset.placeTarget === state.placePickerTarget;
-    button.classList.toggle('active', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
-  });
-}
-
-function syncPlacePickerSelection() {
-  const t = getT();
-  const originSelect = document.querySelector('#origin-select');
-  const destinationSelect = document.querySelector('#destination-select');
-  const originName = state.origin ? getLocationName(getLocation(state.origin)) : t.mapPickerEmpty;
-  const destinationName = state.destination ? getLocationName(getLocation(state.destination)) : t.mapPickerEmpty;
-
-  if (originSelect) {
-    originSelect.value = state.origin;
-  }
-
-  if (destinationSelect) {
-    destinationSelect.value = state.destination;
-  }
-
-  document.querySelectorAll('[data-place-id]').forEach(marker => {
-    marker.classList.toggle('selected-origin', marker.dataset.placeId === state.origin);
-    marker.classList.toggle('selected-destination', marker.dataset.placeId === state.destination);
-  });
-
-  const status = document.querySelector('#place-map-status');
-  if (status) {
-    status.textContent = formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName });
-  }
-}
 function renderProfile() {
   const t = getT();
   const profileError = state.errors.profile ? `${t.errorPrefix} ${state.errors.profile}` : '';
@@ -1732,7 +1536,7 @@ function renderMarker(location, routeView) {
   const isActive = location.id === state.activeMarkerId;
   const roleText = isOrigin ? t.markerRoleOrigin : isDestination ? t.markerRoleDestination : t.markerRoleNeutral;
   const visibleLabel = isOrigin ? t.originBadge : isDestination ? t.destinationBadge : '';
-  const shortLabel = isOrigin ? 'O' : isDestination ? 'D' : getLocationShortCode(location);
+  const shortLabel = isOrigin ? 'O' : isDestination ? 'D' : getLocationName(location).slice(0, 1);
   const ariaLabel = `${t.markerAria}: ${getLocationName(location)}, ${getLocationType(location)}, ${roleText}.`;
 
   return `
