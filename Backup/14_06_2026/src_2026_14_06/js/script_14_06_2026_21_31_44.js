@@ -74,60 +74,6 @@ const locations = [
     y: 47
   },
   {
-    id: 'ccb',
-    namePt: 'Centro de Ciências Biológicas',
-    nameEn: 'Biological Sciences Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 29.8,
-    y: 46.2
-  },
-  {
-    id: 'cfm',
-    namePt: 'Centro de Ciências Físicas e Matemáticas',
-    nameEn: 'Physical and Mathematical Sciences Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 34.3,
-    y: 42.8
-  },
-  {
-    id: 'ced',
-    namePt: 'Centro de Ciências da Educação',
-    nameEn: 'Education Sciences Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 35.6,
-    y: 52.2
-  },
-  {
-    id: 'ccj',
-    namePt: 'Centro de Ciências Jurídicas',
-    nameEn: 'Legal Sciences Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 42.2,
-    y: 31.5
-  },
-  {
-    id: 'ccs',
-    namePt: 'Centro de Ciências da Saúde',
-    nameEn: 'Health Sciences Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 66.7,
-    y: 36.9
-  },
-  {
-    id: 'cds',
-    namePt: 'Centro de Desportos',
-    nameEn: 'Sports Center',
-    typePt: 'Centro de ensino',
-    typeEn: 'Academic center',
-    x: 56.8,
-    y: 61.4
-  },
-  {
     id: 'centro_eventos',
     namePt: 'Centro de Cultura e Eventos',
     nameEn: 'Culture and Events Center',
