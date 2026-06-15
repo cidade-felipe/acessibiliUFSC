@@ -696,7 +696,7 @@ body.high-contrast .summary-icon {
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
   z-index: 2;
   font-weight: 900;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% + var(--marker-shift-x, 0px)), calc(-50% + var(--marker-shift-y, 0px)));
   transition: box-shadow 160ms ease;
 }
 
@@ -715,6 +715,9 @@ body.high-contrast .summary-icon {
   box-shadow: 0 0 0 5px var(--focus), 0 8px 24px rgba(15, 23, 42, 0.34);
 }
 
+.map-marker.is-displaced {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.34);
+}
 
 .marker-tag {
   position: absolute;
@@ -730,7 +733,7 @@ body.high-contrast .summary-icon {
   background: var(--surface);
   font-size: 0.78rem;
   font-weight: 850;
-  transform: translate(calc(-50% + var(--tag-shift-x, 0px)), var(--tag-shift-y, 0px));
+  transform: translateX(-50%);
   white-space: normal;
 }
 

@@ -1486,7 +1486,7 @@ function renderMarker(location, routeView) {
   const ariaLabel = `${t.markerAria}: ${getLocationName(location)}, ${getLocationType(location)}, ${roleText}.`;
 
   return `
-    <button class="map-marker${isOrigin ? ' origin' : ''}${isDestination ? ' destination' : ''}${isActive ? ' active' : ''}" type="button" data-location-id="${escapeHtml(location.id)}" style="left: ${location.x}%; top: ${location.y}%; " aria-label="${escapeHtml(ariaLabel)}">
+    <button class="map-marker${isOrigin ? ' origin' : ''}${isDestination ? ' destination' : ''}${isActive ? ' active' : ''}" type="button" data-location-id="${escapeHtml(location.id)}" style="left: ${location.x}%; top: ${location.y}%; --marker-shift-x: 0px; --marker-shift-y: 0px;" aria-label="${escapeHtml(ariaLabel)}">
       <span aria-hidden="true">${escapeHtml(shortLabel)}</span>
       ${visibleLabel ? `<span class="marker-tag">${escapeHtml(visibleLabel)}</span>` : ''}
     </button>
@@ -1513,7 +1513,7 @@ function bindMapMarkers(routeView) {
 }
 
 function scheduleMapMarkerCollisionResolution(routeView) {
-  window.requestAnimationFrame(() => resolveMapTagCollisions(routeView));
+  window.requestAnimationFrame(() => resolveMapMarkerCollisions(routeView));
 
   if (mapCollisionResizeHandler) {
     window.removeEventListener('resize', mapCollisionResizeHandler);
@@ -1526,7 +1526,7 @@ function scheduleMapMarkerCollisionResolution(routeView) {
 
     mapCollisionResizeFrame = window.requestAnimationFrame(() => {
       if (state.currentView === 'route' && state.route) {
-        resolveMapTagCollisions(getRouteView());
+        resolveMapMarkerCollisions(getRouteView());
       }
     });
   };
@@ -1534,41 +1534,41 @@ function scheduleMapMarkerCollisionResolution(routeView) {
   window.addEventListener('resize', mapCollisionResizeHandler);
 }
 
-function resolveMapTagCollisions(routeView) {
+function resolveMapMarkerCollisions(routeView) {
   const mapWrap = document.querySelector('.map-wrap');
-  const tags = [...document.querySelectorAll('.marker-tag')];
   const markers = [...document.querySelectorAll('.map-marker')];
 
-  if (!mapWrap || tags.length === 0 || !Array.isArray(routeView.path) || routeView.path.length < 2) {
+  if (!mapWrap || markers.length === 0 || !Array.isArray(routeView.path) || routeView.path.length < 2) {
     return;
   }
 
   const wrapRect = mapWrap.getBoundingClientRect();
   const routeSegments = buildRouteSegments(routeView.path, wrapRect);
-  const markerRects = markers.map(marker => inflateRect(getElementRect(marker, wrapRect), 6));
-  const occupiedRects = [...markerRects];
+  const occupiedRects = [];
 
-  tags.forEach(tag => applyTagShift(tag, { x: 0, y: 0 }));
+  markers.forEach(marker => applyMarkerShift(marker, { x: 0, y: 0 }));
 
-  tags.forEach(tag => {
-    const shift = chooseTagShift(tag, routeSegments, wrapRect, occupiedRects);
-    applyTagShift(tag, shift);
-    tag.classList.toggle('is-displaced', Math.abs(shift.x) > 0 || Math.abs(shift.y) > 0);
-    occupiedRects.push(inflateRect(getElementRect(tag, wrapRect), 5));
-  });
+  markers
+    .sort((first, second) => getMarkerPriority(first) - getMarkerPriority(second))
+    .forEach(marker => {
+      const shift = chooseMarkerShift(marker, routeSegments, wrapRect, occupiedRects);
+      applyMarkerShift(marker, shift);
+      marker.classList.toggle('is-displaced', Math.abs(shift.x) > 0 || Math.abs(shift.y) > 0);
+      getMarkerCollisionRects(marker, wrapRect).forEach(rect => occupiedRects.push(inflateRect(rect, 4)));
+    });
 }
 
-function chooseTagShift(tag, routeSegments, wrapRect, occupiedRects) {
-  const candidates = buildTagShiftCandidates(tag, routeSegments, wrapRect);
+function chooseMarkerShift(marker, routeSegments, wrapRect, occupiedRects) {
+  const candidates = buildMarkerShiftCandidates(marker, routeSegments, wrapRect);
   let bestCandidate = candidates[0];
   let bestScore = Number.POSITIVE_INFINITY;
 
   candidates.forEach(candidate => {
-    applyTagShift(tag, candidate);
-    const tagRect = getElementRect(tag, wrapRect);
-    const routeHits = countRouteCollisions([tagRect], routeSegments);
-    const occupiedHits = countOccupiedCollisions([tagRect], occupiedRects);
-    const outsidePenalty = getOutsidePenalty([tagRect], wrapRect);
+    applyMarkerShift(marker, candidate);
+    const markerRects = getMarkerCollisionRects(marker, wrapRect);
+    const routeHits = countRouteCollisions(markerRects, routeSegments);
+    const occupiedHits = countOccupiedCollisions(markerRects, occupiedRects);
+    const outsidePenalty = getOutsidePenalty(markerRects, wrapRect);
     const movementPenalty = Math.hypot(candidate.x, candidate.y) / 120;
     const score = routeHits * 1000 + occupiedHits * 700 + outsidePenalty * 120 + movementPenalty;
 
@@ -1581,11 +1581,10 @@ function chooseTagShift(tag, routeSegments, wrapRect, occupiedRects) {
   return bestCandidate;
 }
 
-function buildTagShiftCandidates(tag, routeSegments, wrapRect) {
-  const tagRect = getElementRect(tag, wrapRect);
-  const center = getRectCenter(tagRect);
-  const directions = buildShiftDirections(center, routeSegments);
-  const distances = [0, 34, 52, 76, 104, 136, 174];
+function buildMarkerShiftCandidates(marker, routeSegments, wrapRect) {
+  const anchor = getMarkerAnchorPoint(marker, wrapRect);
+  const directions = buildShiftDirections(anchor, routeSegments);
+  const distances = [0, 46, 68, 94, 126, 162, 204];
   const candidates = [{ x: 0, y: 0 }];
   const seen = new Set(['0:0']);
 
@@ -1610,14 +1609,14 @@ function buildTagShiftCandidates(tag, routeSegments, wrapRect) {
 function buildShiftDirections(anchor, routeSegments) {
   const nearest = getNearestRouteSegment(anchor, routeSegments);
   const fallbackDirections = [
-    { x: 1, y: 0 },
-    { x: -1, y: 0 },
-    { x: 0, y: 1 },
     { x: 0, y: -1 },
-    normalizeVector({ x: 1, y: 1 }),
-    normalizeVector({ x: -1, y: 1 }),
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+    { x: -1, y: 0 },
     normalizeVector({ x: 1, y: -1 }),
-    normalizeVector({ x: -1, y: -1 })
+    normalizeVector({ x: -1, y: -1 }),
+    normalizeVector({ x: 1, y: 1 }),
+    normalizeVector({ x: -1, y: 1 })
   ];
 
   if (!nearest) {
@@ -1670,6 +1669,13 @@ function mapPointToPixels(point, wrapRect) {
   };
 }
 
+function getMarkerAnchorPoint(marker, wrapRect) {
+  return {
+    x: (parseFloat(marker.style.left) / 100) * wrapRect.width,
+    y: (parseFloat(marker.style.top) / 100) * wrapRect.height
+  };
+}
+
 function getNearestRouteSegment(point, routeSegments) {
   return routeSegments.reduce((nearest, segment) => {
     const closestPoint = getClosestPointOnSegment(point, segment);
@@ -1709,26 +1715,37 @@ function normalizeVector(vector) {
   };
 }
 
-function applyTagShift(tag, shift) {
-  tag.style.setProperty('--tag-shift-x', `${shift.x}px`);
-  tag.style.setProperty('--tag-shift-y', `${shift.y}px`);
+function applyMarkerShift(marker, shift) {
+  marker.style.setProperty('--marker-shift-x', `${shift.x}px`);
+  marker.style.setProperty('--marker-shift-y', `${shift.y}px`);
 }
 
-function getElementRect(element, wrapRect) {
-  const rect = element.getBoundingClientRect();
-  return {
-    left: rect.left - wrapRect.left,
-    top: rect.top - wrapRect.top,
-    right: rect.right - wrapRect.left,
-    bottom: rect.bottom - wrapRect.top
-  };
+function getMarkerPriority(marker) {
+  if (marker.classList.contains('origin')) {
+    return 0;
+  }
+
+  if (marker.classList.contains('destination')) {
+    return 1;
+  }
+
+  if (marker.classList.contains('active')) {
+    return 2;
+  }
+
+  return 3;
 }
 
-function getRectCenter(rect) {
-  return {
-    x: (rect.left + rect.right) / 2,
-    y: (rect.top + rect.bottom) / 2
-  };
+function getMarkerCollisionRects(marker, wrapRect) {
+  return [marker, ...marker.querySelectorAll('.marker-tag')]
+    .map(element => element.getBoundingClientRect())
+    .filter(rect => rect.width > 0 && rect.height > 0)
+    .map(rect => ({
+      left: rect.left - wrapRect.left,
+      top: rect.top - wrapRect.top,
+      right: rect.right - wrapRect.left,
+      bottom: rect.bottom - wrapRect.top
+    }));
 }
 
 function countRouteCollisions(rects, routeSegments) {
@@ -1826,6 +1843,7 @@ function pointOnSegment(point, start, end) {
     && point.y <= Math.max(start.y, end.y) + 0.001
     && point.y >= Math.min(start.y, end.y) - 0.001;
 }
+
 function renderLocationInfo(location, routeView) {
   const t = getT();
   if (!location) {

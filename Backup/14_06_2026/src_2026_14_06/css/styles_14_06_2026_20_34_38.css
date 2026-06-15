@@ -694,27 +694,21 @@ body.high-contrast .summary-icon {
   color: #ffffff;
   background: var(--primary);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
-  z-index: 2;
   font-weight: 900;
   transform: translate(-50%, -50%);
-  transition: box-shadow 160ms ease;
 }
 
 .map-marker.origin {
-  z-index: 5;
   background: var(--success);
 }
 
 .map-marker.destination {
-  z-index: 5;
   background: var(--danger);
 }
 
 .map-marker.active {
-  z-index: 6;
   box-shadow: 0 0 0 5px var(--focus), 0 8px 24px rgba(15, 23, 42, 0.34);
 }
-
 
 .marker-tag {
   position: absolute;
@@ -730,7 +724,7 @@ body.high-contrast .summary-icon {
   background: var(--surface);
   font-size: 0.78rem;
   font-weight: 850;
-  transform: translate(calc(-50% + var(--tag-shift-x, 0px)), var(--tag-shift-y, 0px));
+  transform: translateX(-50%);
   white-space: normal;
 }
 
@@ -934,37 +928,6 @@ body.high-contrast .success-badge {
   border: 0;
 }
 
-@media (min-width: 1280px) {
-  :root {
-    --content: 1500px;
-  }
-
-  .welcome-layout {
-    grid-template-columns: minmax(0, 1.22fr) minmax(25rem, 0.82fr);
-    min-height: clamp(34rem, calc(100vh - 14.5rem), 43rem);
-  }
-
-  .hero-panel {
-    display: flex;
-  }
-
-  .hero-panel .panel-inner {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .feature-panel .panel-inner {
-    padding: clamp(1.4rem, 1.7vw, 2rem);
-  }
-
-  .feature-panel .section-title {
-    font-size: clamp(1.35rem, 1.55vw, 1.7rem);
-    line-height: 1.1;
-    white-space: nowrap;
-  }
-}
 @media (max-width: 940px) {
   .app-header,
   .welcome-layout,
