@@ -1360,7 +1360,7 @@ body.high-contrast .summary-icon {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: #dbeafe;
-  aspect-ratio: 1500 / 1443;
+  aspect-ratio: 1500 / 2121;
 }
 
 .place-picker-layer {
@@ -1486,7 +1486,7 @@ body.high-contrast .summary-icon {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: #dbeafe;
-  aspect-ratio: 1500 / 1443;
+  aspect-ratio: 1500 / 2121;
 }
 
 .map-image {
@@ -2034,7 +2034,7 @@ body.high-contrast .success-badge {
   .map-wrap {
     width: calc(100% - 1rem);
     margin: 0.5rem;
-    aspect-ratio: 1500 / 1443;
+    aspect-ratio: 1500 / 2121;
   }
 
   .map-header,
