@@ -8,7 +8,7 @@ const locations = [
     typePt: 'Unidade administrativa',
     typeEn: 'Administrative unit',
     x: 52.4,
-    y: 56.8
+    y: 46.3
   },
   {
     id: 'biblioteca',
@@ -17,7 +17,7 @@ const locations = [
     typePt: 'Biblioteca',
     typeEn: 'Library',
     x: 52.4,
-    y: 43.7
+    y: 37.4
   },
   {
     id: 'ru',
@@ -26,7 +26,7 @@ const locations = [
     typePt: 'Alimentação',
     typeEn: 'Food service',
     x: 40.4,
-    y: 70.6
+    y: 55.7
   },
   {
     id: 'hu',
@@ -35,7 +35,7 @@ const locations = [
     typePt: 'Saúde',
     typeEn: 'Health service',
     x: 63.8,
-    y: 28.5
+    y: 27
   },
   {
     id: 'ctc',
@@ -44,7 +44,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 63.5,
-    y: 62.6
+    y: 50.2
   },
   {
     id: 'cse',
@@ -53,7 +53,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 40.7,
-    y: 44.6
+    y: 38
   },
   {
     id: 'cfh',
@@ -62,7 +62,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 31.6,
-    y: 67.7
+    y: 53.7
   },
   {
     id: 'cce',
@@ -71,7 +71,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 43.2,
-    y: 57.9
+    y: 47
   },
   {
     id: 'ccb',
@@ -80,7 +80,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 29.8,
-    y: 56.7
+    y: 46.2
   },
   {
     id: 'cfm',
@@ -89,7 +89,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 34.3,
-    y: 51.7
+    y: 42.8
   },
   {
     id: 'ced',
@@ -98,7 +98,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 35.6,
-    y: 65.5
+    y: 52.2
   },
   {
     id: 'ccj',
@@ -107,7 +107,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 42.2,
-    y: 35.1
+    y: 31.5
   },
   {
     id: 'ccs',
@@ -116,7 +116,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 66.7,
-    y: 43
+    y: 36.9
   },
   {
     id: 'cds',
@@ -125,7 +125,7 @@ const locations = [
     typePt: 'Centro de ensino',
     typeEn: 'Academic center',
     x: 56.8,
-    y: 79
+    y: 61.4
   },
   {
     id: 'centro_eventos',
@@ -134,7 +134,7 @@ const locations = [
     typePt: 'Eventos',
     typeEn: 'Events',
     x: 50.5,
-    y: 64.6
+    y: 51.6
   }
 ];
 
@@ -660,10 +660,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto curto entre a Biblioteca Central e o RU, com travessia sinalizada e alternativa por trecho mais plano.',
     summaryEn: 'Short path between the Central Library and the University Restaurant, with a marked crossing and a flatter alternative segment.',
     path: [
-      { x: 52.4, y: 43.7 },
-      { x: 49, y: 53.4 },
-      { x: 45, y: 63.7 },
-      { x: 40.4, y: 70.6 }
+      { x: 52.4, y: 37.4 },
+      { x: 49, y: 44 },
+      { x: 45, y: 51 },
+      { x: 40.4, y: 55.7 }
     ],
     alerts: ['vehicleCrossing', 'partialShade', 'wheelchair', 'crowded'],
     landmarksPt: ['Entrada principal da Biblioteca Central', 'Via interna central', 'Faixa sinalizada próxima ao RU'],
@@ -689,10 +689,10 @@ const routeTemplates = {
     summaryPt: 'Rota institucional entre a Reitoria e o CTC, evitando atalhos com piso irregular quando possível.',
     summaryEn: 'Institutional route between the Rector\'s Office and the Technology Center, avoiding uneven shortcuts where possible.',
     path: [
-      { x: 52.4, y: 56.8 },
-      { x: 56, y: 59.3 },
-      { x: 60, y: 60.8 },
-      { x: 63.5, y: 62.6 }
+      { x: 52.4, y: 46.3 },
+      { x: 56, y: 48 },
+      { x: 60, y: 49 },
+      { x: 63.5, y: 50.2 }
     ],
     alerts: ['unevenFloor', 'partialShade', 'restPoint', 'rain'],
     landmarksPt: ['Praça próxima à Reitoria', 'Via interna em direção ao setor leste', 'Acesso principal ao CTC'],
@@ -718,10 +718,10 @@ const routeTemplates = {
     summaryPt: 'Trajeto direto entre CSE e Biblioteca Central, com referências simples e baixa distância estimada.',
     summaryEn: 'Direct path between the Socioeconomic Center and the Central Library, with simple references and low estimated distance.',
     path: [
-      { x: 40.7, y: 44.6 },
-      { x: 45, y: 44 },
-      { x: 49, y: 43.9 },
-      { x: 52.4, y: 43.7 }
+      { x: 40.7, y: 38 },
+      { x: 45, y: 37.6 },
+      { x: 49, y: 37.5 },
+      { x: 52.4, y: 37.4 }
     ],
     alerts: ['partialShade', 'wheelchair', 'restPoint'],
     landmarksPt: ['Saída do CSE', 'Eixo de circulação central', 'Entrada lateral da Biblioteca Central'],
@@ -747,10 +747,10 @@ const routeTemplates = {
     summaryPt: 'Rota mais longa entre o Centro de Cultura e Eventos e o HU, com alertas para chuva e circulação intensa.',
     summaryEn: 'Longer route between the Culture and Events Center and the University Hospital, with alerts for rain and heavy circulation.',
     path: [
-      { x: 50.5, y: 64.6 },
-      { x: 55, y: 52 },
-      { x: 60, y: 38.7 },
-      { x: 63.8, y: 28.5 }
+      { x: 50.5, y: 51.6 },
+      { x: 55, y: 43 },
+      { x: 60, y: 34 },
+      { x: 63.8, y: 27 }
     ],
     alerts: ['rain', 'vehicleCrossing', 'crowded', 'textReference'],
     landmarksPt: ['Centro de Cultura e Eventos', 'Via interna em direção ao norte', 'Acesso do Hospital Universitário'],
@@ -894,7 +894,7 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
   return accumulator;
 }, {});
 const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
-const mapImageSize = { width: 1500, height: 1443 };
+const mapImageSize = { width: 1500, height: 2121 };
 const metersPerMapPixel = 1.18;
 const locationCategoryOrder = ['academic', 'services', 'administration'];
 const locationShortCodes = {
