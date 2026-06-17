@@ -15,6 +15,9 @@
   --shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
   --radius: 8px;
   --content: 1180px;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-smooth: 320ms;
+  --motion-page: 520ms;
 }
 
 * {
@@ -33,6 +36,7 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.5;
+  transition: background-color var(--motion-page) var(--motion-ease), color var(--motion-smooth) var(--motion-ease);
 }
 
 body.high-contrast {
@@ -80,6 +84,44 @@ a {
 :focus-visible {
   outline: 4px solid var(--focus);
   outline-offset: 3px;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion-page);
+  animation-timing-function: var(--motion-ease);
+}
+
+::view-transition-old(root) {
+  animation-name: page-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: page-fade-in;
+}
+
+@keyframes page-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.985) translateY(-0.35rem);
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.992) translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .skip-link {
@@ -245,6 +287,13 @@ body.high-contrast .brand-name-highlight {
   border-radius: 999px;
   color: var(--text);
   background: var(--surface);
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    border-color var(--motion-smooth) var(--motion-ease),
+    color var(--motion-smooth) var(--motion-ease),
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease),
+    filter var(--motion-smooth) var(--motion-ease);
 }
 
 .select {
@@ -305,12 +354,23 @@ body.high-contrast .brand-name-highlight {
   font-weight: 650;
   text-align: left;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    border-color var(--motion-smooth) var(--motion-ease),
+    color var(--motion-smooth) var(--motion-ease),
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .custom-select__button:hover {
   border-color: var(--primary);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+
+.custom-select.is-open .custom-select__button {
+  border-color: var(--primary);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
 }
 
 .custom-select__button:focus-visible {
@@ -340,6 +400,7 @@ body.high-contrast .brand-name-highlight {
   border-radius: 999px;
   background: #ffffff;
   object-fit: cover;
+  transition: box-shadow var(--motion-smooth) var(--motion-ease), transform var(--motion-smooth) var(--motion-ease);
 }
 
 .top-actions .custom-select__flag {
@@ -362,7 +423,7 @@ body.high-contrast .brand-name-highlight {
   font-size: 0;
   line-height: 1;
   transform: translateY(-50%);
-  transition: transform 180ms ease;
+  transition: color var(--motion-smooth) var(--motion-ease), transform var(--motion-smooth) var(--motion-ease);
   pointer-events: none;
 }
 
@@ -394,6 +455,8 @@ body.high-contrast .brand-name-highlight {
   padding: 0.35rem;
   background: var(--surface);
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16);
+  animation: dropdown-enter 300ms var(--motion-ease) both;
+  transform-origin: top center;
 }
 
 .top-actions .custom-select__list {
@@ -434,6 +497,11 @@ body.high-contrast .brand-name-highlight {
   background: transparent;
   font: inherit;
   text-align: left;
+  transition:
+    background-color 260ms var(--motion-ease),
+    color 260ms var(--motion-ease),
+    transform 260ms var(--motion-ease),
+    box-shadow 260ms var(--motion-ease);
 }
 
 .top-actions .custom-select__option {
@@ -453,6 +521,7 @@ body.high-contrast .brand-name-highlight {
   outline: 0;
   color: var(--primary-strong);
   background: #e8f6ff;
+  transform: translateX(0.18rem);
 }
 
 .custom-select__option.is-selected {
@@ -482,6 +551,24 @@ body.high-contrast .brand-name-highlight {
   color: var(--primary);
   background: #dbeafe;
   font-weight: 950;
+  transition: background-color 260ms var(--motion-ease), color 260ms var(--motion-ease), transform 260ms var(--motion-ease);
+}
+
+.custom-select__option:hover .custom-select__check,
+.custom-select__option:focus-visible .custom-select__check {
+  transform: scale(1.06);
+}
+
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.45rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 body.high-contrast .custom-select__list {
@@ -547,7 +634,13 @@ textarea:focus-visible,
   font-weight: 800;
   text-decoration: none;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    border-color var(--motion-smooth) var(--motion-ease),
+    color var(--motion-smooth) var(--motion-ease),
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease),
+    filter var(--motion-smooth) var(--motion-ease);
 }
 
 .top-actions .icon-button {
@@ -557,13 +650,13 @@ textarea:focus-visible,
 
 .button:hover,
 .icon-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
 }
 
 .button:active,
 .icon-button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.985);
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
 }
 
@@ -701,13 +794,15 @@ body:has(#app .welcome-panel) .app-shell {
   font-weight: 850;
   text-align: center;
   box-shadow: none;
-  transition: color 160ms ease, transform 160ms ease;
+  transition:
+    color var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .flow-stepper__button:not(:disabled):hover {
   color: var(--primary-strong);
   background: transparent;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .flow-stepper__button:disabled {
@@ -1277,6 +1372,53 @@ body.high-contrast .summary-icon {
   border-color: var(--danger);
 }
 
+.location-assist {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  margin: 1.25rem 0;
+  border: 1px solid rgba(0, 88, 145, 0.22);
+  border-radius: var(--radius);
+  padding: 1rem;
+  background:
+    linear-gradient(135deg, rgba(237, 248, 246, 0.95), rgba(232, 246, 255, 0.78));
+}
+
+.location-assist__title {
+  margin: 0;
+  color: var(--primary-strong);
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.location-assist__text {
+  margin: 0.28rem 0 0;
+  color: var(--muted);
+}
+
+.location-assist__button {
+  white-space: nowrap;
+}
+
+.location-assist__status {
+  grid-column: 1 / -1;
+  min-height: 1.4rem;
+  margin: 0;
+  color: var(--primary-strong);
+  font-weight: 800;
+}
+
+body.high-contrast .location-assist {
+  border-color: #7dd3fc;
+  background: rgba(15, 23, 42, 0.94);
+}
+
+body.high-contrast .location-assist__title,
+body.high-contrast .location-assist__status {
+  color: var(--primary-strong);
+}
+
 
 .place-map-disclosure {
   margin-top: 1rem;
@@ -1298,7 +1440,10 @@ body.high-contrast .summary-icon {
   list-style: none;
   cursor: pointer;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-  transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .place-map-disclosure > summary::-webkit-details-marker {
@@ -1307,7 +1452,7 @@ body.high-contrast .summary-icon {
 
 .place-map-disclosure > summary:hover {
   background: var(--surface-soft);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
 }
 
@@ -1341,7 +1486,10 @@ body.high-contrast .summary-icon {
   color: var(--muted);
   background: var(--surface);
   font-weight: 850;
-  transition: background-color 180ms ease, color 180ms ease;
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    color var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .place-target-button:last-child {
@@ -1571,7 +1719,9 @@ body.high-contrast .summary-icon {
   font-weight: 900;
   line-height: 1;
   transform: translate(-50%, -50%);
-  transition: box-shadow 160ms ease;
+  transition:
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .map-marker.origin {
@@ -1738,13 +1888,16 @@ body.high-contrast .instruction-number {
   background: var(--surface);
   font-weight: 850;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
-  transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    background-color var(--motion-smooth) var(--motion-ease),
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .route-reader__button:hover {
   background: var(--surface);
   box-shadow: inset 0 0 0 2px var(--primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .route-reader__button--icon {
@@ -1963,6 +2116,15 @@ body.high-contrast .success-badge {
   .profile-grid,
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .location-assist {
+    grid-template-columns: 1fr;
+  }
+
+  .location-assist__button {
+    width: 100%;
+    white-space: normal;
   }
 
   .welcome-flow {

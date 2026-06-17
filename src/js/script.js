@@ -225,6 +225,15 @@ const translations = {
     destinationLabel: 'Destino',
     originHelp: 'Escolha de onde você vai sair.',
     destinationHelp: 'Escolha para onde você quer ir.',
+    locationAssistTitle: 'Não sei onde estou',
+    locationAssistText: 'Ative sua localização para o site sugerir a origem mais próxima no campus. Depois escolha apenas o destino.',
+    locationAssistButton: 'Usar minha localização como origem',
+    locationDetecting: 'Solicitando sua localização...',
+    locationDetected: 'Origem preenchida pela localização: {location}.',
+    locationDetectedApprox: 'Você parece estar fora da área central do campus. Usamos o ponto mais próximo como origem: {location}.',
+    locationUnsupported: 'Seu navegador não permite identificar a localização automaticamente.',
+    locationPermissionDenied: 'Permissão de localização negada. Ative a localização do navegador ou escolha a origem manualmente.',
+    locationUnavailable: 'Não foi possível identificar sua localização agora. Escolha a origem manualmente.',
     selectPlaceholder: 'Selecione um local',
     locationCategories: {
       academic: 'Centros de ensino',
@@ -370,6 +379,15 @@ const translations = {
     destinationLabel: 'Destination',
     originHelp: 'Choose where you will start.',
     destinationHelp: 'Choose where you want to go.',
+    locationAssistTitle: 'I do not know where I am',
+    locationAssistText: 'Turn on location so the site can suggest the nearest campus origin. Then choose only the destination.',
+    locationAssistButton: 'Use my location as origin',
+    locationDetecting: 'Requesting your location...',
+    locationDetected: 'Origin filled from location: {location}.',
+    locationDetectedApprox: 'You appear to be outside the central campus area. We used the nearest point as origin: {location}.',
+    locationUnsupported: 'Your browser does not allow automatic location detection.',
+    locationPermissionDenied: 'Location permission denied. Enable browser location or choose the origin manually.',
+    locationUnavailable: 'Could not identify your location right now. Choose the origin manually.',
     selectPlaceholder: 'Select a location',
     locationCategories: {
       academic: 'Academic centers',
@@ -525,6 +543,15 @@ translations.es = {
   destinationLabel: 'Destino',
   originHelp: 'Elige desde dónde vas a salir.',
   destinationHelp: 'Elige hacia dónde quieres ir.',
+  locationAssistTitle: 'No sé dónde estoy',
+  locationAssistText: 'Activa tu ubicación para que el sitio sugiera el origen más cercano en el campus. Después elige solo el destino.',
+  locationAssistButton: 'Usar mi ubicación como origen',
+  locationDetecting: 'Solicitando tu ubicación...',
+  locationDetected: 'Origen completado por ubicación: {location}.',
+  locationDetectedApprox: 'Parece que estás fuera del área central del campus. Usamos el punto más cercano como origen: {location}.',
+  locationUnsupported: 'Tu navegador no permite identificar la ubicación automáticamente.',
+  locationPermissionDenied: 'Permiso de ubicación denegado. Activa la ubicación del navegador o elige el origen manualmente.',
+  locationUnavailable: 'No fue posible identificar tu ubicación ahora. Elige el origen manualmente.',
   selectPlaceholder: 'Selecciona un lugar',
   locationCategories: {
     academic: 'Centros de enseñanza',
@@ -896,7 +923,13 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
 const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 const mapImageSize = { width: 1500, height: 1443 };
 const metersPerMapPixel = 1.18;
-const locationCategoryOrder = ['academic', 'services', 'administration'];
+const campusGeoBounds = {
+  north: -27.5928,
+  south: -27.6088,
+  west: -48.5325,
+  east: -48.5125
+};
+const locationCategoryOrder = ['services', 'administration', 'academic'];
 const locationShortCodes = {
   reitoria: 'R',
   biblioteca: 'BU',
@@ -1014,6 +1047,12 @@ function renderIcon(name) {
         <path d="M8 11h7"></path>
         <path d="M8 15h5"></path>
       </svg>
+    `,
+    location: `
+      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"></path>
+        <circle cx="12" cy="10" r="2.4"></circle>
+      </svg>
     `
   };
 
@@ -1021,6 +1060,22 @@ function renderIcon(name) {
 }
 function getLocation(id) {
   return locations.find(location => location.id === id);
+}
+
+function getMapPointFromGeolocation(latitude, longitude) {
+  const x = ((longitude - campusGeoBounds.west) / (campusGeoBounds.east - campusGeoBounds.west)) * 100;
+  const y = ((campusGeoBounds.north - latitude) / (campusGeoBounds.north - campusGeoBounds.south)) * 100;
+  return { x, y };
+}
+
+function getNearestCampusLocationFromGeolocation(latitude, longitude) {
+  const point = getMapPointFromGeolocation(latitude, longitude);
+  return locations
+    .map(location => ({
+      location,
+      distance: Math.hypot(location.x - point.x, location.y - point.y)
+    }))
+    .sort((first, second) => first.distance - second.distance)[0];
 }
 
 function getLocationName(location) {
@@ -1228,9 +1283,11 @@ function handleHistoryNavigation(event) {
     stopSpeech();
   }
 
-  state.currentView = allowedView;
-  state.errors = {};
-  render(true);
+  runPageTransition(() => {
+    state.currentView = allowedView;
+    state.errors = {};
+    render(true);
+  });
   announceViewChange(allowedView, blocked);
 
   if (blocked) {
@@ -1256,6 +1313,19 @@ function setRouteReaderStatus(message) {
   document.querySelectorAll('[data-route-reader-status]').forEach(status => {
     status.textContent = message;
   });
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function runPageTransition(update) {
+  if (typeof document.startViewTransition !== 'function' || prefersReducedMotion()) {
+    update();
+    return;
+  }
+
+  document.startViewTransition(update);
 }
 
 function getCurrentLanguage() {
@@ -1502,9 +1572,11 @@ function setView(view, options = {}) {
     stopSpeech();
   }
 
-  state.currentView = allowedView;
-  state.errors = {};
-  render(Boolean(options.focus));
+  runPageTransition(() => {
+    state.currentView = allowedView;
+    state.errors = {};
+    render(Boolean(options.focus));
+  });
 
   if (options.history !== false) {
     syncHistoryView(allowedView, options.historyMode || 'push');
@@ -1690,6 +1762,81 @@ function renderWelcome() {
   });
 }
 
+function setLocationAssistStatus(message) {
+  const status = document.querySelector('#location-assist-status');
+  if (status) {
+    status.textContent = message;
+  }
+
+  setStatus(message);
+}
+
+function getLocationErrorMessage(error) {
+  const t = getT();
+
+  if (error && error.code === error.PERMISSION_DENIED) {
+    return t.locationPermissionDenied;
+  }
+
+  return t.locationUnavailable;
+}
+
+function useCurrentLocationAsOrigin() {
+  const t = getT();
+  const button = document.querySelector('#use-current-location');
+
+  if (!('geolocation' in navigator)) {
+    setLocationAssistStatus(t.locationUnsupported);
+    return;
+  }
+
+  if (button) {
+    button.disabled = true;
+  }
+
+  setLocationAssistStatus(t.locationDetecting);
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const nearest = getNearestCampusLocationFromGeolocation(position.coords.latitude, position.coords.longitude);
+
+      if (!nearest || !nearest.location) {
+        setLocationAssistStatus(t.locationUnavailable);
+        if (button) button.disabled = false;
+        return;
+      }
+
+      state.origin = nearest.location.id;
+      state.placePickerTarget = 'origin';
+      delete state.errors.origin;
+
+      if (!routeMatchesSelection()) {
+        invalidateRoute();
+      }
+
+      const locationName = getLocationName(nearest.location);
+      const messageKey = nearest.distance > 18 ? 'locationDetectedApprox' : 'locationDetected';
+      syncPlacePickerSelection();
+      renderStepNav();
+      setLocationAssistStatus(formatTemplate(t[messageKey], { location: locationName }));
+
+      if (button) {
+        button.disabled = false;
+      }
+    },
+    error => {
+      setLocationAssistStatus(getLocationErrorMessage(error));
+      if (button) {
+        button.disabled = false;
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000
+    }
+  );
+}
+
 function renderPlaces() {
   const t = getT();
   const originError = state.errors.origin ? `${t.errorPrefix} ${state.errors.origin}` : '';
@@ -1701,6 +1848,18 @@ function renderPlaces() {
         <h2 class="section-title" id="places-title" tabindex="-1" data-focus-target>${escapeHtml(t.placesTitle)}</h2>
         <p class="section-lead">${escapeHtml(t.placesLead)}</p>
         <form id="places-form" novalidate>
+          <section class="location-assist" aria-labelledby="location-assist-title">
+            <div>
+              <h3 class="location-assist__title" id="location-assist-title">${escapeHtml(t.locationAssistTitle)}</h3>
+              <p class="location-assist__text">${escapeHtml(t.locationAssistText)}</p>
+            </div>
+            <button class="button button-secondary location-assist__button" type="button" id="use-current-location">
+              ${renderIcon('location')}
+              <span>${escapeHtml(t.locationAssistButton)}</span>
+            </button>
+            <p class="location-assist__status" id="location-assist-status" aria-live="polite" aria-atomic="true"></p>
+          </section>
+
           <div class="form-grid">
             <div class="field">
               <label for="origin-select">${escapeHtml(t.originLabel)}</label>
@@ -1753,6 +1912,8 @@ function renderPlaces() {
   setupCustomSelect(document.querySelector('#destination-select'));
 
   bindPlaceMapPicker();
+
+  document.querySelector('#use-current-location').addEventListener('click', useCurrentLocationAsOrigin);
 
   document.querySelector('#places-back').addEventListener('click', () => {
     setView('welcome', { focus: true });
