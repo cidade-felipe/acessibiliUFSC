@@ -1018,11 +1018,25 @@ function getLanguageFlag(value) {
 }
 
 function getLanguageDisplayName(value) {
-  return {
-    pt: 'Português (Brasil)',
-    en: 'English (USA)',
-    es: 'Español (España)'
-  }[value] || value;
+  const namesByLanguage = {
+    pt: {
+      pt: 'Português (Brasil)',
+      en: 'Inglês (EUA)',
+      es: 'Espanhol'
+    },
+    en: {
+      pt: 'Portuguese (Brazil)',
+      en: 'English (USA)',
+      es: 'Spanish'
+    },
+    es: {
+      pt: 'Portugués (Brasil)',
+      en: 'Inglés (EE. UU.)',
+      es: 'Español'
+    }
+  };
+
+  return (namesByLanguage[state.lang] || namesByLanguage.pt)[value] || value;
 }
 
 function renderBrandName() {

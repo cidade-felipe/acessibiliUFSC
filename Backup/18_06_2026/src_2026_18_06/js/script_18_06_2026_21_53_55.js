@@ -1019,9 +1019,9 @@ function getLanguageFlag(value) {
 
 function getLanguageDisplayName(value) {
   return {
-    pt: 'Português (Brasil)',
+    pt: 'Português (Portuguese)',
     en: 'English (USA)',
-    es: 'Español (España)'
+    es: 'Español (Spanish)'
   }[value] || value;
 }
 
