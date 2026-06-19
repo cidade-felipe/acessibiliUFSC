@@ -1508,10 +1508,6 @@ body.high-contrast .location-assist__status {
   background: var(--primary);
 }
 
-.place-map-scroll {
-  width: 100%;
-}
-
 .place-map-wrap {
   position: relative;
   width: min(100%, 44rem);
@@ -1635,18 +1631,6 @@ body.high-contrast .location-assist__status {
   margin: 0;
   font-size: 1.2rem;
   line-height: 1.2;
-}
-
-.map-scroll {
-  width: 100%;
-}
-
-.map-scroll-hint {
-  display: none;
-  margin: 0.55rem 1rem 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 750;
 }
 
 .map-wrap {
@@ -2237,38 +2221,10 @@ body.high-contrast .success-badge {
     border: 0;
   }
 
-  .map-scroll,
-  .place-map-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-color: var(--primary) #e2e8f0;
-  }
-
-  .map-scroll:focus-visible,
-  .place-map-scroll:focus-visible {
-    outline: 4px solid var(--focus);
-    outline-offset: -4px;
-  }
-
-  .map-scroll-hint {
-    display: block;
-  }
-
-  .map-wrap,
-  .place-map-wrap {
-    width: clamp(38rem, 170vw, 44rem);
-    max-width: none;
-    aspect-ratio: 1500 / 1443;
-  }
-
   .map-wrap {
-    margin: 0.5rem 0.75rem 0.35rem;
-  }
-
-  .place-map-wrap {
-    margin: 0.25rem 0 0.35rem;
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+    aspect-ratio: 1500 / 1443;
   }
 
   .map-header,
@@ -2288,8 +2244,8 @@ body.high-contrast .success-badge {
   }
 
   .marker-tag {
-    max-width: 7.5rem;
-    font-size: 0.78rem;
+    max-width: 6.8rem;
+    font-size: 0.72rem;
   }
 }
 

@@ -268,8 +268,6 @@ const translations = {
     mapSourceLabel: 'Fonte do mapa',
     mapSourceText: 'Imagem baseada no Mapa e Endereços da UFSC.',
     mapSourceAction: 'Acessar fonte oficial',
-    mapScrollHint: 'No celular, deslize o mapa para ver os detalhes.',
-    mapScrollLabel: 'Mapa ampliado do campus. Deslize horizontalmente para ver todas as áreas.',
     mapInfoInitial: 'Foque ou selecione um marcador para ver detalhes do local.',
     routeSummaryTitle: 'Resumo da rota',
     estimatedTime: 'Tempo estimado',
@@ -424,8 +422,6 @@ const translations = {
     mapSourceLabel: 'Map source',
     mapSourceText: 'Image based on UFSC Maps and Addresses.',
     mapSourceAction: 'Open official source',
-    mapScrollHint: 'On mobile, swipe the map to see details.',
-    mapScrollLabel: 'Enlarged campus map. Swipe horizontally to see all areas.',
     mapInfoInitial: 'Focus or select a marker to see location details.',
     routeSummaryTitle: 'Route summary',
     estimatedTime: 'Estimated time',
@@ -590,8 +586,6 @@ translations.es = {
   mapSourceLabel: 'Fuente del mapa',
   mapSourceText: 'Imagen basada en el Mapa y Direcciones de UFSC.',
   mapSourceAction: 'Acceder a la fuente oficial',
-  mapScrollHint: 'En celular, desliza el mapa para ver los detalles.',
-  mapScrollLabel: 'Mapa ampliado del campus. Desliza horizontalmente para ver todas las áreas.',
   mapInfoInitial: 'Enfoca o selecciona un marcador para ver detalles del lugar.',
   routeSummaryTitle: 'Resumen de la ruta',
   estimatedTime: 'Tiempo estimado',
@@ -2189,13 +2183,10 @@ function renderPlaceMapPicker() {
             <button class="place-target-button${state.placePickerTarget === 'destination' ? ' active' : ''}" type="button" data-place-target="destination" aria-pressed="${state.placePickerTarget === 'destination'}">${escapeHtml(t.mapPickerDestinationTarget)}</button>
           </div>
         </div>
-        <p class="map-scroll-hint">${escapeHtml(t.mapScrollHint)}</p>
-        <div class="place-map-scroll" tabindex="0" aria-label="${escapeHtml(t.mapScrollLabel)}">
-          <div class="place-map-wrap">
-            <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
-            <div class="place-picker-layer" aria-label="${escapeHtml(t.placesAria)}">
-              ${locations.map(location => renderPlacePickerMarker(location)).join('')}
-            </div>
+        <div class="place-map-wrap">
+          <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
+          <div class="place-picker-layer" aria-label="${escapeHtml(t.placesAria)}">
+            ${locations.map(location => renderPlacePickerMarker(location)).join('')}
           </div>
         </div>
         <p class="place-map-status" id="place-map-status">${escapeHtml(formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName }))}</p>
@@ -2222,7 +2213,6 @@ function bindPlaceMapPicker() {
     button.addEventListener('click', () => {
       state.placePickerTarget = button.dataset.placeTarget;
       updatePlacePickerTargetButtons();
-      window.requestAnimationFrame(centerPlaceMapScroll);
     });
   });
 
@@ -2240,12 +2230,9 @@ function bindPlaceMapPicker() {
       state[target] = selectedId;
       syncPlacePickerSelection();
       renderStepNav();
-      window.requestAnimationFrame(centerPlaceMapScroll);
       setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(getLocation(selectedId))}.`);
     });
   });
-
-  window.requestAnimationFrame(centerPlaceMapScroll);
 }
 
 function updatePlacePickerTargetButtons() {
@@ -2716,14 +2703,11 @@ function renderMap(routeView) {
           <p class="item-text">${escapeHtml(routeView.name)}</p>
         </div>
       </div>
-      <p class="map-scroll-hint">${escapeHtml(t.mapScrollHint)}</p>
-      <div class="map-scroll" tabindex="0" aria-label="${escapeHtml(t.mapScrollLabel)}">
-        <div class="map-wrap">
-          <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
-          ${renderRouteSvg(routeView.path)}
-          <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
-            ${locations.map(location => renderMarker(location, routeView)).join('')}
-          </div>
+      <div class="map-wrap">
+        <img class="map-image" src="assets/mapa_ufsc.jpg" alt="${escapeHtml(t.mapAlt)}">
+        ${renderRouteSvg(routeView.path)}
+        <div class="marker-layer" aria-label="${escapeHtml(t.placesAria)}">
+          ${locations.map(location => renderMarker(location, routeView)).join('')}
         </div>
       </div>
       <div class="map-source">
@@ -2787,10 +2771,7 @@ function bindMapMarkers(routeView) {
 }
 
 function scheduleMapMarkerCollisionResolution(routeView) {
-  window.requestAnimationFrame(() => {
-    centerScrollableMapOnPoints('.map-scroll', '.map-wrap', routeView.path);
-    resolveMapTagCollisions(routeView);
-  });
+  window.requestAnimationFrame(() => resolveMapTagCollisions(routeView));
 
   if (mapCollisionResizeHandler) {
     window.removeEventListener('resize', mapCollisionResizeHandler);
@@ -2803,40 +2784,12 @@ function scheduleMapMarkerCollisionResolution(routeView) {
 
     mapCollisionResizeFrame = window.requestAnimationFrame(() => {
       if (state.currentView === 'route' && state.route) {
-        const updatedRouteView = getRouteView();
-        centerScrollableMapOnPoints('.map-scroll', '.map-wrap', updatedRouteView.path);
-        resolveMapTagCollisions(updatedRouteView);
+        resolveMapTagCollisions(getRouteView());
       }
     });
   };
 
   window.addEventListener('resize', mapCollisionResizeHandler);
-}
-
-function centerPlaceMapScroll() {
-  const preferredLocationId = state[state.placePickerTarget] || state.origin || state.destination;
-  const preferredLocation = preferredLocationId ? getLocation(preferredLocationId) : null;
-  const points = preferredLocation ? [{ x: preferredLocation.x, y: preferredLocation.y }] : [];
-
-  centerScrollableMapOnPoints('.place-map-scroll', '.place-map-wrap', points);
-}
-
-function centerScrollableMapOnPoints(scrollSelector, mapSelector, points = []) {
-  const scrollContainer = document.querySelector(scrollSelector);
-  const mapElement = document.querySelector(mapSelector);
-
-  if (!scrollContainer || !mapElement || scrollContainer.scrollWidth <= scrollContainer.clientWidth) {
-    return;
-  }
-
-  const validPoints = points.filter(point => Number.isFinite(point.x));
-  const centerX = validPoints.length
-    ? validPoints.reduce((total, point) => total + point.x, 0) / validPoints.length
-    : 50;
-  const targetLeft = (centerX / 100) * mapElement.offsetWidth - scrollContainer.clientWidth / 2;
-  const maxLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-
-  scrollContainer.scrollLeft = Math.max(0, Math.min(maxLeft, targetLeft));
 }
 
 function resolveMapTagCollisions(routeView) {
