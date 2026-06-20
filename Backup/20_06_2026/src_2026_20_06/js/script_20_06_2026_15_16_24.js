@@ -241,7 +241,6 @@ const translations = {
       administration: 'Administração e eventos'
     },
     mapPickerSummary: 'Escolher no mapa',
-    mapPickerCollapse: 'Recolher mapa',
     mapPickerTitle: 'Mapa de seleção',
     mapPickerTargetLabel: 'Preencher campo',
     mapPickerOriginTarget: 'Origem',
@@ -398,7 +397,6 @@ const translations = {
       administration: 'Administration and events'
     },
     mapPickerSummary: 'Choose on map',
-    mapPickerCollapse: 'Collapse map',
     mapPickerTitle: 'Selection map',
     mapPickerTargetLabel: 'Field to fill',
     mapPickerOriginTarget: 'Origin',
@@ -565,7 +563,6 @@ translations.es = {
     administration: 'Administración y eventos'
   },
   mapPickerSummary: 'Elegir en el mapa',
-  mapPickerCollapse: 'Replegar mapa',
   mapPickerTitle: 'Mapa de selección',
   mapPickerTargetLabel: 'Campo a completar',
   mapPickerOriginTarget: 'Origen',
@@ -2259,13 +2256,15 @@ function renderPlaceMapPicker() {
 
   return `
     <details class="place-map-disclosure">
-      <summary>
-        <span class="place-map-summary-icon" aria-hidden="true"></span>
-        <span class="place-map-summary-label place-map-summary-label--closed">${escapeHtml(t.mapPickerSummary)}</span>
-        <span class="place-map-summary-label place-map-summary-label--open">${escapeHtml(t.mapPickerCollapse)}</span>
-      </summary>
+      <summary><span class="place-map-summary-icon" aria-hidden="true"></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
-        <h3 class="item-title place-map-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
+        <div class="place-map-header">
+          <h3 class="item-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
+          <div class="place-target-toggle" role="group" aria-label="${escapeHtml(t.mapPickerTargetLabel)}">
+            <button class="place-target-button${state.placePickerTarget === 'origin' ? ' active' : ''}" type="button" data-place-target="origin" aria-pressed="${state.placePickerTarget === 'origin'}">${escapeHtml(t.mapPickerOriginTarget)}</button>
+            <button class="place-target-button${state.placePickerTarget === 'destination' ? ' active' : ''}" type="button" data-place-target="destination" aria-pressed="${state.placePickerTarget === 'destination'}">${escapeHtml(t.mapPickerDestinationTarget)}</button>
+          </div>
+        </div>
         <p class="map-scroll-hint">${escapeHtml(t.mapScrollHint)}</p>
         <div class="place-map-scroll" tabindex="0" aria-label="${escapeHtml(t.mapScrollLabel)}">
           <div class="place-map-wrap">
@@ -2275,17 +2274,10 @@ function renderPlaceMapPicker() {
             </div>
           </div>
         </div>
-        <div class="place-map-actions">
-          <a class="button button-secondary place-map-source-link" href="${escapeHtml(mapSourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.mapSourceAction)}</a>
-        </div>
         <p class="place-map-status" id="place-map-status">${escapeHtml(formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName }))}</p>
       </section>
     </details>
   `;
-}
-
-function getAutomaticPlacePickerTarget() {
-  return state.origin ? 'destination' : 'origin';
 }
 
 function renderPlacePickerMarker(location) {
@@ -2302,18 +2294,24 @@ function renderPlacePickerMarker(location) {
 }
 
 function bindPlaceMapPicker() {
+  document.querySelectorAll('[data-place-target]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.placePickerTarget = button.dataset.placeTarget;
+      updatePlacePickerTargetButtons();
+      window.requestAnimationFrame(centerPlaceMapScroll);
+    });
+  });
+
   document.querySelectorAll('[data-place-id]').forEach(button => {
     button.addEventListener('click', () => {
       const selectedId = button.dataset.placeId;
-      const target = getAutomaticPlacePickerTarget();
-      state.placePickerTarget = target;
+      const target = state.placePickerTarget;
       state[target] = selectedId;
 
       if (!routeMatchesSelection()) {
         invalidateRoute();
       }
 
-      state.placePickerTarget = getAutomaticPlacePickerTarget();
       syncPlacePickerSelection();
       const errors = validatePlaceSelection({ announce: false });
       renderStepNav();
@@ -2332,6 +2330,13 @@ function bindPlaceMapPicker() {
   window.requestAnimationFrame(centerPlaceMapScroll);
 }
 
+function updatePlacePickerTargetButtons() {
+  document.querySelectorAll('[data-place-target]').forEach(button => {
+    const isActive = button.dataset.placeTarget === state.placePickerTarget;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+}
 
 function syncPlacePickerSelection() {
   const t = getT();
