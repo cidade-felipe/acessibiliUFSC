@@ -903,7 +903,6 @@ const state = {
   profile: '',
   route: null,
   errors: {},
-  placesValidationSubmitted: false,
   currentRouteStep: 0,
   textMode: false,
   activeMarkerId: '',
@@ -1163,73 +1162,6 @@ function invalidateRoute() {
 
 function hasValidPlaceSelection() {
   return Boolean(getLocation(state.origin) && getLocation(state.destination) && state.origin !== state.destination);
-}
-
-function getPlaceSelectionErrors({ showRequired = false } = {}) {
-  const t = getT();
-  const errors = {};
-
-  if (showRequired && !state.origin) {
-    errors.origin = t.originRequired;
-  }
-
-  if (showRequired && !state.destination) {
-    errors.destination = t.destinationRequired;
-  }
-
-  if (state.origin && state.destination && state.origin === state.destination) {
-    errors.destination = t.samePlaceError;
-  }
-
-  return errors;
-}
-
-function applyPlaceSelectionErrors(options = {}) {
-  const errors = getPlaceSelectionErrors(options);
-  const nextErrors = { ...state.errors };
-  delete nextErrors.origin;
-  delete nextErrors.destination;
-  state.errors = { ...nextErrors, ...errors };
-  return errors;
-}
-
-function updatePlaceErrorDisplay() {
-  const t = getT();
-  const fields = [
-    { key: 'origin', selectId: 'origin-select', errorId: 'origin-error' },
-    { key: 'destination', selectId: 'destination-select', errorId: 'destination-error' }
-  ];
-
-  fields.forEach(({ key, selectId, errorId }) => {
-    const message = state.errors[key] ? `${t.errorPrefix} ${state.errors[key]}` : '';
-    const error = document.querySelector(`#${errorId}`);
-    const select = document.querySelector(`#${selectId}`);
-    const customButton = document.querySelector(`[data-select-id="${selectId}"] .custom-select__button`);
-
-    if (error) {
-      error.textContent = message;
-    }
-
-    if (select) {
-      select.setAttribute('aria-invalid', String(Boolean(message)));
-    }
-
-    if (customButton) {
-      customButton.setAttribute('aria-invalid', String(Boolean(message)));
-    }
-  });
-}
-
-function validatePlaceSelection({ showRequired = state.placesValidationSubmitted, announce = false } = {}) {
-  const errors = applyPlaceSelectionErrors({ showRequired });
-  updatePlaceErrorDisplay();
-
-  if (announce && Object.keys(errors).length > 0) {
-    const t = getT();
-    setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
-  }
-
-  return errors;
 }
 
 function hasProfileSelection() {
@@ -1775,9 +1707,6 @@ function renderStepNav() {
         if (isCurrent) {
           itemClasses.push('is-current');
         }
-        if (!isUnlocked) {
-          itemClasses.push('is-locked');
-        }
         const buttonAttributes = isUnlocked
           ? `data-step-view="${escapeHtml(view)}"`
           : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
@@ -1884,6 +1813,7 @@ function useCurrentLocationAsOrigin() {
 
       state.origin = nearest.location.id;
       state.placePickerTarget = 'origin';
+      delete state.errors.origin;
 
       if (!routeMatchesSelection()) {
         invalidateRoute();
@@ -1894,7 +1824,6 @@ function useCurrentLocationAsOrigin() {
       syncPlacePickerSelection();
       renderStepNav();
       setLocationAssistStatus(formatTemplate(t[messageKey], { location: locationName }));
-      validatePlaceSelection({ announce: true });
 
       if (button) {
         button.disabled = false;
@@ -1916,7 +1845,6 @@ function useCurrentLocationAsOrigin() {
 
 function renderPlaces() {
   const t = getT();
-  applyPlaceSelectionErrors({ showRequired: state.placesValidationSubmitted });
   const originError = state.errors.origin ? `${t.errorPrefix} ${state.errors.origin}` : '';
   const destinationError = state.errors.destination ? `${t.errorPrefix} ${state.errors.destination}` : '';
 
@@ -1975,7 +1903,6 @@ function renderPlaces() {
       invalidateRoute();
     }
     syncPlacePickerSelection();
-    validatePlaceSelection({ announce: true });
     renderStepNav();
   });
 
@@ -1985,12 +1912,10 @@ function renderPlaces() {
       invalidateRoute();
     }
     syncPlacePickerSelection();
-    validatePlaceSelection({ announce: true });
     renderStepNav();
   });
   setupCustomSelect(document.querySelector('#origin-select'));
   setupCustomSelect(document.querySelector('#destination-select'));
-  updatePlaceErrorDisplay();
 
   bindPlaceMapPicker();
 
@@ -2005,8 +1930,20 @@ function renderPlaces() {
     state.origin = document.querySelector('#origin-select').value;
     state.destination = document.querySelector('#destination-select').value;
 
-    state.placesValidationSubmitted = true;
-    const errors = validatePlaceSelection({ showRequired: true });
+    const errors = {};
+    if (!state.origin) {
+      errors.origin = t.originRequired;
+    }
+
+    if (!state.destination) {
+      errors.destination = t.destinationRequired;
+    }
+
+    if (state.origin && state.destination && state.origin === state.destination) {
+      errors.destination = t.samePlaceError;
+    }
+
+    state.errors = errors;
 
     if (Object.keys(errors).length > 0) {
       render(true);
@@ -2026,7 +1963,7 @@ function renderPlaces() {
 function renderLocationOptions(selectedValue) {
   const t = getT();
   return `
-    <option value="" disabled hidden${selectedValue ? "" : " selected"}>${escapeHtml(t.selectPlaceholder)}</option>
+    <option value="">${escapeHtml(t.selectPlaceholder)}</option>
     ${getLocationGroups().map(group => `
       <optgroup label="${escapeHtml(group.label)}">
         ${group.locations.map(location => `
@@ -2057,10 +1994,6 @@ function setupCustomSelect(select) {
   button.id = `${select.id}-custom-button`;
   button.setAttribute('aria-haspopup', 'listbox');
   button.setAttribute('aria-expanded', 'false');
-  button.setAttribute('aria-invalid', select.getAttribute('aria-invalid') || 'false');
-  if (select.getAttribute('aria-describedby')) {
-    button.setAttribute('aria-describedby', select.getAttribute('aria-describedby'));
-  }
 
   const value = document.createElement('span');
   value.className = 'custom-select__value';
@@ -2112,9 +2045,10 @@ function setupCustomSelect(select) {
       flag.setAttribute('aria-hidden', 'true');
       value.append(flag);
     }
-    value.classList.toggle('is-placeholder', Boolean(selectedOption && selectedOption.value === ''));
     const valueText = document.createElement('span');
-    valueText.textContent = selectedOption ? selectedOption.textContent.trim() : '';
+    valueText.textContent = selectedOption
+      ? (select.id === 'language-select' ? selectedOption.textContent.trim() : selectedOption.textContent.trim())
+      : '';
     value.append(valueText);
     list.innerHTML = '';
 
@@ -2126,19 +2060,13 @@ function setupCustomSelect(select) {
         list.append(group);
 
         [...child.children].forEach(option => {
-          const item = renderCustomSelectOption(select, option, close);
-          if (item) {
-            list.append(item);
-          }
+          list.append(renderCustomSelectOption(select, option, close));
         });
         return;
       }
 
       if (child.tagName === 'OPTION') {
-        const item = renderCustomSelectOption(select, child, close);
-        if (item) {
-          list.append(item);
-        }
+        list.append(renderCustomSelectOption(select, child, close));
       }
     });
   };
@@ -2176,10 +2104,6 @@ function setupCustomSelect(select) {
 }
 
 function renderCustomSelectOption(select, option, close) {
-  if (option.disabled || option.hidden) {
-    return null;
-  }
-
   const item = document.createElement('button');
   item.className = 'custom-select__option';
   item.type = 'button';
@@ -2256,7 +2180,7 @@ function renderPlaceMapPicker() {
 
   return `
     <details class="place-map-disclosure">
-      <summary><span class="place-map-summary-icon" aria-hidden="true"></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
+      <summary>${escapeHtml(t.mapPickerSummary)}</summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
         <div class="place-map-header">
           <h3 class="item-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
@@ -2307,22 +2231,16 @@ function bindPlaceMapPicker() {
       const selectedId = button.dataset.placeId;
       const target = state.placePickerTarget;
       state[target] = selectedId;
+      delete state.errors[target];
 
       if (!routeMatchesSelection()) {
         invalidateRoute();
       }
 
+      state[target] = selectedId;
       syncPlacePickerSelection();
-      const errors = validatePlaceSelection({ announce: false });
       renderStepNav();
       window.requestAnimationFrame(centerPlaceMapScroll);
-
-      if (Object.keys(errors).length > 0) {
-        const t = getT();
-        setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
-        return;
-      }
-
       setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(getLocation(selectedId))}.`);
     });
   });

@@ -400,11 +400,6 @@ body.high-contrast .brand-name-highlight {
   white-space: nowrap;
 }
 
-.custom-select__value.is-placeholder {
-  color: var(--muted);
-  font-weight: 650;
-}
-
 .custom-select__flag {
   flex: 0 0 auto;
   width: 1.35rem;
@@ -824,25 +819,6 @@ body:has(#app .welcome-panel) .app-shell {
   cursor: not-allowed;
 }
 
-.flow-stepper__item.is-locked .flow-stepper__button {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #d6e0ea;
-  color: #64748b;
-  background: #eef4f8;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__label {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked::before,
-.flow-stepper__item.is-locked::after {
-  background: #dbe5ee;
-}
-
 .flow-stepper__number {
   display: inline-flex;
   flex: 0 0 auto;
@@ -968,22 +944,6 @@ body.high-contrast .flow-stepper__item.is-current .flow-stepper__number {
 body.high-contrast .flow-stepper__item.is-current .flow-stepper__label {
   color: #020617;
   background: var(--primary);
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__button,
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__label {
-  color: #94a3b8;
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #475569;
-  color: #cbd5e1;
-  background: #1e293b;
-}
-
-body.high-contrast .flow-stepper__item.is-locked::before,
-body.high-contrast .flow-stepper__item.is-locked::after {
-  background: #334155;
 }
 .stage {
   min-height: 0;
@@ -1420,10 +1380,8 @@ body.high-contrast .summary-icon {
   min-height: 1.5rem;
 }
 
-.select[aria-invalid="true"],
-.custom-select__button[aria-invalid="true"] {
+.select[aria-invalid="true"] {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12), 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .location-assist {
@@ -1484,7 +1442,6 @@ body.high-contrast .location-assist__status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
   min-height: 2.75rem;
   border: 2px solid var(--primary);
   border-radius: 999px;
@@ -1501,16 +1458,6 @@ body.high-contrast .location-assist__status {
     transform var(--motion-smooth) var(--motion-ease);
 }
 
-
-.place-map-summary-icon {
-  display: inline-block;
-  flex: 0 0 auto;
-  width: 1.5rem;
-  height: 1.35rem;
-  background: currentColor;
-  mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-  -webkit-mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-}
 .place-map-disclosure > summary::-webkit-details-marker {
   display: none;
 }

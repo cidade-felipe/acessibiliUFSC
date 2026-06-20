@@ -1,9 +1,5 @@
 :root {
   --bg: #f8fafc;
-  --page-background:
-    radial-gradient(circle at 9% 90%, rgba(123, 195, 184, 0.5), transparent 34rem),
-    radial-gradient(circle at 88% 76%, rgba(155, 215, 255, 0.62), transparent 38rem),
-    linear-gradient(180deg, #f8fafc 0%, #ffffff 42%, #eefaff 100%);
   --surface: #ffffff;
   --surface-soft: #edf8f6;
   --text: #0f172a;
@@ -36,7 +32,7 @@ body {
   min-width: 320px;
   margin: 0;
   color: var(--text);
-  background: var(--page-background);
+  background: var(--bg);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.5;
@@ -45,10 +41,6 @@ body {
 
 body.high-contrast {
   --bg: #020617;
-  --page-background:
-    radial-gradient(circle at 10% 88%, rgba(125, 211, 252, 0.24), transparent 34rem),
-    radial-gradient(circle at 88% 78%, rgba(134, 239, 172, 0.18), transparent 36rem),
-    linear-gradient(135deg, #020617, #0f172a 58%, #082f49);
   --surface: #0f172a;
   --surface-soft: #172554;
   --text: #f8fafc;
@@ -400,11 +392,6 @@ body.high-contrast .brand-name-highlight {
   white-space: nowrap;
 }
 
-.custom-select__value.is-placeholder {
-  color: var(--muted);
-  font-weight: 650;
-}
-
 .custom-select__flag {
   flex: 0 0 auto;
   width: 1.35rem;
@@ -735,6 +722,12 @@ body.high-contrast .button-secondary {
   padding: 0 1rem 2rem;
 }
 
+body:has(#app .welcome-panel) {
+  background:
+    radial-gradient(circle at 9% 90%, rgba(123, 195, 184, 0.5), transparent 34rem),
+    radial-gradient(circle at 88% 76%, rgba(155, 215, 255, 0.62), transparent 38rem),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 42%, #eefaff 100%);
+}
 
 body:has(#app .welcome-panel) .app-shell {
   max-width: var(--content);
@@ -822,25 +815,6 @@ body:has(#app .welcome-panel) .app-shell {
 .flow-stepper__button:disabled {
   opacity: 1;
   cursor: not-allowed;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__button {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #d6e0ea;
-  color: #64748b;
-  background: #eef4f8;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__label {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked::before,
-.flow-stepper__item.is-locked::after {
-  background: #dbe5ee;
 }
 
 .flow-stepper__number {
@@ -968,22 +942,6 @@ body.high-contrast .flow-stepper__item.is-current .flow-stepper__number {
 body.high-contrast .flow-stepper__item.is-current .flow-stepper__label {
   color: #020617;
   background: var(--primary);
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__button,
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__label {
-  color: #94a3b8;
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #475569;
-  color: #cbd5e1;
-  background: #1e293b;
-}
-
-body.high-contrast .flow-stepper__item.is-locked::before,
-body.high-contrast .flow-stepper__item.is-locked::after {
-  background: #334155;
 }
 .stage {
   min-height: 0;
@@ -1249,6 +1207,12 @@ body.high-contrast .action-row--route-result {
   line-height: 1.42;
 }
 
+body.high-contrast:has(#app .welcome-panel) {
+  background:
+    radial-gradient(circle at 10% 88%, rgba(125, 211, 252, 0.24), transparent 34rem),
+    radial-gradient(circle at 88% 78%, rgba(134, 239, 172, 0.18), transparent 36rem),
+    linear-gradient(135deg, #020617, #0f172a 58%, #082f49);
+}
 
 body.high-contrast .hero-panel {
   background: transparent;
@@ -1420,10 +1384,8 @@ body.high-contrast .summary-icon {
   min-height: 1.5rem;
 }
 
-.select[aria-invalid="true"],
-.custom-select__button[aria-invalid="true"] {
+.select[aria-invalid="true"] {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12), 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .location-assist {
@@ -1484,7 +1446,6 @@ body.high-contrast .location-assist__status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
   min-height: 2.75rem;
   border: 2px solid var(--primary);
   border-radius: 999px;
@@ -1501,16 +1462,6 @@ body.high-contrast .location-assist__status {
     transform var(--motion-smooth) var(--motion-ease);
 }
 
-
-.place-map-summary-icon {
-  display: inline-block;
-  flex: 0 0 auto;
-  width: 1.5rem;
-  height: 1.35rem;
-  background: currentColor;
-  mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-  -webkit-mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-}
 .place-map-disclosure > summary::-webkit-details-marker {
   display: none;
 }

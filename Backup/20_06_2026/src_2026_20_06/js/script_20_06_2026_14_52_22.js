@@ -1775,9 +1775,6 @@ function renderStepNav() {
         if (isCurrent) {
           itemClasses.push('is-current');
         }
-        if (!isUnlocked) {
-          itemClasses.push('is-locked');
-        }
         const buttonAttributes = isUnlocked
           ? `data-step-view="${escapeHtml(view)}"`
           : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
@@ -2026,7 +2023,7 @@ function renderPlaces() {
 function renderLocationOptions(selectedValue) {
   const t = getT();
   return `
-    <option value="" disabled hidden${selectedValue ? "" : " selected"}>${escapeHtml(t.selectPlaceholder)}</option>
+    <option value="">${escapeHtml(t.selectPlaceholder)}</option>
     ${getLocationGroups().map(group => `
       <optgroup label="${escapeHtml(group.label)}">
         ${group.locations.map(location => `
@@ -2112,9 +2109,10 @@ function setupCustomSelect(select) {
       flag.setAttribute('aria-hidden', 'true');
       value.append(flag);
     }
-    value.classList.toggle('is-placeholder', Boolean(selectedOption && selectedOption.value === ''));
     const valueText = document.createElement('span');
-    valueText.textContent = selectedOption ? selectedOption.textContent.trim() : '';
+    valueText.textContent = selectedOption
+      ? (select.id === 'language-select' ? selectedOption.textContent.trim() : selectedOption.textContent.trim())
+      : '';
     value.append(valueText);
     list.innerHTML = '';
 
@@ -2126,19 +2124,13 @@ function setupCustomSelect(select) {
         list.append(group);
 
         [...child.children].forEach(option => {
-          const item = renderCustomSelectOption(select, option, close);
-          if (item) {
-            list.append(item);
-          }
+          list.append(renderCustomSelectOption(select, option, close));
         });
         return;
       }
 
       if (child.tagName === 'OPTION') {
-        const item = renderCustomSelectOption(select, child, close);
-        if (item) {
-          list.append(item);
-        }
+        list.append(renderCustomSelectOption(select, child, close));
       }
     });
   };
@@ -2176,10 +2168,6 @@ function setupCustomSelect(select) {
 }
 
 function renderCustomSelectOption(select, option, close) {
-  if (option.disabled || option.hidden) {
-    return null;
-  }
-
   const item = document.createElement('button');
   item.className = 'custom-select__option';
   item.type = 'button';
@@ -2256,7 +2244,7 @@ function renderPlaceMapPicker() {
 
   return `
     <details class="place-map-disclosure">
-      <summary><span class="place-map-summary-icon" aria-hidden="true"></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
+      <summary><span class="place-map-summary-icon" aria-hidden="true"><span></span></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
         <div class="place-map-header">
           <h3 class="item-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>

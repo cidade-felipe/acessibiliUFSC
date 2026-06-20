@@ -1775,9 +1775,6 @@ function renderStepNav() {
         if (isCurrent) {
           itemClasses.push('is-current');
         }
-        if (!isUnlocked) {
-          itemClasses.push('is-locked');
-        }
         const buttonAttributes = isUnlocked
           ? `data-step-view="${escapeHtml(view)}"`
           : `disabled aria-disabled="true" title="${escapeHtml(t.navigationBlocked)}"`;
@@ -2256,7 +2253,7 @@ function renderPlaceMapPicker() {
 
   return `
     <details class="place-map-disclosure">
-      <summary><span class="place-map-summary-icon" aria-hidden="true"></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
+      <summary><span class="place-map-summary-icon" aria-hidden="true"><span class="place-map-icon-fold"></span><span class="place-map-icon-pin"><span></span></span></span><span>${escapeHtml(t.mapPickerSummary)}</span></summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
         <div class="place-map-header">
           <h3 class="item-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>

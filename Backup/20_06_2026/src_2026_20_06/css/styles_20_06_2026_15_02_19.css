@@ -824,25 +824,6 @@ body:has(#app .welcome-panel) .app-shell {
   cursor: not-allowed;
 }
 
-.flow-stepper__item.is-locked .flow-stepper__button {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #d6e0ea;
-  color: #64748b;
-  background: #eef4f8;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__label {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked::before,
-.flow-stepper__item.is-locked::after {
-  background: #dbe5ee;
-}
-
 .flow-stepper__number {
   display: inline-flex;
   flex: 0 0 auto;
@@ -968,22 +949,6 @@ body.high-contrast .flow-stepper__item.is-current .flow-stepper__number {
 body.high-contrast .flow-stepper__item.is-current .flow-stepper__label {
   color: #020617;
   background: var(--primary);
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__button,
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__label {
-  color: #94a3b8;
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #475569;
-  color: #cbd5e1;
-  background: #1e293b;
-}
-
-body.high-contrast .flow-stepper__item.is-locked::before,
-body.high-contrast .flow-stepper__item.is-locked::after {
-  background: #334155;
 }
 .stage {
   min-height: 0;
@@ -1503,13 +1468,96 @@ body.high-contrast .location-assist__status {
 
 
 .place-map-summary-icon {
+  position: relative;
   display: inline-block;
   flex: 0 0 auto;
-  width: 1.5rem;
-  height: 1.35rem;
+  width: 1.85rem;
+  height: 1.7rem;
+  color: currentColor;
+}
+
+.place-map-icon-fold,
+.place-map-icon-fold::before,
+.place-map-icon-fold::after {
+  position: absolute;
+  display: block;
+  height: 0.18rem;
+  border-radius: 999px;
   background: currentColor;
-  mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-  -webkit-mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
+  content: "";
+}
+
+.place-map-icon-fold {
+  left: 0.06rem;
+  bottom: 0.28rem;
+  width: 0.86rem;
+  transform: rotate(-22deg);
+  transform-origin: left center;
+}
+
+.place-map-icon-fold::before {
+  left: 0.55rem;
+  top: -0.23rem;
+  width: 0.88rem;
+  transform: rotate(42deg);
+  transform-origin: left center;
+}
+
+.place-map-icon-fold::after {
+  left: 0.98rem;
+  top: 0.26rem;
+  width: 0.82rem;
+  transform: rotate(-24deg);
+  transform-origin: left center;
+}
+
+.place-map-summary-icon::before,
+.place-map-summary-icon::after {
+  position: absolute;
+  display: block;
+  height: 0.18rem;
+  border-radius: 999px;
+  background: currentColor;
+  content: "";
+}
+
+.place-map-summary-icon::before {
+  left: 0.08rem;
+  top: 0.58rem;
+  width: 0.78rem;
+  transform: rotate(-22deg);
+  transform-origin: left center;
+}
+
+.place-map-summary-icon::after {
+  left: 0.66rem;
+  top: 0.38rem;
+  width: 0.7rem;
+  transform: rotate(21deg);
+  transform-origin: left center;
+}
+
+.place-map-icon-pin {
+  position: absolute;
+  top: 0.02rem;
+  right: 0.02rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 0.18rem solid currentColor;
+  border-radius: 50% 50% 50% 0;
+  background: var(--surface);
+  transform: rotate(-45deg);
+}
+
+.place-map-icon-pin span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.2rem;
+  height: 0.2rem;
+  border-radius: 999px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
 }
 .place-map-disclosure > summary::-webkit-details-marker {
   display: none;

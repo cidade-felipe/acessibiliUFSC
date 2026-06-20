@@ -400,11 +400,6 @@ body.high-contrast .brand-name-highlight {
   white-space: nowrap;
 }
 
-.custom-select__value.is-placeholder {
-  color: var(--muted);
-  font-weight: 650;
-}
-
 .custom-select__flag {
   flex: 0 0 auto;
   width: 1.35rem;
@@ -824,25 +819,6 @@ body:has(#app .welcome-panel) .app-shell {
   cursor: not-allowed;
 }
 
-.flow-stepper__item.is-locked .flow-stepper__button {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #d6e0ea;
-  color: #64748b;
-  background: #eef4f8;
-}
-
-.flow-stepper__item.is-locked .flow-stepper__label {
-  color: #64748b;
-}
-
-.flow-stepper__item.is-locked::before,
-.flow-stepper__item.is-locked::after {
-  background: #dbe5ee;
-}
-
 .flow-stepper__number {
   display: inline-flex;
   flex: 0 0 auto;
@@ -968,22 +944,6 @@ body.high-contrast .flow-stepper__item.is-current .flow-stepper__number {
 body.high-contrast .flow-stepper__item.is-current .flow-stepper__label {
   color: #020617;
   background: var(--primary);
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__button,
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__label {
-  color: #94a3b8;
-}
-
-body.high-contrast .flow-stepper__item.is-locked .flow-stepper__number {
-  border-color: #475569;
-  color: #cbd5e1;
-  background: #1e293b;
-}
-
-body.high-contrast .flow-stepper__item.is-locked::before,
-body.high-contrast .flow-stepper__item.is-locked::after {
-  background: #334155;
 }
 .stage {
   min-height: 0;
@@ -1503,13 +1463,51 @@ body.high-contrast .location-assist__status {
 
 
 .place-map-summary-icon {
+  position: relative;
   display: inline-block;
   flex: 0 0 auto;
   width: 1.5rem;
-  height: 1.35rem;
+  height: 1.5rem;
+  color: currentColor;
+}
+
+.place-map-summary-icon::before {
+  position: absolute;
+  left: 0.08rem;
+  bottom: 0.18rem;
+  width: 1.08rem;
+  height: 0.72rem;
+  border: 2px solid currentColor;
+  border-radius: 0.18rem;
+  background:
+    linear-gradient(112deg, transparent 34%, currentColor 35% 44%, transparent 45%),
+    linear-gradient(0deg, transparent 47%, currentColor 48% 56%, transparent 57%);
+  content: "";
+  transform: skewY(-8deg);
+}
+
+.place-map-summary-icon::after {
+  position: absolute;
+  top: 0.04rem;
+  right: 0.03rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border: 2px solid currentColor;
+  border-radius: 50% 50% 50% 0;
+  background: var(--surface);
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.place-map-summary-icon span {
+  position: absolute;
+  top: 0.24rem;
+  right: 0.23rem;
+  z-index: 1;
+  width: 0.18rem;
+  height: 0.18rem;
+  border-radius: 999px;
   background: currentColor;
-  mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
-  -webkit-mask: url("../../assets/map-location-dot.svg") center / contain no-repeat;
 }
 .place-map-disclosure > summary::-webkit-details-marker {
   display: none;
