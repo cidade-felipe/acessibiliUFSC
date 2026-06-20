@@ -1417,13 +1417,12 @@ function getCurrentLanguage() {
   return 'pt-BR';
 }
 
-function speakText(text, options = {}) {
+function speakText(text) {
   if (!('speechSynthesis' in window)) {
     setRouteReaderStatus(getT().routeReaderUnsupported);
     return;
   }
 
-  const keepPageReaderActive = Boolean(options.keepPageReaderActive);
   const content = String(text || '').trim();
   if (!content) {
     return;
@@ -1434,7 +1433,7 @@ function speakText(text, options = {}) {
   currentRouteUtterance.lang = getCurrentLanguage();
   currentRouteUtterance.onend = () => {
     currentRouteUtterance = null;
-    if (state.pageReaderActive && !keepPageReaderActive) {
+    if (state.pageReaderActive) {
       state.pageReaderActive = false;
       updatePageReaderButton();
     }
@@ -1442,7 +1441,7 @@ function speakText(text, options = {}) {
   };
   currentRouteUtterance.onerror = () => {
     currentRouteUtterance = null;
-    if (state.pageReaderActive && !keepPageReaderActive) {
+    if (state.pageReaderActive) {
       state.pageReaderActive = false;
       updatePageReaderButton();
     }
@@ -1530,27 +1529,6 @@ function buildRouteTextModeSpeechText() {
     buildRouteAlertsSpeechText(),
     `${t.landmarksTitle}: ${routeView.landmarks.join('. ')}.`
   ].filter(Boolean).join(' ');
-}
-
-function buildLocationSpeechText(location) {
-  if (!location) {
-    return '';
-  }
-
-  return `${getLocationName(location)}. ${getLocationType(location)}.`;
-}
-
-function speakLocationIfPageReaderActive(location, force = false) {
-  if ((!state.pageReaderActive && !force) || !location) {
-    return;
-  }
-
-  if (force && !state.pageReaderActive) {
-    state.pageReaderActive = true;
-    updatePageReaderButton();
-  }
-
-  speakText(buildLocationSpeechText(location), { keepPageReaderActive: true });
 }
 
 function buildPageReaderSpeechText() {
@@ -1776,7 +1754,7 @@ function renderTopActions() {
 
     state.pageReaderActive = true;
     updatePageReaderButton();
-    speakText(buildPageReaderSpeechText(), { keepPageReaderActive: true });
+    speakText(buildPageReaderSpeechText());
     setStatus(getT().pageReaderStarted);
   });
 }
@@ -2327,7 +2305,6 @@ function bindPlaceMapPicker() {
   document.querySelectorAll('[data-place-id]').forEach(button => {
     button.addEventListener('click', () => {
       const selectedId = button.dataset.placeId;
-      const shouldSpeakLocation = state.pageReaderActive;
       const target = getAutomaticPlacePickerTarget();
       state.placePickerTarget = target;
       state[target] = selectedId;
@@ -2342,16 +2319,13 @@ function bindPlaceMapPicker() {
       renderStepNav();
       window.requestAnimationFrame(centerPlaceMapScroll);
 
-      const selectedLocation = getLocation(selectedId);
-      speakLocationIfPageReaderActive(selectedLocation, shouldSpeakLocation);
-
       if (Object.keys(errors).length > 0) {
         const t = getT();
         setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
         return;
       }
 
-      setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(selectedLocation)}.`);
+      setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(getLocation(selectedId))}.`);
     });
   });
 
@@ -2872,23 +2846,18 @@ function renderMarker(location, routeView) {
 
 function bindMapMarkers(routeView) {
   document.querySelectorAll('.map-marker').forEach(marker => {
-    const update = (shouldSpeak = false) => {
+    const update = () => {
       const id = marker.dataset.locationId;
-      const location = getLocation(id);
       state.activeMarkerId = id;
       document.querySelectorAll('.map-marker').forEach(item => {
         item.classList.toggle('active', item.dataset.locationId === id);
       });
-      document.querySelector('#map-location-panel').innerHTML = renderLocationInfo(location, routeView);
-      setStatus(`${getT().locationSelected} ${getLocationName(location)}.`);
-
-      if (shouldSpeak) {
-        speakLocationIfPageReaderActive(location);
-      }
+      document.querySelector('#map-location-panel').innerHTML = renderLocationInfo(getLocation(id), routeView);
+      setStatus(`${getT().locationSelected} ${getLocationName(getLocation(id))}.`);
     };
 
-    marker.addEventListener('focus', () => update(false));
-    marker.addEventListener('click', () => update(true));
+    marker.addEventListener('focus', update);
+    marker.addEventListener('click', update);
   });
 
   scheduleMapMarkerCollisionResolution(routeView);
