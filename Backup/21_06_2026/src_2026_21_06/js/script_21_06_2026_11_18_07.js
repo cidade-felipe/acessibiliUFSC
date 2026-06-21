@@ -622,14 +622,14 @@ translations.es = {
   estimatedDistance: 'Distancia estimada',
   accessibilityLevel: 'Nivel de accesibilidad',
   chosenProfile: 'Perfil elegido',
-  profileAdjustment: 'Ajuste realizado',
+  profileAdjustment: 'Ajuste aplicado',
   alertsTitle: 'Alertas de la ruta',
   instructionsTitle: 'Instrucciones paso a paso',
   landmarksTitle: 'Puntos de referencia',
   startRoute: 'Iniciar ruta',
   editRoute: 'Volver y cambiar',
   showTextRoute: 'Ver ruta en modo texto',
-  hideTextRoute: 'Ocultar modo de texto',
+  hideTextRoute: 'Ocultar modo texto',
   textRouteTitle: 'Ruta en modo texto',
   originBadge: 'Origen',
   destinationBadge: 'Destino',
@@ -642,9 +642,9 @@ translations.es = {
   routeReaderReadTextMode: 'Leer modo texto',
   routeReaderReadCurrentStep: 'Leer este paso',
   routeReaderReadAllSteps: 'Leer todos los pasos',
-  routeReaderPause: 'Pausar lectura',
-  routeReaderResume: 'Continuar lectura',
-  routeReaderStop: 'Detener lectura',
+  routeReaderPause: 'Pausar',
+  routeReaderResume: 'Continuar',
+  routeReaderStop: 'Parar',
   routeReaderAuto: 'Leer automáticamente al cambiar de paso',
   routeReaderReady: 'Lector listo.',
   routeReaderReading: 'Leyendo instrucción.',
@@ -660,7 +660,7 @@ translations.es = {
   warningLabel: 'Atención',
   infoLabel: 'Información',
   accessibleLabel: 'Accesible',
-  dangerLabel: 'Precaución',
+  dangerLabel: 'Cuidado',
   alerts: {
     vehicleCrossing: 'tramo con cruce de vehículos.',
     partialShade: 'camino con sombra parcial.',
@@ -680,7 +680,7 @@ translations.es = {
   arrivalMessage: 'Llegaste al destino. Ruta concluida con éxito.',
   newRoute: 'Planificar nueva ruta',
   viewMapAgain: 'Ver mapa nuevamente',
-  hideMapAgain: 'Ocultar el mapa',
+  hideMapAgain: 'Ocultar mapa',
   summaryOrigin: 'Origen',
   summaryDestination: 'Destino',
   summaryProfile: 'Perfil',
@@ -693,7 +693,7 @@ translations.es = {
   markerRoleNeutral: 'punto del campus',
   routeSpecificNames: {
     bibliotecaRu: 'Biblioteca Central a Restaurante Universitario',
-    reitoriaCtc: 'Rectoría a Centro de Tecnología',
+    reitoriaCtc: 'Rectoría a Centro Tecnológico',
     cseBiblioteca: 'Centro Socioeconómico a Biblioteca Central',
     eventosHu: 'Centro de Cultura y Eventos a Hospital Universitario'
   }
@@ -834,7 +834,7 @@ const locationTranslationsEs = {
   biblioteca: { name: 'Biblioteca Central', type: 'Biblioteca' },
   ru: { name: 'Restaurante Universitario', type: 'Alimentación' },
   hu: { name: 'Hospital Universitario', type: 'Salud' },
-  ctc: { name: 'Centro de Tecnología', type: 'Centro de enseñanza' },
+  ctc: { name: 'Centro Tecnológico', type: 'Centro de enseñanza' },
   cse: { name: 'Centro Socioeconómico', type: 'Centro de enseñanza' },
   cfh: { name: 'Centro de Filosofía y Ciencias Humanas', type: 'Centro de enseñanza' },
   cce: { name: 'Centro de Comunicación y Expresión', type: 'Centro de enseñanza' },
@@ -915,8 +915,8 @@ Object.assign(routeTemplates['reitoria|ctc'], {
     ['Sal de la Rectoría hacia la vía interna principal.', 'Prefiere el recorrido alrededor de la plaza.'],
     ['Sigue hacia el sector este del campus.', 'Evita atajos con piso visualmente irregular.'],
     ['Pasa por el tramo con sombra parcial.', 'Hay un punto de descanso antes de llegar al CTC.'],
-    ['Acércate al acceso principal del Centro de Tecnología.', 'La circulación puede aumentar en los horarios de cambio de clase.'],
-    ['Llegaste al Centro de Tecnología.', 'Usa la entrada principal para una orientación más clara.']
+    ['Acércate al acceso principal del Centro Tecnológico.', 'La circulación puede aumentar en los horarios de cambio de clase.'],
+    ['Llegaste al Centro Tecnológico.', 'Usa la entrada principal para una orientación más clara.']
   ]
 });
 
@@ -1953,8 +1953,8 @@ function renderTopActions() {
   `;
 
   document.querySelector('#language-select').addEventListener('change', event => {
-    state.lang = event.target.value;
     stopSpeech();
+    state.lang = event.target.value;
     render();
     const languageNames = { pt: getT().languagePt, en: getT().languageEn, es: getT().languageEs };
     setStatus(`${getT().languageLabel}: ${languageNames[state.lang]}.`);
@@ -2738,10 +2738,10 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     distance: metrics.distancePt,
     distancePt: metrics.distancePt,
     distanceEn: metrics.distanceEn,
-    distanceEs: metrics.distanceEs,
+    distanceEs: metrics.distancePt,
     timePt: metrics.timePt,
     timeEn: metrics.timeEn,
-    timeEs: metrics.timeEs,
+    timeEs: metrics.timePt,
     accessibility: getProfileAccessibility(template.accessibility, profileId),
     summaryPt: template.summaryPt,
     summaryEn: template.summaryEn,
@@ -2784,10 +2784,10 @@ function buildFallbackRoute(origin, destination) {
     distance: metrics.distancePt,
     distancePt: metrics.distancePt,
     distanceEn: metrics.distanceEn,
-    distanceEs: metrics.distanceEs,
+    distanceEs: metrics.distancePt,
     timePt: metrics.timePt,
     timeEn: metrics.timeEn,
-    timeEs: metrics.timeEs,
+    timeEs: metrics.timePt,
     accessibility: getProfileAccessibility(baseDistanceMeters > 650 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
     summaryPt: translations.pt.defaultRouteSummary,
     summaryEn: translations.en.defaultRouteSummary,
@@ -2843,10 +2843,8 @@ function buildRouteMetrics(path, profileId = 'standard') {
   return {
     distancePt: formatDistance(meters, 'pt'),
     distanceEn: formatDistance(meters, 'en'),
-    distanceEs: formatDistance(meters, 'es'),
     timePt: `${minimumMinutes} a ${maximumMinutes} min`,
-    timeEn: `${minimumMinutes} to ${maximumMinutes} min`,
-    timeEs: `${minimumMinutes} a ${maximumMinutes} min`
+    timeEn: `${minimumMinutes} to ${maximumMinutes} min`
   };
 }
 
@@ -2872,12 +2870,11 @@ function roundToNearest(value, step) {
 function formatDistance(meters, lang) {
   if (meters >= 1000) {
     const kilometers = (meters / 1000).toFixed(1);
-    return `${lang === 'pt' || lang === 'es' ? kilometers.replace('.', ',') : kilometers} km`;
+    return `${lang === 'pt' ? kilometers.replace('.', ',') : kilometers} km`;
   }
 
   return `${meters} m`;
 }
-
 function buildProfilePath(basePath, origin, destination, profileId = 'standard') {
   const anchoredPath = anchorPathEndpoints(basePath, origin, destination);
 

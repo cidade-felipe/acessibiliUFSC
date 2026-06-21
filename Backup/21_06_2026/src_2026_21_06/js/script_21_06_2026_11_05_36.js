@@ -622,14 +622,14 @@ translations.es = {
   estimatedDistance: 'Distancia estimada',
   accessibilityLevel: 'Nivel de accesibilidad',
   chosenProfile: 'Perfil elegido',
-  profileAdjustment: 'Ajuste realizado',
+  profileAdjustment: 'Ajuste aplicado',
   alertsTitle: 'Alertas de la ruta',
   instructionsTitle: 'Instrucciones paso a paso',
   landmarksTitle: 'Puntos de referencia',
   startRoute: 'Iniciar ruta',
   editRoute: 'Volver y cambiar',
   showTextRoute: 'Ver ruta en modo texto',
-  hideTextRoute: 'Ocultar modo de texto',
+  hideTextRoute: 'Ocultar modo texto',
   textRouteTitle: 'Ruta en modo texto',
   originBadge: 'Origen',
   destinationBadge: 'Destino',
@@ -642,9 +642,9 @@ translations.es = {
   routeReaderReadTextMode: 'Leer modo texto',
   routeReaderReadCurrentStep: 'Leer este paso',
   routeReaderReadAllSteps: 'Leer todos los pasos',
-  routeReaderPause: 'Pausar lectura',
-  routeReaderResume: 'Continuar lectura',
-  routeReaderStop: 'Detener lectura',
+  routeReaderPause: 'Pausar',
+  routeReaderResume: 'Continuar',
+  routeReaderStop: 'Parar',
   routeReaderAuto: 'Leer automáticamente al cambiar de paso',
   routeReaderReady: 'Lector listo.',
   routeReaderReading: 'Leyendo instrucción.',
@@ -660,7 +660,7 @@ translations.es = {
   warningLabel: 'Atención',
   infoLabel: 'Información',
   accessibleLabel: 'Accesible',
-  dangerLabel: 'Precaución',
+  dangerLabel: 'Cuidado',
   alerts: {
     vehicleCrossing: 'tramo con cruce de vehículos.',
     partialShade: 'camino con sombra parcial.',
@@ -680,7 +680,7 @@ translations.es = {
   arrivalMessage: 'Llegaste al destino. Ruta concluida con éxito.',
   newRoute: 'Planificar nueva ruta',
   viewMapAgain: 'Ver mapa nuevamente',
-  hideMapAgain: 'Ocultar el mapa',
+  hideMapAgain: 'Ocultar mapa',
   summaryOrigin: 'Origen',
   summaryDestination: 'Destino',
   summaryProfile: 'Perfil',
@@ -693,7 +693,7 @@ translations.es = {
   markerRoleNeutral: 'punto del campus',
   routeSpecificNames: {
     bibliotecaRu: 'Biblioteca Central a Restaurante Universitario',
-    reitoriaCtc: 'Rectoría a Centro de Tecnología',
+    reitoriaCtc: 'Rectoría a Centro Tecnológico',
     cseBiblioteca: 'Centro Socioeconómico a Biblioteca Central',
     eventosHu: 'Centro de Cultura y Eventos a Hospital Universitario'
   }
@@ -829,32 +829,6 @@ const routeTemplates = {
   }
 };
 
-const locationTranslationsEs = {
-  reitoria: { name: 'Rectoría', type: 'Unidad administrativa' },
-  biblioteca: { name: 'Biblioteca Central', type: 'Biblioteca' },
-  ru: { name: 'Restaurante Universitario', type: 'Alimentación' },
-  hu: { name: 'Hospital Universitario', type: 'Salud' },
-  ctc: { name: 'Centro de Tecnología', type: 'Centro de enseñanza' },
-  cse: { name: 'Centro Socioeconómico', type: 'Centro de enseñanza' },
-  cfh: { name: 'Centro de Filosofía y Ciencias Humanas', type: 'Centro de enseñanza' },
-  cce: { name: 'Centro de Comunicación y Expresión', type: 'Centro de enseñanza' },
-  ccb: { name: 'Centro de Ciencias Biológicas', type: 'Centro de enseñanza' },
-  cfm: { name: 'Centro de Ciencias Físicas y Matemáticas', type: 'Centro de enseñanza' },
-  ced: { name: 'Centro de Ciencias de la Educación', type: 'Centro de enseñanza' },
-  ccj: { name: 'Centro de Ciencias Jurídicas', type: 'Centro de enseñanza' },
-  ccs: { name: 'Centro de Ciencias de la Salud', type: 'Centro de enseñanza' },
-  cds: { name: 'Centro de Deportes', type: 'Centro de enseñanza' },
-  centro_eventos: { name: 'Centro de Cultura y Eventos', type: 'Eventos' }
-};
-
-locations.forEach(location => {
-  const translatedLocation = locationTranslationsEs[location.id];
-  if (translatedLocation) {
-    location.nameEs = translatedLocation.name;
-    location.typeEs = translatedLocation.type;
-  }
-});
-
 profiles.forEach(profile => {
   const profileEs = {
     stairs: {
@@ -915,8 +889,8 @@ Object.assign(routeTemplates['reitoria|ctc'], {
     ['Sal de la Rectoría hacia la vía interna principal.', 'Prefiere el recorrido alrededor de la plaza.'],
     ['Sigue hacia el sector este del campus.', 'Evita atajos con piso visualmente irregular.'],
     ['Pasa por el tramo con sombra parcial.', 'Hay un punto de descanso antes de llegar al CTC.'],
-    ['Acércate al acceso principal del Centro de Tecnología.', 'La circulación puede aumentar en los horarios de cambio de clase.'],
-    ['Llegaste al Centro de Tecnología.', 'Usa la entrada principal para una orientación más clara.']
+    ['Acércate al acceso principal del Centro Tecnológico.', 'La circulación puede aumentar en los horarios de cambio de clase.'],
+    ['Llegaste al Centro Tecnológico.', 'Usa la entrada principal para una orientación más clara.']
   ]
 });
 
@@ -1021,7 +995,6 @@ const routeReaderStatusRegion = document.querySelector('#route-reader-status');
 let mapCollisionResizeHandler = null;
 let mapCollisionResizeFrame = 0;
 let currentRouteUtterance = null;
-let speechVoices = [];
 const speechQueue = [];
 
 function getT() {
@@ -1470,63 +1443,6 @@ function getCurrentLanguage() {
   return 'pt-BR';
 }
 
-function getSpeechLanguageCandidates(language = getCurrentLanguage()) {
-  const normalizedLanguage = String(language || '').toLowerCase();
-
-  if (normalizedLanguage.startsWith('en')) {
-    return ['en-US', 'en'];
-  }
-
-  if (normalizedLanguage.startsWith('es')) {
-    return ['es-ES', 'es'];
-  }
-
-  return ['pt-BR', 'pt'];
-}
-
-function refreshSpeechVoices() {
-  if (!('speechSynthesis' in window) || typeof window.speechSynthesis.getVoices !== 'function') {
-    speechVoices = [];
-    return speechVoices;
-  }
-
-  speechVoices = window.speechSynthesis.getVoices() || [];
-  return speechVoices;
-}
-
-function prepareSpeechSynthesisVoices() {
-  if (!('speechSynthesis' in window)) {
-    return;
-  }
-
-  refreshSpeechVoices();
-
-  if (typeof window.speechSynthesis.addEventListener === 'function') {
-    window.speechSynthesis.addEventListener('voiceschanged', refreshSpeechVoices);
-    return;
-  }
-
-  if ('onvoiceschanged' in window.speechSynthesis) {
-    window.speechSynthesis.onvoiceschanged = refreshSpeechVoices;
-  }
-}
-
-function getPreferredSpeechVoice(language = getCurrentLanguage()) {
-  const voices = speechVoices.length > 0 ? speechVoices : refreshSpeechVoices();
-  if (!voices.length) {
-    return null;
-  }
-
-  const candidates = getSpeechLanguageCandidates(language).map(candidate => candidate.toLowerCase());
-  const exactVoice = voices.find(voice => candidates.includes(String(voice.lang || '').toLowerCase()));
-  if (exactVoice) {
-    return exactVoice;
-  }
-
-  const primaryLanguage = candidates[candidates.length - 1];
-  return voices.find(voice => String(voice.lang || '').toLowerCase().startsWith(`${primaryLanguage}-`)) || null;
-}
-
 function speakText(text, options = {}) {
   if (!('speechSynthesis' in window)) {
     setRouteReaderStatus(getT().routeReaderUnsupported);
@@ -1555,13 +1471,8 @@ function speakText(text, options = {}) {
   currentRouteUtterance = null;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(content);
-  const speechLanguage = getCurrentLanguage();
-  const speechVoice = getPreferredSpeechVoice(speechLanguage);
   currentRouteUtterance = utterance;
-  utterance.lang = speechLanguage;
-  if (speechVoice) {
-    utterance.voice = speechVoice;
-  }
+  utterance.lang = getCurrentLanguage();
 
   const finishSpeech = status => {
     if (currentRouteUtterance !== utterance) {
@@ -1953,8 +1864,8 @@ function renderTopActions() {
   `;
 
   document.querySelector('#language-select').addEventListener('change', event => {
-    state.lang = event.target.value;
     stopSpeech();
+    state.lang = event.target.value;
     render();
     const languageNames = { pt: getT().languagePt, en: getT().languageEn, es: getT().languageEs };
     setStatus(`${getT().languageLabel}: ${languageNames[state.lang]}.`);
@@ -2738,10 +2649,10 @@ function normalizeTemplateRoute(template, origin, destination, profileId = state
     distance: metrics.distancePt,
     distancePt: metrics.distancePt,
     distanceEn: metrics.distanceEn,
-    distanceEs: metrics.distanceEs,
+    distanceEs: metrics.distancePt,
     timePt: metrics.timePt,
     timeEn: metrics.timeEn,
-    timeEs: metrics.timeEs,
+    timeEs: metrics.timePt,
     accessibility: getProfileAccessibility(template.accessibility, profileId),
     summaryPt: template.summaryPt,
     summaryEn: template.summaryEn,
@@ -2771,8 +2682,6 @@ function buildFallbackRoute(origin, destination) {
   const path = buildProfilePath(basePath, origin, destination, state.profile);
   const metrics = buildRouteMetrics(path, state.profile);
   const baseDistanceMeters = estimatePathMeters(basePath);
-  const originNameEs = origin.nameEs || origin.namePt;
-  const destinationNameEs = destination.nameEs || destination.namePt;
 
   return {
     namePt: translations.pt.defaultRouteName,
@@ -2784,10 +2693,10 @@ function buildFallbackRoute(origin, destination) {
     distance: metrics.distancePt,
     distancePt: metrics.distancePt,
     distanceEn: metrics.distanceEn,
-    distanceEs: metrics.distanceEs,
+    distanceEs: metrics.distancePt,
     timePt: metrics.timePt,
     timeEn: metrics.timeEn,
-    timeEs: metrics.timeEs,
+    timeEs: metrics.timePt,
     accessibility: getProfileAccessibility(baseDistanceMeters > 650 ? 'routeAccessibleModerate' : 'routeAccessibleMedium', state.profile),
     summaryPt: translations.pt.defaultRouteSummary,
     summaryEn: translations.en.defaultRouteSummary,
@@ -2796,14 +2705,14 @@ function buildFallbackRoute(origin, destination) {
     alerts: buildProfileAlerts(['partialShade', 'unevenFloor', 'textReference'], state.profile),
     landmarksPt: [origin.namePt, 'Via interna do campus', destination.namePt],
     landmarksEn: [origin.nameEn, 'Campus internal road', destination.nameEn],
-    landmarksEs: [originNameEs, 'Vía interna del campus', destinationNameEs],
+    landmarksEs: [origin.namePt, 'Vía interna del campus', destination.namePt],
     steps: [
       {
         textPt: `Saia de ${origin.namePt} pelo acesso mais visível.`,
         accessPt: 'Confirme a sinalização local antes de iniciar.',
         textEn: `Leave ${origin.nameEn} through the most visible access point.`,
         accessEn: 'Check local signage before starting.',
-        textEs: `Sal de ${originNameEs} por el acceso más visible.`,
+        textEs: `Sal de ${origin.namePt} por el acceso más visible.`,
         accessEs: 'Confirma la señalización local antes de iniciar.'
       },
       {
@@ -2827,7 +2736,7 @@ function buildFallbackRoute(origin, destination) {
         accessPt: 'Procure a entrada sinalizada mais próxima.',
         textEn: `Continue until ${destination.nameEn}.`,
         accessEn: 'Look for the nearest marked entrance.',
-        textEs: `Continúa hasta ${destinationNameEs}.`,
+        textEs: `Continúa hasta ${destination.namePt}.`,
         accessEs: 'Busca la entrada señalizada más cercana.'
       }
     ]
@@ -2843,10 +2752,8 @@ function buildRouteMetrics(path, profileId = 'standard') {
   return {
     distancePt: formatDistance(meters, 'pt'),
     distanceEn: formatDistance(meters, 'en'),
-    distanceEs: formatDistance(meters, 'es'),
     timePt: `${minimumMinutes} a ${maximumMinutes} min`,
-    timeEn: `${minimumMinutes} to ${maximumMinutes} min`,
-    timeEs: `${minimumMinutes} a ${maximumMinutes} min`
+    timeEn: `${minimumMinutes} to ${maximumMinutes} min`
   };
 }
 
@@ -2872,12 +2779,11 @@ function roundToNearest(value, step) {
 function formatDistance(meters, lang) {
   if (meters >= 1000) {
     const kilometers = (meters / 1000).toFixed(1);
-    return `${lang === 'pt' || lang === 'es' ? kilometers.replace('.', ',') : kilometers} km`;
+    return `${lang === 'pt' ? kilometers.replace('.', ',') : kilometers} km`;
   }
 
   return `${meters} m`;
 }
-
 function buildProfilePath(basePath, origin, destination, profileId = 'standard') {
   const anchoredPath = anchorPathEndpoints(basePath, origin, destination);
 
@@ -3819,6 +3725,5 @@ function renderComplete() {
 }
 
 setupPageReaderControlNarration();
-prepareSpeechSynthesisVoices();
 initializeHistory();
 render(true);
