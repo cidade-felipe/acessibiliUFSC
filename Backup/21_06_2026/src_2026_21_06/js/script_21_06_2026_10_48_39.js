@@ -248,12 +248,7 @@ const translations = {
     mapPickerDestinationTarget: 'Destino',
     mapPickerEmpty: 'não selecionado',
     mapPickerStatus: 'Origem: {origin}. Destino: {destination}.',
-    mapPickerPromptOrigin: 'Escolha a origem',
-    mapPickerPromptDestination: 'Escolha o destino',
-    mapPickerPromptComplete: 'Origem e destino selecionados. Clique em um ponto selecionado para desmarcar.',
     mapPickerOriginSelected: 'Origem selecionada no mapa:',
-    mapPickerOriginCleared: 'Origem removida no mapa.',
-    mapPickerDestinationCleared: 'Destino removido no mapa.',
     mapPickerDestinationSelected: 'Destino selecionado no mapa:',
     continueButton: 'Continuar',
     backButton: 'Voltar',
@@ -412,12 +407,7 @@ const translations = {
     mapPickerDestinationTarget: 'Destination',
     mapPickerEmpty: 'not selected',
     mapPickerStatus: 'Origin: {origin}. Destination: {destination}.',
-    mapPickerPromptOrigin: 'Choose the origin',
-    mapPickerPromptDestination: 'Choose the destination',
-    mapPickerPromptComplete: 'Origin and destination selected. Click a selected point to remove it.',
     mapPickerOriginSelected: 'Origin selected on map:',
-    mapPickerOriginCleared: 'Origin removed on map.',
-    mapPickerDestinationCleared: 'Destination removed on map.',
     mapPickerDestinationSelected: 'Destination selected on map:',
     continueButton: 'Continue',
     backButton: 'Back',
@@ -586,12 +576,7 @@ translations.es = {
   mapPickerDestinationTarget: 'Destino',
   mapPickerEmpty: 'no seleccionado',
   mapPickerStatus: 'Origen: {origin}. Destino: {destination}.',
-  mapPickerPromptOrigin: 'Elige el origen',
-  mapPickerPromptDestination: 'Elige el destino',
-  mapPickerPromptComplete: 'Origen y destino seleccionados. Haz clic en un punto seleccionado para desmarcarlo.',
   mapPickerOriginSelected: 'Origen seleccionado en el mapa:',
-  mapPickerOriginCleared: 'Origen eliminado en el mapa.',
-  mapPickerDestinationCleared: 'Destino eliminado en el mapa.',
   mapPickerDestinationSelected: 'Destino seleccionado en el mapa:',
   continueButton: 'Continuar',
   backButton: 'Volver',
@@ -2391,8 +2376,6 @@ function renderPlaceMapPicker() {
   const t = getT();
   const originName = state.origin ? getLocationName(getLocation(state.origin)) : t.mapPickerEmpty;
   const destinationName = state.destination ? getLocationName(getLocation(state.destination)) : t.mapPickerEmpty;
-  const promptState = getPlacePickerPromptState();
-  const promptText = getPlacePickerPromptText();
 
   return `
     <details class="place-map-disclosure">
@@ -2403,7 +2386,6 @@ function renderPlaceMapPicker() {
       </summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
         <h3 class="item-title place-map-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
-        <p class="place-map-guidance place-map-guidance--${escapeHtml(promptState)}" id="place-map-guidance" aria-live="polite" aria-atomic="true">${escapeHtml(promptText)}</p>
         <p class="map-scroll-hint">${escapeHtml(t.mapScrollHint)}</p>
         <div class="place-map-scroll" tabindex="0" aria-label="${escapeHtml(t.mapScrollLabel)}">
           <div class="place-map-wrap">
@@ -2420,33 +2402,6 @@ function renderPlaceMapPicker() {
       </section>
     </details>
   `;
-}
-
-function getPlacePickerPromptState() {
-  if (!state.origin) {
-    return 'origin';
-  }
-
-  if (!state.destination) {
-    return 'destination';
-  }
-
-  return 'complete';
-}
-
-function getPlacePickerPromptText() {
-  const t = getT();
-  const promptState = getPlacePickerPromptState();
-
-  if (promptState === 'origin') {
-    return t.mapPickerPromptOrigin;
-  }
-
-  if (promptState === 'destination') {
-    return t.mapPickerPromptDestination;
-  }
-
-  return t.mapPickerPromptComplete;
 }
 
 function getAutomaticPlacePickerTarget() {
@@ -2469,26 +2424,11 @@ function renderPlacePickerMarker(location) {
 function bindPlaceMapPicker() {
   document.querySelectorAll('[data-place-id]').forEach(button => {
     button.addEventListener('click', () => {
-      const t = getT();
       const selectedId = button.dataset.placeId;
       const shouldSpeakLocation = state.pageReaderActive;
-      const selectedLocation = getLocation(selectedId);
-      let statusMessage = '';
-
-      if (selectedId === state.origin) {
-        state.origin = '';
-        state.placePickerTarget = 'origin';
-        statusMessage = t.mapPickerOriginCleared;
-      } else if (selectedId === state.destination) {
-        state.destination = '';
-        state.placePickerTarget = state.origin ? 'destination' : 'origin';
-        statusMessage = t.mapPickerDestinationCleared;
-      } else {
-        const target = getAutomaticPlacePickerTarget();
-        state.placePickerTarget = target;
-        state[target] = selectedId;
-        statusMessage = `${target === 'origin' ? t.mapPickerOriginSelected : t.mapPickerDestinationSelected} ${getLocationName(selectedLocation)}.`;
-      }
+      const target = getAutomaticPlacePickerTarget();
+      state.placePickerTarget = target;
+      state[target] = selectedId;
 
       if (!routeMatchesSelection()) {
         invalidateRoute();
@@ -2500,14 +2440,16 @@ function bindPlaceMapPicker() {
       renderStepNav();
       window.requestAnimationFrame(centerPlaceMapScroll);
 
+      const selectedLocation = getLocation(selectedId);
       speakLocationIfPageReaderActive(selectedLocation, shouldSpeakLocation);
 
       if (Object.keys(errors).length > 0) {
+        const t = getT();
         setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
         return;
       }
 
-      setStatus(`${statusMessage} ${getPlacePickerPromptText()}`.trim());
+      setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(selectedLocation)}.`);
     });
   });
 
@@ -2537,19 +2479,11 @@ function syncPlacePickerSelection() {
     marker.classList.toggle('selected-destination', marker.dataset.placeId === state.destination);
   });
 
-  const guidance = document.querySelector('#place-map-guidance');
-  if (guidance) {
-    const promptState = getPlacePickerPromptState();
-    guidance.className = `place-map-guidance place-map-guidance--${promptState}`;
-    guidance.textContent = getPlacePickerPromptText();
-  }
-
   const status = document.querySelector('#place-map-status');
   if (status) {
     status.textContent = formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName });
   }
 }
-
 function renderProfile() {
   const t = getT();
   const profileError = state.errors.profile ? `${t.errorPrefix} ${state.errors.profile}` : '';

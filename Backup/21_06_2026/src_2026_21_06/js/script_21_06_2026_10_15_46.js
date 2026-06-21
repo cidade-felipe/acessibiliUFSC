@@ -229,7 +229,7 @@ const translations = {
     locationAssistText: 'Ative sua localização para o site sugerir a origem mais próxima no campus. Depois escolha apenas o destino.',
     locationAssistButton: 'Usar minha localização como origem',
     locationDetecting: 'Solicitando sua localização...',
-    locationDetected: 'Você está próximo de {location}. Usamos esse ponto como origem.',
+    locationDetected: 'Origem preenchida pela localização: {location}.',
     locationDetectedApprox: 'Você parece estar fora da área central do campus. Usamos o ponto mais próximo como origem: {location}.',
     locationUnsupported: 'Seu navegador não permite identificar a localização automaticamente.',
     locationPermissionDenied: 'Permissão de localização negada. Ative a localização do navegador ou escolha a origem manualmente.',
@@ -248,12 +248,7 @@ const translations = {
     mapPickerDestinationTarget: 'Destino',
     mapPickerEmpty: 'não selecionado',
     mapPickerStatus: 'Origem: {origin}. Destino: {destination}.',
-    mapPickerPromptOrigin: 'Escolha a origem',
-    mapPickerPromptDestination: 'Escolha o destino',
-    mapPickerPromptComplete: 'Origem e destino selecionados. Clique em um ponto selecionado para desmarcar.',
     mapPickerOriginSelected: 'Origem selecionada no mapa:',
-    mapPickerOriginCleared: 'Origem removida no mapa.',
-    mapPickerDestinationCleared: 'Destino removido no mapa.',
     mapPickerDestinationSelected: 'Destino selecionado no mapa:',
     continueButton: 'Continuar',
     backButton: 'Voltar',
@@ -277,8 +272,6 @@ const translations = {
     mapScrollHint: 'No celular, deslize o mapa para ver os detalhes.',
     mapScrollLabel: 'Mapa ampliado do campus. Deslize horizontalmente para ver todas as áreas.',
     mapInfoInitial: 'Foque ou selecione um marcador para ver detalhes do local.',
-    buttonSpeechPrefix: 'Botão',
-    linkSpeechPrefix: 'Link',
     routeSummaryTitle: 'Resumo da rota',
     estimatedTime: 'Tempo estimado',
     estimatedDistance: 'Distância estimada',
@@ -393,7 +386,7 @@ const translations = {
     locationAssistText: 'Turn on location so the site can suggest the nearest campus origin. Then choose only the destination.',
     locationAssistButton: 'Use my location as origin',
     locationDetecting: 'Requesting your location...',
-    locationDetected: 'You are near {location}. We used this point as your origin.',
+    locationDetected: 'Origin filled from location: {location}.',
     locationDetectedApprox: 'You appear to be outside the central campus area. We used the nearest point as origin: {location}.',
     locationUnsupported: 'Your browser does not allow automatic location detection.',
     locationPermissionDenied: 'Location permission denied. Enable browser location or choose the origin manually.',
@@ -412,12 +405,7 @@ const translations = {
     mapPickerDestinationTarget: 'Destination',
     mapPickerEmpty: 'not selected',
     mapPickerStatus: 'Origin: {origin}. Destination: {destination}.',
-    mapPickerPromptOrigin: 'Choose the origin',
-    mapPickerPromptDestination: 'Choose the destination',
-    mapPickerPromptComplete: 'Origin and destination selected. Click a selected point to remove it.',
     mapPickerOriginSelected: 'Origin selected on map:',
-    mapPickerOriginCleared: 'Origin removed on map.',
-    mapPickerDestinationCleared: 'Destination removed on map.',
     mapPickerDestinationSelected: 'Destination selected on map:',
     continueButton: 'Continue',
     backButton: 'Back',
@@ -441,8 +429,6 @@ const translations = {
     mapScrollHint: 'On mobile, swipe the map to see details.',
     mapScrollLabel: 'Enlarged campus map. Swipe horizontally to see all areas.',
     mapInfoInitial: 'Focus or select a marker to see location details.',
-    buttonSpeechPrefix: 'Button',
-    linkSpeechPrefix: 'Link',
     routeSummaryTitle: 'Route summary',
     estimatedTime: 'Estimated time',
     estimatedDistance: 'Estimated distance',
@@ -567,7 +553,7 @@ translations.es = {
   locationAssistText: 'Activa tu ubicación para que el sitio sugiera el origen más cercano en el campus. Después elige solo el destino.',
   locationAssistButton: 'Usar mi ubicación como origen',
   locationDetecting: 'Solicitando tu ubicación...',
-  locationDetected: 'Estás cerca de {location}. Usamos este punto como origen.',
+  locationDetected: 'Origen completado por ubicación: {location}.',
   locationDetectedApprox: 'Parece que estás fuera del área central del campus. Usamos el punto más cercano como origen: {location}.',
   locationUnsupported: 'Tu navegador no permite identificar la ubicación automáticamente.',
   locationPermissionDenied: 'Permiso de ubicación denegado. Activa la ubicación del navegador o elige el origen manualmente.',
@@ -586,12 +572,7 @@ translations.es = {
   mapPickerDestinationTarget: 'Destino',
   mapPickerEmpty: 'no seleccionado',
   mapPickerStatus: 'Origen: {origin}. Destino: {destination}.',
-  mapPickerPromptOrigin: 'Elige el origen',
-  mapPickerPromptDestination: 'Elige el destino',
-  mapPickerPromptComplete: 'Origen y destino seleccionados. Haz clic en un punto seleccionado para desmarcarlo.',
   mapPickerOriginSelected: 'Origen seleccionado en el mapa:',
-  mapPickerOriginCleared: 'Origen eliminado en el mapa.',
-  mapPickerDestinationCleared: 'Destino eliminado en el mapa.',
   mapPickerDestinationSelected: 'Destino seleccionado en el mapa:',
   continueButton: 'Continuar',
   backButton: 'Volver',
@@ -615,8 +596,6 @@ translations.es = {
   mapScrollHint: 'En celular, desliza el mapa para ver los detalles.',
   mapScrollLabel: 'Mapa ampliado del campus. Desliza horizontalmente para ver todas las áreas.',
   mapInfoInitial: 'Enfoca o selecciona un marcador para ver detalles del lugar.',
-  buttonSpeechPrefix: 'Botón',
-  linkSpeechPrefix: 'Enlace',
   routeSummaryTitle: 'Resumen de la ruta',
   estimatedTime: 'Tiempo estimado',
   estimatedDistance: 'Distancia estimada',
@@ -995,7 +974,6 @@ const routeReaderStatusRegion = document.querySelector('#route-reader-status');
 let mapCollisionResizeHandler = null;
 let mapCollisionResizeFrame = 0;
 let currentRouteUtterance = null;
-const speechQueue = [];
 
 function getT() {
   return translations[state.lang];
@@ -1176,12 +1154,8 @@ function routeMatchesSelection(route = state.route) {
   return Boolean(route && route.originId === state.origin && route.destinationId === state.destination && route.profileId === state.profile);
 }
 
-function invalidateRoute(options = {}) {
-  const shouldStopSpeech = options.stopSpeech ?? Boolean(state.route);
-  if (shouldStopSpeech) {
-    stopSpeech();
-  }
-
+function invalidateRoute() {
+  stopSpeech();
   state.route = null;
   state.currentRouteStep = 0;
   state.textMode = false;
@@ -1450,60 +1424,33 @@ function speakText(text, options = {}) {
   }
 
   const keepPageReaderActive = Boolean(options.keepPageReaderActive);
-  const shouldQueue = Boolean(options.queue);
   const content = String(text || '').trim();
   if (!content) {
     return;
   }
 
-  if (shouldQueue && currentRouteUtterance) {
-    speechQueue.push({
-      text: content,
-      options: { ...options, queue: true }
-    });
-    return;
-  }
-
-  if (!shouldQueue) {
-    speechQueue.length = 0;
-  }
-
-  currentRouteUtterance = null;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(content);
-  currentRouteUtterance = utterance;
-  utterance.lang = getCurrentLanguage();
-
-  const finishSpeech = status => {
-    if (currentRouteUtterance !== utterance) {
-      return;
-    }
-
+  currentRouteUtterance = new SpeechSynthesisUtterance(content);
+  currentRouteUtterance.lang = getCurrentLanguage();
+  currentRouteUtterance.onend = () => {
     currentRouteUtterance = null;
     if (state.pageReaderActive && !keepPageReaderActive) {
       state.pageReaderActive = false;
       updatePageReaderButton();
     }
-
-    const nextSpeech = speechQueue.shift();
-    if (nextSpeech) {
-      speakText(nextSpeech.text, nextSpeech.options);
-      return;
+    setRouteReaderStatus(getT().routeReaderReady);
+  };
+  currentRouteUtterance.onerror = () => {
+    currentRouteUtterance = null;
+    if (state.pageReaderActive && !keepPageReaderActive) {
+      state.pageReaderActive = false;
+      updatePageReaderButton();
     }
-
-    setRouteReaderStatus(status);
-  };
-
-  utterance.onend = () => {
-    finishSpeech(getT().routeReaderReady);
-  };
-  utterance.onerror = () => {
-    speechQueue.length = 0;
-    finishSpeech(getT().routeReaderStopped);
+    setRouteReaderStatus(getT().routeReaderStopped);
   };
 
   setRouteReaderStatus(getT().routeReaderReading);
-  window.speechSynthesis.speak(utterance);
+  window.speechSynthesis.speak(currentRouteUtterance);
 }
 
 function pauseSpeech() {
@@ -1527,13 +1474,11 @@ function resumeSpeech() {
 }
 
 function stopSpeech() {
-  speechQueue.length = 0;
-  currentRouteUtterance = null;
-
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
 
+  currentRouteUtterance = null;
   if (state.pageReaderActive) {
     state.pageReaderActive = false;
     updatePageReaderButton();
@@ -1587,18 +1532,6 @@ function buildRouteTextModeSpeechText() {
   ].filter(Boolean).join(' ');
 }
 
-function speakTextIfPageReaderActive(text, options = {}) {
-  if (!state.pageReaderActive) {
-    return;
-  }
-
-  speakText(text, {
-    ...options,
-    keepPageReaderActive: true,
-    queue: options.queue ?? true
-  });
-}
-
 function buildLocationSpeechText(location) {
   if (!location) {
     return '';
@@ -1618,49 +1551,6 @@ function speakLocationIfPageReaderActive(location, force = false) {
   }
 
   speakText(buildLocationSpeechText(location), { keepPageReaderActive: true });
-}
-
-function getControlSpeechName(control) {
-  const ariaLabel = control.getAttribute('aria-label');
-  const text = ariaLabel || control.innerText || control.textContent || '';
-  return text.replace(/\s+/g, ' ').trim();
-}
-
-function buildControlSpeechText(control) {
-  const name = getControlSpeechName(control);
-  if (!name) {
-    return '';
-  }
-
-  const t = getT();
-  const prefix = control.matches('a') ? t.linkSpeechPrefix : t.buttonSpeechPrefix;
-  const context = control.dataset.readerContext || '';
-  return [`${prefix}: ${name}.`, context].filter(Boolean).join(' ');
-}
-
-function shouldSkipPageReaderControlSpeech(control) {
-  return control.id === 'page-reader-toggle'
-    || control.matches('.place-picker-marker, .map-marker, [data-route-reader-action]');
-}
-
-function handlePageReaderControlClick(event) {
-  if (!state.pageReaderActive) {
-    return;
-  }
-
-  const control = event.target.closest('button, a.button, summary');
-  if (!control || shouldSkipPageReaderControlSpeech(control)) {
-    return;
-  }
-
-  const speechText = buildControlSpeechText(control);
-  if (speechText) {
-    speakText(speechText, { keepPageReaderActive: true });
-  }
-}
-
-function setupPageReaderControlNarration() {
-  document.addEventListener('click', handlePageReaderControlClick, true);
 }
 
 function buildPageReaderSpeechText() {
@@ -1974,16 +1864,13 @@ function renderWelcome() {
   });
 }
 
-function setLocationAssistStatus(message, options = {}) {
+function setLocationAssistStatus(message) {
   const status = document.querySelector('#location-assist-status');
   if (status) {
     status.textContent = message;
   }
 
   setStatus(message);
-  if (options.speak) {
-    speakTextIfPageReaderActive(message);
-  }
 }
 
 function getLocationErrorMessage(error) {
@@ -2001,7 +1888,7 @@ function useCurrentLocationAsOrigin() {
   const button = document.querySelector('#use-current-location');
 
   if (!('geolocation' in navigator)) {
-    setLocationAssistStatus(t.locationUnsupported, { speak: true });
+    setLocationAssistStatus(t.locationUnsupported);
     return;
   }
 
@@ -2009,13 +1896,13 @@ function useCurrentLocationAsOrigin() {
     button.disabled = true;
   }
 
-  setLocationAssistStatus(t.locationDetecting, { speak: true });
+  setLocationAssistStatus(t.locationDetecting);
   navigator.geolocation.getCurrentPosition(
     position => {
       const nearest = getNearestCampusLocationFromGeolocation(position.coords.latitude, position.coords.longitude);
 
       if (!nearest || !nearest.location) {
-        setLocationAssistStatus(t.locationUnavailable, { speak: true });
+        setLocationAssistStatus(t.locationUnavailable);
         if (button) button.disabled = false;
         return;
       }
@@ -2031,7 +1918,7 @@ function useCurrentLocationAsOrigin() {
       const messageKey = nearest.distance > 18 ? 'locationDetectedApprox' : 'locationDetected';
       syncPlacePickerSelection();
       renderStepNav();
-      setLocationAssistStatus(formatTemplate(t[messageKey], { location: locationName }), { speak: true });
+      setLocationAssistStatus(formatTemplate(t[messageKey], { location: locationName }));
       validatePlaceSelection({ announce: true });
 
       if (button) {
@@ -2039,7 +1926,7 @@ function useCurrentLocationAsOrigin() {
       }
     },
     error => {
-      setLocationAssistStatus(getLocationErrorMessage(error), { speak: true });
+      setLocationAssistStatus(getLocationErrorMessage(error));
       if (button) {
         button.disabled = false;
       }
@@ -2069,7 +1956,7 @@ function renderPlaces() {
               <h3 class="location-assist__title" id="location-assist-title">${escapeHtml(t.locationAssistTitle)}</h3>
               <p class="location-assist__text">${escapeHtml(t.locationAssistText)}</p>
             </div>
-            <button class="button button-secondary location-assist__button" type="button" id="use-current-location" data-reader-context="${escapeHtml(`${t.locationAssistTitle}. ${t.locationAssistText}`)}">
+            <button class="button button-secondary location-assist__button" type="button" id="use-current-location">
               ${renderIcon('location')}
               <span>${escapeHtml(t.locationAssistButton)}</span>
             </button>
@@ -2391,8 +2278,6 @@ function renderPlaceMapPicker() {
   const t = getT();
   const originName = state.origin ? getLocationName(getLocation(state.origin)) : t.mapPickerEmpty;
   const destinationName = state.destination ? getLocationName(getLocation(state.destination)) : t.mapPickerEmpty;
-  const promptState = getPlacePickerPromptState();
-  const promptText = getPlacePickerPromptText();
 
   return `
     <details class="place-map-disclosure">
@@ -2403,7 +2288,6 @@ function renderPlaceMapPicker() {
       </summary>
       <section class="place-map-picker" aria-labelledby="place-map-title">
         <h3 class="item-title place-map-title" id="place-map-title">${escapeHtml(t.mapPickerTitle)}</h3>
-        <p class="place-map-guidance place-map-guidance--${escapeHtml(promptState)}" id="place-map-guidance" aria-live="polite" aria-atomic="true">${escapeHtml(promptText)}</p>
         <p class="map-scroll-hint">${escapeHtml(t.mapScrollHint)}</p>
         <div class="place-map-scroll" tabindex="0" aria-label="${escapeHtml(t.mapScrollLabel)}">
           <div class="place-map-wrap">
@@ -2420,33 +2304,6 @@ function renderPlaceMapPicker() {
       </section>
     </details>
   `;
-}
-
-function getPlacePickerPromptState() {
-  if (!state.origin) {
-    return 'origin';
-  }
-
-  if (!state.destination) {
-    return 'destination';
-  }
-
-  return 'complete';
-}
-
-function getPlacePickerPromptText() {
-  const t = getT();
-  const promptState = getPlacePickerPromptState();
-
-  if (promptState === 'origin') {
-    return t.mapPickerPromptOrigin;
-  }
-
-  if (promptState === 'destination') {
-    return t.mapPickerPromptDestination;
-  }
-
-  return t.mapPickerPromptComplete;
 }
 
 function getAutomaticPlacePickerTarget() {
@@ -2469,26 +2326,11 @@ function renderPlacePickerMarker(location) {
 function bindPlaceMapPicker() {
   document.querySelectorAll('[data-place-id]').forEach(button => {
     button.addEventListener('click', () => {
-      const t = getT();
       const selectedId = button.dataset.placeId;
       const shouldSpeakLocation = state.pageReaderActive;
-      const selectedLocation = getLocation(selectedId);
-      let statusMessage = '';
-
-      if (selectedId === state.origin) {
-        state.origin = '';
-        state.placePickerTarget = 'origin';
-        statusMessage = t.mapPickerOriginCleared;
-      } else if (selectedId === state.destination) {
-        state.destination = '';
-        state.placePickerTarget = state.origin ? 'destination' : 'origin';
-        statusMessage = t.mapPickerDestinationCleared;
-      } else {
-        const target = getAutomaticPlacePickerTarget();
-        state.placePickerTarget = target;
-        state[target] = selectedId;
-        statusMessage = `${target === 'origin' ? t.mapPickerOriginSelected : t.mapPickerDestinationSelected} ${getLocationName(selectedLocation)}.`;
-      }
+      const target = getAutomaticPlacePickerTarget();
+      state.placePickerTarget = target;
+      state[target] = selectedId;
 
       if (!routeMatchesSelection()) {
         invalidateRoute();
@@ -2500,14 +2342,16 @@ function bindPlaceMapPicker() {
       renderStepNav();
       window.requestAnimationFrame(centerPlaceMapScroll);
 
+      const selectedLocation = getLocation(selectedId);
       speakLocationIfPageReaderActive(selectedLocation, shouldSpeakLocation);
 
       if (Object.keys(errors).length > 0) {
+        const t = getT();
         setStatus(Object.values(errors).map(error => `${t.errorPrefix} ${error}`).join(' '));
         return;
       }
 
-      setStatus(`${statusMessage} ${getPlacePickerPromptText()}`.trim());
+      setStatus(`${target === 'origin' ? getT().mapPickerOriginSelected : getT().mapPickerDestinationSelected} ${getLocationName(selectedLocation)}.`);
     });
   });
 
@@ -2537,19 +2381,11 @@ function syncPlacePickerSelection() {
     marker.classList.toggle('selected-destination', marker.dataset.placeId === state.destination);
   });
 
-  const guidance = document.querySelector('#place-map-guidance');
-  if (guidance) {
-    const promptState = getPlacePickerPromptState();
-    guidance.className = `place-map-guidance place-map-guidance--${promptState}`;
-    guidance.textContent = getPlacePickerPromptText();
-  }
-
   const status = document.querySelector('#place-map-status');
   if (status) {
     status.textContent = formatTemplate(t.mapPickerStatus, { origin: originName, destination: destinationName });
   }
 }
-
 function renderProfile() {
   const t = getT();
   const profileError = state.errors.profile ? `${t.errorPrefix} ${state.errors.profile}` : '';
@@ -3724,6 +3560,5 @@ function renderComplete() {
   });
 }
 
-setupPageReaderControlNarration();
 initializeHistory();
 render(true);
