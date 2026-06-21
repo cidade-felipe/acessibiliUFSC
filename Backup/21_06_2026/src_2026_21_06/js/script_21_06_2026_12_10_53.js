@@ -980,8 +980,6 @@ const pathViews = Object.entries(viewPaths).reduce((accumulator, [view, path]) =
 const mapSourceUrl = 'https://ufsc.br/mapa-e-enderecos/';
 const mapImageSize = { width: 1500, height: 1443 };
 const metersPerMapPixel = 1.18;
-const mobileMarkerSpacingMedia = '(max-width: 680px)';
-const mobileMarkerSpacingDistances = [0, 26, 40, 56, 72];
 const campusGeoBounds = {
   north: -27.5928,
   south: -27.6088,
@@ -2589,7 +2587,7 @@ function bindPlaceMapPicker() {
       syncPlacePickerSelection();
       const errors = validatePlaceSelection({ announce: false });
       renderStepNav();
-      schedulePlaceMapLayout();
+      window.requestAnimationFrame(centerPlaceMapScroll);
 
       speakLocationIfPageReaderActive(selectedLocation, shouldSpeakLocation);
 
@@ -2602,7 +2600,7 @@ function bindPlaceMapPicker() {
     });
   });
 
-  schedulePlaceMapLayout();
+  window.requestAnimationFrame(centerPlaceMapScroll);
 }
 
 
@@ -3157,7 +3155,6 @@ function bindMapMarkers(routeView) {
 function scheduleMapMarkerCollisionResolution(routeView) {
   window.requestAnimationFrame(() => {
     centerScrollableMapOnPoints('.map-scroll', '.map-wrap', routeView.path);
-    applyMobileMarkerSpacing('.map-wrap', '.map-marker', marker => marker.classList.contains('origin') || marker.classList.contains('destination'));
     resolveMapTagCollisions(routeView);
   });
 
@@ -3174,20 +3171,12 @@ function scheduleMapMarkerCollisionResolution(routeView) {
       if (state.currentView === 'route' && state.route) {
         const updatedRouteView = getRouteView();
         centerScrollableMapOnPoints('.map-scroll', '.map-wrap', updatedRouteView.path);
-        applyMobileMarkerSpacing('.map-wrap', '.map-marker', marker => marker.classList.contains('origin') || marker.classList.contains('destination'));
         resolveMapTagCollisions(updatedRouteView);
       }
     });
   };
 
   window.addEventListener('resize', mapCollisionResizeHandler);
-}
-
-function schedulePlaceMapLayout() {
-  window.requestAnimationFrame(() => {
-    centerPlaceMapScroll();
-    applyMobileMarkerSpacing('.place-map-wrap', '.place-picker-marker');
-  });
 }
 
 function centerPlaceMapScroll() {
@@ -3214,115 +3203,6 @@ function centerScrollableMapOnPoints(scrollSelector, mapSelector, points = []) {
   const maxLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
 
   scrollContainer.scrollLeft = Math.max(0, Math.min(maxLeft, targetLeft));
-}
-
-function applyMobileMarkerSpacing(mapSelector, markerSelector, isPinnedMarker = () => false) {
-  const mapWrap = document.querySelector(mapSelector);
-  const markers = [...document.querySelectorAll(markerSelector)];
-
-  if (!mapWrap || markers.length === 0) {
-    return;
-  }
-
-  markers.forEach(marker => {
-    applyMarkerSpread(marker, { x: 0, y: 0 });
-    marker.classList.remove('is-spaced');
-  });
-
-  if (!window.matchMedia(mobileMarkerSpacingMedia).matches) {
-    return;
-  }
-
-  const wrapRect = mapWrap.getBoundingClientRect();
-  const markerEntries = markers.map(marker => ({
-    marker,
-    pinned: isPinnedMarker(marker),
-    rect: inflateRect(getElementRect(marker, wrapRect), 5)
-  }));
-  const pinnedRects = markerEntries
-    .filter(entry => entry.pinned)
-    .map(entry => inflateRect(entry.rect, 4));
-  const movableEntries = markerEntries
-    .filter(entry => !entry.pinned)
-    .map(entry => ({
-      ...entry,
-      collisionCount: markerEntries.filter(other => other.marker !== entry.marker && rectsOverlap(entry.rect, other.rect)).length
-    }))
-    .sort((first, second) => second.collisionCount - first.collisionCount);
-  const occupiedRects = [...pinnedRects];
-
-  movableEntries.forEach(entry => {
-    const otherInitialRects = markerEntries
-      .filter(other => other.marker !== entry.marker)
-      .map(other => other.rect);
-    const shift = chooseMarkerSpread(entry.marker, wrapRect, occupiedRects, otherInitialRects);
-
-    applyMarkerSpread(entry.marker, shift);
-    entry.marker.classList.toggle('is-spaced', Math.abs(shift.x) > 0 || Math.abs(shift.y) > 0);
-    occupiedRects.push(inflateRect(getElementRect(entry.marker, wrapRect), 7));
-  });
-}
-
-function chooseMarkerSpread(marker, wrapRect, occupiedRects, initialRects) {
-  const candidates = buildMarkerSpreadCandidates();
-  let bestCandidate = candidates[0];
-  let bestScore = Number.POSITIVE_INFINITY;
-
-  candidates.forEach(candidate => {
-    applyMarkerSpread(marker, candidate);
-    const markerRect = inflateRect(getElementRect(marker, wrapRect), 4);
-    const occupiedHits = countOccupiedCollisions([markerRect], occupiedRects);
-    const initialHits = countOccupiedCollisions([markerRect], initialRects);
-    const outsidePenalty = getOutsidePenalty([markerRect], wrapRect);
-    const movementPenalty = Math.hypot(candidate.x, candidate.y) / 80;
-    const stillOverlappingPenalty = initialHits > 0 && candidate.x === 0 && candidate.y === 0 ? 520 : 0;
-    const score = occupiedHits * 1000 + initialHits * 400 + outsidePenalty * 120 + movementPenalty + stillOverlappingPenalty;
-
-    if (score < bestScore) {
-      bestScore = score;
-      bestCandidate = candidate;
-    }
-  });
-
-  return bestCandidate;
-}
-
-function buildMarkerSpreadCandidates() {
-  const directions = [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 1, y: 0 },
-    { x: 0, y: -1 },
-    { x: 0, y: 1 },
-    normalizeVector({ x: -1, y: -1 }),
-    normalizeVector({ x: 1, y: -1 }),
-    normalizeVector({ x: -1, y: 1 }),
-    normalizeVector({ x: 1, y: 1 })
-  ];
-  const candidates = [];
-  const seen = new Set();
-
-  mobileMarkerSpacingDistances.forEach(distance => {
-    directions.forEach(direction => {
-      const candidate = {
-        x: Math.round(direction.x * distance),
-        y: Math.round(direction.y * distance)
-      };
-      const key = candidate.x + ':' + candidate.y;
-
-      if (!seen.has(key)) {
-        seen.add(key);
-        candidates.push(candidate);
-      }
-    });
-  });
-
-  return candidates;
-}
-
-function applyMarkerSpread(marker, shift) {
-  marker.style.setProperty('--marker-spread-x', shift.x + 'px');
-  marker.style.setProperty('--marker-spread-y', shift.y + 'px');
 }
 
 function resolveMapTagCollisions(routeView) {

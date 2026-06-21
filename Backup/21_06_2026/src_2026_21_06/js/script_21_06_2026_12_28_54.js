@@ -3186,7 +3186,7 @@ function scheduleMapMarkerCollisionResolution(routeView) {
 function schedulePlaceMapLayout() {
   window.requestAnimationFrame(() => {
     centerPlaceMapScroll();
-    applyMobileMarkerSpacing('.place-map-wrap', '.place-picker-marker');
+    applyMobileMarkerSpacing('.place-map-wrap', '.place-picker-marker', marker => marker.classList.contains('selected-origin') || marker.classList.contains('selected-destination'));
   });
 }
 

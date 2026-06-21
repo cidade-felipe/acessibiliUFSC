@@ -1637,7 +1637,7 @@ body.high-contrast .location-assist__status {
   font-size: 0.95rem;
   font-weight: 950;
   line-height: 1;
-  transform: translate(calc(-50% + var(--marker-spread-x, 0px)), calc(-50% + var(--marker-spread-y, 0px)));
+  transform: translate(-50%, -50%);
 }
 
 .place-picker-marker.selected-origin {
@@ -1845,8 +1845,10 @@ body.high-contrast .place-map-guidance::before {
   font-size: 0.94rem;
   font-weight: 950;
   line-height: 1;
-  transform: translate(calc(-50% + var(--marker-spread-x, 0px)), calc(-50% + var(--marker-spread-y, 0px)));
-  transition: box-shadow var(--motion-smooth) var(--motion-ease);
+  transform: translate(-50%, -50%);
+  transition:
+    box-shadow var(--motion-smooth) var(--motion-ease),
+    transform var(--motion-smooth) var(--motion-ease);
 }
 
 .map-marker.origin {
