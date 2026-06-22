@@ -29,14 +29,22 @@
 }
 
 html {
+  min-height: 100%;
+  background: #eefaff;
   scroll-behavior: smooth;
 }
 
 body {
   min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
+  overflow-x: hidden;
   color: var(--text);
   background: var(--page-background);
+  background-color: var(--bg);
+  background-repeat: no-repeat;
+  background-size: cover;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1rem;
   line-height: 1.5;
@@ -69,11 +77,43 @@ svg {
   max-width: 100%;
 }
 
+/* Keep flexible children from expanding their page-level containers. */
+.app-header > *,
+.app-shell,
+.stage,
+.panel,
+.panel-inner,
+.route-layout > *,
+.form-grid > *,
+.profile-grid > *,
+.metric-grid > *,
+.feature-item > div,
+.alert-item > div,
+.summary-item > div,
+.reference-item > div,
+.instruction-item > div,
+.success-banner > div {
+  min-width: 0;
+}
+
 button,
 input,
 select,
 textarea {
   font: inherit;
+}
+
+input,
+select,
+textarea,
+form,
+fieldset {
+  max-width: 100%;
+}
+
+form,
+fieldset {
+  min-width: 0;
 }
 
 button {
@@ -213,6 +253,7 @@ a {
   font-size: clamp(1.7rem, 4vw, 3rem);
   line-height: 1.05;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .brand-name {
@@ -242,6 +283,7 @@ body.high-contrast .brand-name-highlight {
   margin: 0.35rem 0 0;
   color: var(--muted);
   font-size: 1.02rem;
+  overflow-wrap: anywhere;
 }
 
 .top-actions {
@@ -646,6 +688,8 @@ textarea:focus-visible,
   padding: 0.75rem 1rem;
   font-weight: 800;
   text-decoration: none;
+  text-align: center;
+  overflow-wrap: anywhere;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
   transition:
     background-color var(--motion-smooth) var(--motion-ease),
@@ -1094,6 +1138,7 @@ body:has(#app .welcome-panel) .stage {
   font-size: clamp(1.45rem, 3vw, 2.2rem);
   line-height: 1.15;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .section-lead {
@@ -1101,6 +1146,7 @@ body:has(#app .welcome-panel) .stage {
   margin: 0.75rem 0 0;
   color: var(--muted);
   font-size: 1.08rem;
+  overflow-wrap: anywhere;
 }
 
 .action-row {
@@ -1124,16 +1170,30 @@ body:has(#app .welcome-panel) .stage {
   right: 0;
   bottom: 0.85rem;
   z-index: 20;
-  justify-content: flex-end;
-  width: fit-content;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.55fr) minmax(0, 0.9fr);
+  align-items: stretch;
+  gap: 0.55rem;
+  width: 100%;
   max-width: 100%;
   margin-left: auto;
   border: 1px solid rgba(203, 213, 225, 0.72);
-  border-radius: 999px;
-  padding: 0.55rem;
+  border-radius: 2rem;
+  padding: 0.7rem;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
   backdrop-filter: blur(12px);
+}
+
+.action-row--route-result .button {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 3.35rem;
+  padding: 0.75rem 0.5rem;
+  font-size: clamp(0.68rem, 2.8vw, 0.92rem);
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 body.high-contrast .action-row--route-result {
@@ -1166,12 +1226,12 @@ body.high-contrast .action-row--route-result {
 .button-hero {
   position: relative;
   z-index: 1;
-  min-width: 15.5rem;
-  min-height: 3.85rem;
-  padding: 0.95rem 1.55rem;
+  min-width: clamp(20rem, 32vw, 26rem);
+  min-height: 5rem;
+  padding: 1.25rem 2.4rem;
   border-color: transparent;
   color: #ffffff;
-  font-size: 1.16rem;
+  font-size: clamp(1.3rem, 2.2vw, 1.55rem);
   background: linear-gradient(135deg, var(--primary), #0878b8);
   box-shadow: 0 16px 34px rgba(0, 88, 145, 0.26);
 }
@@ -1335,6 +1395,23 @@ body.high-contrast .button-hero:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+}
+
+.completion-summary {
+  margin-top: 1rem;
+}
+
+.completion-summary .summary-item {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  align-items: start;
+}
+
+.completion-summary .item-title,
+.completion-summary .item-text {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .feature-icon,
@@ -1984,6 +2061,7 @@ body.high-contrast .instruction-number {
 .text-route {
   display: grid;
   gap: 1rem;
+  scroll-margin-top: 1rem;
   padding: 1rem;
   border: 2px solid var(--primary);
   border-radius: var(--radius);
@@ -2079,6 +2157,20 @@ body.high-contrast .route-reader__button {
 .walkthrough {
   display: grid;
   gap: 1rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.walkthrough > *,
+.navigation-map-preview,
+.progress-block,
+.step-card,
+.route-reader,
+.route-reader__actions,
+.action-row--step-navigation {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .navigation-map-preview .map-panel {
@@ -2220,6 +2312,18 @@ body.high-contrast .success-badge {
     justify-content: flex-start;
   }
 
+  .top-actions > * {
+    min-width: 0;
+  }
+
+  .flow-stepper__list {
+    min-width: 40rem;
+  }
+
+  .flow-stepper__item {
+    flex-basis: 6rem;
+  }
+
   .route-panel {
     position: static;
   }
@@ -2235,6 +2339,22 @@ body.high-contrast .success-badge {
 }
 
 @media (max-width: 680px) {
+  body:has(.places-panel) .app-shell {
+    width: 100%;
+    max-width: 100vw;
+    margin-inline: auto;
+    padding-inline: 0.75rem;
+  }
+
+  body:has(.places-panel) .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+
   .app-header {
     padding: 0.85rem;
   }
@@ -2247,6 +2367,18 @@ body.high-contrast .success-badge {
     width: 3.2rem;
   }
 
+  .brand-title {
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
+  }
+
+  .brand-kicker {
+    font-size: 0.78rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.92rem;
+  }
+
   .app-shell {
     padding-inline: 0.85rem;
   }
@@ -2257,9 +2389,45 @@ body.high-contrast .success-badge {
     flex-direction: column;
   }
 
-  .action-row--route-result {
+  .top-actions {
     width: 100%;
-    border-radius: 1rem;
+  }
+
+  .top-actions .control-group,
+  .top-actions .custom-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .top-actions .custom-select__list {
+    right: auto;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .top-actions .icon-button {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .top-actions .icon-button .ui-icon {
+    flex: 0 0 auto;
+  }
+
+  .action-row--route-result {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.55rem;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 2rem;
+  }
+
+  .action-row--route-result .button {
+    min-height: 3.35rem;
+    padding: 0.85rem 1.1rem;
+    font-size: 1rem;
+    white-space: normal;
   }
 
   .button,
@@ -2269,10 +2437,142 @@ body.high-contrast .success-badge {
     width: 100%;
   }
 
+  .button,
+  .icon-button,
+  .route-reader__button {
+    white-space: normal;
+  }
+
+  .panel-inner,
+  .step-card {
+    padding: 1rem;
+  }
+
+  .page-title {
+    max-width: 100%;
+    font-size: clamp(2rem, 11vw, 3rem);
+    overflow-wrap: anywhere;
+  }
+
+  .page-title .brand-name {
+    display: inline;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .welcome-panel__inner {
+    width: 100%;
+    padding-inline: 0.25rem;
+  }
+
+  .welcome-panel__lead,
+  .welcome-flow__text,
+  .eyebrow {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .button-hero {
+    width: min(100%, 24rem);
+    min-width: 0;
+    min-height: 4.75rem;
+    margin-inline: auto;
+  }
+
+  .walkthrough {
+    gap: 0.75rem;
+  }
+
+  .walkthrough .panel-inner,
+  .walkthrough .progress-block,
+  .walkthrough .step-card,
+  .walkthrough .route-reader {
+    width: 100%;
+    padding: 0.85rem;
+  }
+
+  .walkthrough .section-title,
+  .walkthrough .section-lead,
+  .walkthrough .route-reader__title,
+  .walkthrough .route-reader__status,
+  .walkthrough .route-reader__auto {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .action-row--step-navigation,
+  .route-reader__actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .route-reader__auto {
+    align-items: flex-start;
+    white-space: normal;
+  }
+
+  .route-reader__auto input {
+    flex: 0 0 auto;
+  }
+
+  .navigation-map-preview {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .navigation-map-preview .map-scroll {
+    overflow: hidden;
+  }
+
+  .navigation-map-preview .map-scroll-hint {
+    display: none;
+  }
+
+  .navigation-map-preview .map-wrap {
+    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
+    margin: 0.75rem;
+  }
+
   .form-grid,
   .profile-grid,
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .places-panel {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    overflow: hidden;
+    justify-self: center;
+  }
+
+  .places-panel .panel-inner,
+  .places-panel form,
+  .places-panel .form-grid,
+  .places-panel .field,
+  .places-panel .place-map-disclosure,
+  .places-panel .place-map-picker,
+  .places-panel .place-map-scroll {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .places-panel .place-map-scroll {
+    overflow: hidden;
+  }
+
+  .places-panel .map-scroll-hint {
+    display: none;
+  }
+
+  .places-panel .place-map-wrap {
+    width: 100%;
+    max-width: 100%;
+    margin: 0.25rem auto 0.35rem;
   }
 
   .location-assist {
@@ -2281,7 +2581,9 @@ body.high-contrast .success-badge {
 
   .location-assist__button {
     width: 100%;
-    white-space: normal;
+    padding-inline: 0.55rem;
+    font-size: clamp(0.72rem, 3.2vw, 0.88rem);
+    white-space: nowrap;
   }
 
   .welcome-flow {
@@ -2299,15 +2601,17 @@ body.high-contrast .success-badge {
   }
 
   .flow-stepper {
+    overflow: visible;
     padding-bottom: 0.5rem;
   }
 
   .flow-stepper__list {
-    min-width: 23rem;
+    width: 100%;
+    min-width: 0;
   }
 
   .flow-stepper__item {
-    flex-basis: 3.8rem;
+    flex: 1 1 0;
   }
 
   .flow-stepper__item::before,
@@ -2323,8 +2627,8 @@ body.high-contrast .success-badge {
   }
 
   .flow-stepper__number {
-    width: 2.1rem;
-    height: 2.1rem;
+    width: clamp(1.8rem, 9vw, 2.1rem);
+    height: clamp(1.8rem, 9vw, 2.1rem);
     border-width: 3px;
     font-size: 0.85rem;
   }
@@ -2334,8 +2638,8 @@ body.high-contrast .success-badge {
   }
 
   .flow-stepper__item.is-current .flow-stepper__number {
-    width: 2.45rem;
-    height: 2.45rem;
+    width: clamp(2.1rem, 10vw, 2.45rem);
+    height: clamp(2.1rem, 10vw, 2.45rem);
   }
 
   .flow-stepper__label {
@@ -2390,6 +2694,11 @@ body.high-contrast .success-badge {
     padding-inline: 0.75rem;
   }
 
+  .map-header,
+  .route-panel-header {
+    flex-wrap: wrap;
+  }
+
   .map-source {
     align-items: stretch;
     flex-direction: column;
@@ -2404,6 +2713,106 @@ body.high-contrast .success-badge {
   .marker-tag {
     max-width: 8.5rem;
     font-size: 0.88rem;
+  }
+
+  .place-map-disclosure > summary,
+  .place-map-guidance {
+    width: 100%;
+    border-radius: 1rem;
+    white-space: normal;
+  }
+
+  .feature-item,
+  .alert-item,
+  .summary-item,
+  .reference-item,
+  .instruction-item,
+  .location-card,
+  .place-map-status,
+  .map-source-copy {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 420px) {
+  body:has(.places-panel) .app-shell {
+    padding-inline: 0.65rem;
+  }
+
+  .app-header,
+  .app-shell {
+    padding-inline: 0.65rem;
+  }
+
+  .brand {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .brand-logo {
+    width: 2.75rem;
+  }
+
+  .brand-title {
+    font-size: clamp(1.2rem, 6.5vw, 1.45rem);
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .places-panel .panel-inner {
+    padding-inline: 0.75rem;
+  }
+
+  .flow-stepper {
+    margin-top: 0.5rem;
+    padding-inline: 0;
+  }
+
+  .flow-stepper__item::before,
+  .flow-stepper__item::after {
+    top: 1.35rem;
+  }
+
+  .flow-stepper__number {
+    box-shadow: 0 0 0 0.2rem var(--surface);
+  }
+
+  .welcome-brand,
+  .welcome-flow__item {
+    width: 100%;
+  }
+
+  .welcome-panel__inner {
+    gap: 1.15rem;
+    padding-top: 1.25rem;
+  }
+
+  .success-banner {
+    flex-direction: column;
+  }
+
+  .completion-summary .summary-item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .route-reader__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .walkthrough .panel-inner,
+  .walkthrough .progress-block,
+  .walkthrough .step-card,
+  .walkthrough .route-reader {
+    padding: 0.75rem;
+  }
+
+  .map-wrap,
+  .place-map-wrap {
+    width: 36rem;
   }
 }
 

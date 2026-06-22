@@ -2150,7 +2150,7 @@ function renderPlaces() {
   const destinationError = state.errors.destination ? `${t.errorPrefix} ${state.errors.destination}` : '';
 
   app.innerHTML = `
-    <section class="panel" aria-labelledby="places-title">
+    <section class="panel places-panel" aria-labelledby="places-title">
       <div class="panel-inner">
         <h2 class="section-title" id="places-title" tabindex="-1" data-focus-target>${escapeHtml(t.placesTitle)}</h2>
         <p class="section-lead">${escapeHtml(t.placesLead)}</p>
@@ -3021,9 +3021,25 @@ function renderRoute() {
   setupRouteReaderControls();
 
   document.querySelector('#toggle-text-mode').addEventListener('click', () => {
-    state.textMode = !state.textMode;
+    const shouldShowTextRoute = !state.textMode;
+    state.textMode = shouldShowTextRoute;
     render();
     setStatus(state.textMode ? t.showTextRoute : t.hideTextRoute);
+
+    if (shouldShowTextRoute) {
+      const textRoute = document.querySelector('.text-route');
+      if (textRoute) {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        textRoute.focus({ preventScroll: true });
+        textRoute.scrollIntoView({
+          behavior: reduceMotion ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      }
+      return;
+    }
+
+    document.querySelector('#toggle-text-mode')?.focus({ preventScroll: true });
   });
 
   document.querySelector('#start-route').addEventListener('click', () => {
@@ -3762,7 +3778,7 @@ function renderInstructionPreview(routeView) {
 function renderTextRoute(routeView) {
   const t = getT();
   return `
-    <section class="text-route" aria-labelledby="text-route-title">
+    <section class="text-route" tabindex="-1" aria-labelledby="text-route-title">
       <h4 class="item-title" id="text-route-title">${escapeHtml(t.textRouteTitle)}</h4>
       <dl class="summary-list">
         <div class="summary-item">
@@ -3822,7 +3838,7 @@ function renderNavigation() {
 
       <article class="step-card">
         <span class="step-number-large" aria-hidden="true">${current}</span>
-        <h3 class="section-title">${escapeHtml(step.text)}</h3>
+        <h3 class="section-title" id="current-route-step-title" tabindex="-1">${escapeHtml(step.text)}</h3>
         <p class="section-lead">${escapeHtml(step.access)}</p>
         ${renderRouteReaderControls('navigation')}
         <div class="action-row action-row--step-navigation">
@@ -3844,7 +3860,7 @@ function renderNavigation() {
   document.querySelector('#previous-route-step').addEventListener('click', () => {
     if (state.currentRouteStep > 0) {
       state.currentRouteStep -= 1;
-      render(true);
+      refreshNavigationStep();
       setStatus(formatTemplate(t.progressText, { current: state.currentRouteStep + 1, total }));
       if (state.routeReaderAutoRead) {
         speakText(buildCurrentStepSpeechText());
@@ -3861,7 +3877,7 @@ function renderNavigation() {
     }
 
     state.currentRouteStep += 1;
-    render(true);
+    refreshNavigationStep();
     setStatus(formatTemplate(t.progressText, { current: state.currentRouteStep + 1, total }));
     if (state.routeReaderAutoRead) {
       speakText(buildCurrentStepSpeechText());
@@ -3876,6 +3892,20 @@ function renderNavigation() {
     button.textContent = state.navigationMapVisible ? t.hideMapAgain : t.viewMapAgain;
     button.setAttribute('aria-expanded', String(state.navigationMapVisible));
   });
+}
+
+function refreshNavigationStep() {
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+
+  renderNavigation();
+
+  const stepTitle = document.querySelector('#current-route-step-title');
+  if (stepTitle) {
+    stepTitle.focus({ preventScroll: true });
+  }
+
+  window.scrollTo(scrollX, scrollY);
 }
 
 function renderComplete() {
@@ -3893,7 +3923,7 @@ function renderComplete() {
           </div>
         </div>
 
-        <dl class="summary-list" style="margin-top: 1rem;">
+        <dl class="summary-list completion-summary">
           <div class="summary-item">
             <dt class="item-title">${escapeHtml(t.summaryOrigin)}</dt>
             <dd class="item-text">${escapeHtml(getLocationName(routeView.origin))}</dd>
