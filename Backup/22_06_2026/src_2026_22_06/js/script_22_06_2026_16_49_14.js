@@ -944,20 +944,6 @@ Object.assign(routeTemplates['centro_eventos|hu'], {
   ]
 });
 
-Object.assign(translations.pt, {
-  resetPlanning: 'Resetar',
-  resetPlanningStatus: 'Planejamento reiniciado.'
-});
-
-Object.assign(translations.en, {
-  resetPlanning: 'Reset',
-  resetPlanningStatus: 'Planning reset.'
-});
-
-Object.assign(translations.es, {
-  resetPlanning: 'Reiniciar',
-  resetPlanningStatus: 'Planificación reiniciada.'
-});
 const state = {
   lang: 'pt',
   highContrast: false,
@@ -1128,12 +1114,6 @@ function renderIcon(name) {
         <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"></path>
         <circle cx="12" cy="10" r="2.4"></circle>
       </svg>
-    `,
-    reset: `
-      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M3 12a9 9 0 1 0 3-6.7"></path>
-        <path d="M3 4v5h5"></path>
-      </svg>
     `
   };
 
@@ -1239,24 +1219,6 @@ function invalidateRoute(options = {}) {
   state.navigationMapVisible = true;
 }
 
-function resetPlanningFlow(options = {}) {
-  stopSpeech();
-  state.origin = '';
-  state.destination = '';
-  state.profile = '';
-  state.route = null;
-  state.errors = {};
-  state.placesValidationSubmitted = false;
-  state.currentRouteStep = 0;
-  state.textMode = false;
-  state.activeMarkerId = '';
-  state.routeCompleted = false;
-  state.placePickerTarget = 'origin';
-  state.routeReaderAutoRead = false;
-  state.navigationMapVisible = true;
-  setView('welcome', { focus: true, historyMode: options.historyMode || 'replace' });
-  setStatus(getT().resetPlanningStatus);
-}
 function hasValidPlaceSelection() {
   return Boolean(getLocation(state.origin) && getLocation(state.destination) && state.origin !== state.destination);
 }
@@ -1972,7 +1934,6 @@ function render(shouldFocus = false) {
 
 function renderTopActions() {
   const t = getT();
-  const showReset = state.currentView !== 'welcome';
   topActions.innerHTML = `
     <div class="control-group">
       <label class="sr-only" for="language-select">${escapeHtml(t.languageLabel)}</label>
@@ -1991,12 +1952,6 @@ function renderTopActions() {
       ${renderIcon('reading')}
       <span>${escapeHtml(t.pageReaderLabel)}</span>
     </button>
-    ${showReset ? `
-      <button class="icon-button button-secondary" id="reset-planning" type="button" aria-label="${escapeHtml(t.resetPlanning)}">
-        ${renderIcon('reset')}
-        <span>${escapeHtml(t.resetPlanning)}</span>
-      </button>
-    ` : ''}
   `;
 
   document.querySelector('#language-select').addEventListener('change', event => {
@@ -2025,11 +1980,6 @@ function renderTopActions() {
     speakText(buildPageReaderSpeechText(), { keepPageReaderActive: true });
     setStatus(getT().pageReaderStarted);
   });
-
-  const resetButton = document.querySelector('#reset-planning');
-  if (resetButton) {
-    resetButton.addEventListener('click', () => resetPlanningFlow());
-  }
 }
 
 function renderStepNav() {
@@ -4001,7 +3951,16 @@ function renderComplete() {
   `;
 
   document.querySelector('#new-route').addEventListener('click', () => {
-    resetPlanningFlow();
+    state.origin = '';
+    state.destination = '';
+    state.profile = '';
+    state.route = null;
+    state.currentRouteStep = 0;
+    state.textMode = false;
+    state.activeMarkerId = '';
+    state.routeCompleted = false;
+    state.navigationMapVisible = true;
+    setView('welcome', { focus: true });
   });
 
   document.querySelector('#view-map-again').addEventListener('click', () => {
